@@ -2,7 +2,6 @@
 from lxml import html
 import requests
 import json
-import urllib.request
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
@@ -13,6 +12,9 @@ import argparse
 import tempfile
 import urllib.request
 import re
+import urllib3
+from tqdm import tqdm
+
 
 
 options = Options()
@@ -66,8 +68,6 @@ total += int(AK)
 
 
 #Arkansas
-
-# 
 driver.get("https://www.healthy.arkansas.gov/programs-services/topics/novel-coronavirus")
 AR = int(driver.find_element_by_xpath("/html/body/div[7]/div[1]/table[4]/tbody/tr[1]/td[2]/b").text.replace(',', ''))
 total += AR
@@ -86,15 +86,44 @@ print(str(CA))
 #Connecticut
 #KILL ME IT'S A PDF
 f = tempfile.TemporaryFile()
-driver.get("https://portal.ct.gov/Coronavirus")
+driver.get("http://portal.ct.gov/Coronavirus")
 pdfurl = driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/main/section[2]/div/div[2]/p[4]/span/strong/a").get_attribute('href')
-resp = urllib.request.urlopen(pdfurl)
-f.write(resp.read())
+
+urllib3.disable_warnings()
+urllib3.util.ssl_.DEFAULT_CIPHERS += 'HIGH:!DH:!aNULL'
+try:
+    urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += 'HIGH:!DH:!aNULL'
+except AttributeError:
+    # no pyopenssl support used / needed / available
+    pass
+
+
+resp = requests.get(pdfurl, stream=True, verify=False)
+
+# read 1024 bytes every time 
+buffer_size = 1024
+
+# get the total file size
+file_size = int(resp.headers.get("Content-Length", 0))
+
+# progress bar, changing the unit to bytes instead of iteration (default by tqdm)
+progress = tqdm(resp.iter_content(buffer_size), f"Downloading file", total=file_size, unit="B", unit_scale=True, unit_divisor=1024)
+
+for data in progress:
+        # write data read to the file
+        f.write(data)
+        # update the progress bar manually
+        progress.update(len(data))
 
 pdfReader = PyPDF2.PdfFileReader(f)
-firstPage = pdfReader.getPage(0).extractText()text.replace(',', '')
+firstPage = pdfReader.getPage(0).extractText().replace(',', '')
 
-re.search("total of \d+")
+#print(firstPage)
+
+CT = int(re.findall(r'-?\d+\.?\d*', re.findall("total of \n\d+", firstPage)[0])[0])
+print(str(CT))
+total += CT
+
 
 f.close()
 
