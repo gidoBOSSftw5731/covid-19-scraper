@@ -98,8 +98,6 @@ re.search("total of \d+")
 
 f.close()
 
-
-#33
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
