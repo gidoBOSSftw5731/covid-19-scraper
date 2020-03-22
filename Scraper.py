@@ -92,7 +92,7 @@ resp = urllib.request.urlopen(pdfurl)
 f.write(resp.read())
 
 pdfReader = PyPDF2.PdfFileReader(f)
-firstPage = pdfReader.getPage(0).extractText()text.replace(',', '')
+firstPage = pdfReader.getPage(0).extractText().text.replace(',', '')
 
 re.search("total of \d+")
 
