@@ -5,21 +5,6 @@ import json
 import urllib.request
 from bs4 import BeautifulSoup
 
-#Currently requires google auth
-#auth.authenticate_user()
-
-#import gspread
-#from oauth2client.client import GoogleCredentials
-
-#gc = gspread.authorize(GoogleCredentials.get_application_default())
-
-#Name must match, if it is changed in the file it must be changed here as well
-#worksheet = gc.open('Beer Virus Automation').sheet1
-
-#xpaths = worksheet.col_values(3)
-#urls = worksheet.col_values(2)
-
-################################################################################
 
 #Alabama
 url = urllib.request.urlopen("https://services7.arcgis.com/4RQmZZ0yaZkGR1zy/arcgis/rest/services/COV19_Public_Dashboard_ReadOnly/FeatureServer/0/query?f=json&where=CONFIRMED%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&outStatistics=%5B%7B%22statisticType%22%3A%22sum%22%2C%22onStatisticField%22%3A%22CONFIRMED%22%2C%22outStatisticFieldName%22%3A%22value%22%7D%5D&cacheHint=true")
