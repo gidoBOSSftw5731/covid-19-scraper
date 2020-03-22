@@ -64,9 +64,15 @@ total += int(AK)
 
 # 
 driver.get("https://www.healthy.arkansas.gov/programs-services/topics/novel-coronavirus")
-AR = int(driver.find_element_by_xpath("/html/body/div[7]/div[1]/table[4]/tbody/tr[1]/td[2]/b").text)
+AR = int(driver.find_element_by_xpath("/html/body/div[7]/div[1]/table[4]/tbody/tr[1]/td[2]/b").text.replace(',', ''))
 total += AR
 print(str(AR))
+
+#California
+driver.get("https://www.latimes.com/projects/california-coronavirus-cases-tracking-outbreak/")
+CA = int(driver.find_element_by_xpath("/html/body/article/div[1]/section[2]/div[1]/div[1]/p[1]").text.replace(',', ''))
+total += CA
+print(str(CA))
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
