@@ -5,6 +5,20 @@ import json
 import urllib.request
 from bs4 import BeautifulSoup
 
+#Currently requires google auth
+#auth.authenticate_user()
+
+#import gspread
+#from oauth2client.client import GoogleCredentials
+
+#gc = gspread.authorize(GoogleCredentials.get_application_default())
+
+#Name must match, if it is changed in the file it must be changed here as well
+#worksheet = gc.open('Beer Virus Automation').sheet1
+
+#xpaths = worksheet.col_values(3)
+#urls = worksheet.col_values(2)
+
 ################################################################################
 
 #Alabama
