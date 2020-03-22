@@ -62,7 +62,11 @@ total += int(AK)
 
 #Arkansas
 
-
+# 
+driver.get("https://www.healthy.arkansas.gov/programs-services/topics/novel-coronavirus")
+AR = int(driver.find_element_by_xpath("/html/body/div[7]/div[1]/table[4]/tbody/tr[1]/td[2]/b").text)
+total += AR
+print(str(AR))
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
