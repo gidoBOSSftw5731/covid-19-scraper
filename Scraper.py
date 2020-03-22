@@ -19,13 +19,17 @@ from bs4 import BeautifulSoup
 #xpaths = worksheet.col_values(3)
 #urls = worksheet.col_values(2)
 
+total = 0
+
 ################################################################################
 
 #Alabama
 url = urllib.request.urlopen("https://services7.arcgis.com/4RQmZZ0yaZkGR1zy/arcgis/rest/services/COV19_Public_Dashboard_ReadOnly/FeatureServer/0/query?f=json&where=CONFIRMED%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&outStatistics=%5B%7B%22statisticType%22%3A%22sum%22%2C%22onStatisticField%22%3A%22CONFIRMED%22%2C%22outStatisticFieldName%22%3A%22value%22%7D%5D&cacheHint=true")
 content = url.read()
 jc = json.loads(content)
-print(jc['features'][0]['attributes']['value'])
+AL = jc['features'][0]['attributes']['value']
+print(AL)
+total += AL
 
 ################################################################################
 
@@ -37,12 +41,14 @@ page = requests.get(url)
 tree = html.fromstring(page.content)
 cnt = tree.xpath(xpathh)
 
-print(cnt[0])
+AK = cnt[0]
+print(AK)
+total += int(AK)
 
 ################################################################################
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
-print("this should be the total")
+print("total: " + str(total))
 #worksheet.update_cells(total)
