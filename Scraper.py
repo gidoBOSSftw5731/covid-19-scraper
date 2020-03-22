@@ -1,4 +1,4 @@
-from google.colab import auth
+#from google.colab import auth
 from lxml import html
 import requests
 import json
@@ -6,18 +6,18 @@ import urllib.request
 from bs4 import BeautifulSoup
 
 #Currently requires google auth
-auth.authenticate_user()
+#auth.authenticate_user()
 
-import gspread
-from oauth2client.client import GoogleCredentials
+#import gspread
+#from oauth2client.client import GoogleCredentials
 
-gc = gspread.authorize(GoogleCredentials.get_application_default())
+#gc = gspread.authorize(GoogleCredentials.get_application_default())
 
 #Name must match, if it is changed in the file it must be changed here as well
-worksheet = gc.open('Beer Virus Automation').sheet1
+#worksheet = gc.open('Beer Virus Automation').sheet1
 
-xpaths = worksheet.col_values(3)
-urls = worksheet.col_values(2)
+#xpaths = worksheet.col_values(3)
+#urls = worksheet.col_values(2)
 
 ################################################################################
 
@@ -30,7 +30,7 @@ print(jc['features'][0]['attributes']['value'])
 ################################################################################
 
 #Alaska
-url = urls[2]
+url = "http://dhss.alaska.gov/dph/Epi/id/Pages/COVID-19/monitoring.aspx"
 xpathh = '//*[@id="ctl00_PlaceHolderMain_PageContent__ControlWrapper_RichHtmlField"]/div[2]/table/tbody/tr[9]/td[3]/p/text()'
 
 page = requests.get(url)
@@ -42,7 +42,7 @@ print(cnt[0])
 ################################################################################
 
 #Output Handling
-store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
-total = store.range('F1:F52')
-print(total)
-worksheet.update_cells(total)
+#store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
+#total = store.range('F1:F52')
+print("this should be the total")
+#worksheet.update_cells(total)
