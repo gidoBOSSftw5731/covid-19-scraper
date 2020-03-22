@@ -14,6 +14,7 @@ import urllib.request
 import re
 import urllib3
 from tqdm import tqdm
+import time
 
 options = Options()
 options.add_argument("--headless")
@@ -116,6 +117,21 @@ print(str(CT))
 total += CT
 
 f.close()
+
+#Delaware
+#Rasmit's job
+
+
+#Flordia (insert flordiaman joke)
+driver.get("https://experience.arcgis.com/experience/96dd742462124fa0b38ddedb9b25e429/")
+
+while len(driver.find_elements_by_xpath("/html/body/div/div/div[2]/div/div/div/margin-container/full-container/div[2]/margin-container/full-container/div/div/div/div[2]/svg/g[2]/svg/text")) == 0:
+    time.sleep(.1)
+
+FL = int(driver.find_element_by_xpath("/html/body/div/div/div[2]/div/div/div/margin-container/full-container/div[2]/margin-container/full-container/div/div/div/div[2]/svg/g[2]/svg/text").replace(",", ""))
+print(FL)
+total += FL
+
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
