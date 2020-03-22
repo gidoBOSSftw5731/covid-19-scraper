@@ -15,8 +15,6 @@ import re
 import urllib3
 from tqdm import tqdm
 
-
-
 options = Options()
 options.add_argument("--headless")
 
@@ -116,8 +114,6 @@ firstPage = pdfReader.getPage(0).extractText().replace(',', '')
 CT = int(re.findall(r'-?\d+\.?\d*', re.findall("total of \n\d+", firstPage)[0])[0])
 print(str(CT))
 total += CT
-
-
 
 f.close()
 
