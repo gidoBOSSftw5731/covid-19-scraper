@@ -8,6 +8,11 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 import sys
 import os
+import PyPDF2
+import argparse
+import tempfile
+import urllib.request
+import re
 
 
 options = Options()
@@ -73,6 +78,27 @@ driver.get("https://www.latimes.com/projects/california-coronavirus-cases-tracki
 CA = int(driver.find_element_by_xpath("/html/body/article/div[1]/section[2]/div[1]/div[1]/p[1]").text.replace(',', ''))
 total += CA
 print(str(CA))
+
+#Colorado (blaze it)
+#too fkin tired to figure out canvas in js
+
+
+#Connecticut
+#KILL ME IT'S A PDF
+f = tempfile.TemporaryFile()
+driver.get("https://portal.ct.gov/Coronavirus")
+pdfurl = driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/main/section[2]/div/div[2]/p[4]/span/strong/a").get_attribute('href')
+resp = urllib.request.urlopen(pdfurl)
+f.write(resp.read())
+
+pdfReader = PyPDF2.PdfFileReader(f)
+firstPage = pdfReader.getPage(0).extractText()text.replace(',', '')
+
+re.search("total of \d+")
+
+f.close()
+
+
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
