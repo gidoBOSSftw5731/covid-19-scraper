@@ -376,6 +376,13 @@ OR = int(driver.find_element_by_css_selector(".table-warning > b:nth-child(1)"
 print(str(OR))
 total += OR
 
+#Pennsylvania
+driver.get("https://www.health.pa.gov/topics/disease/coronavirus/Pages/Cases.aspx")
+PA = int(driver.find_element_by_xpath("/html/body/form/div/div[2]/div/div[4]/div[5]/div/div/div/div/div[1]/div/div/div[2]/div/div/div/div[2]/div/div[2]/table/tbody/tr[2]/td[2]"
+                                      ).text.replace(",", ""))
+print(str(PA))
+total += PA
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
