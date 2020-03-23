@@ -362,6 +362,13 @@ OH = int(driver.find_element_by_css_selector("div.odh-ads__item:nth-child(1) > d
 print(str(OH))
 total += OH
 
+#Oklahoma (It's OK)
+driver.get("https://coronavirus.health.ok.gov/")
+OK = int(driver.find_element_by_xpath("/html/body/div[2]/main/div/div/div[5]/div[1]/div/div[5]/div/table[4]/tbody/tr[17]/td[2]"
+                                      ).text.replace(",", ""))
+print(str(OK))
+total += OK
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
