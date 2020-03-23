@@ -147,10 +147,17 @@ print(str(HI))
 total += HI
 
 #Idaho
+#In spanish it would be jo
 driver.get("https://coronavirus.idaho.gov/")
 ID = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/main/div/div/div/section/div/div/div[1]/table[1]/tbody/tr[10]/td[3]").text)
 print(str(ID))
 total += ID
+
+#Illinois
+driver.get("https://www.dph.illinois.gov/topics-services/diseases-and-conditions/diseases-a-z-list/coronavirus")
+IL = int(driver.find_element_by_xpath("/html/body/div[1]/div[3]/div/article/div/div/div/dl/dd[1]/div[1]/div[1]/h3").text)
+print(str(IL))
+total += IL
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
