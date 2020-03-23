@@ -146,6 +146,12 @@ HI = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div/main/art
 print(str(HI))
 total += HI
 
+#Idaho
+driver.get("https://coronavirus.idaho.gov/")
+ID = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/main/div/div/div/section/div/div/div[1]/table[1]/tbody/tr[10]/td[3]").text)
+print(str(ID))
+total += ID
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
