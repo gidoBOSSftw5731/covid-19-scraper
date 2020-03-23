@@ -346,6 +346,13 @@ NY = int(driver.find_element_by_xpath("/html/body/div[3]/div/main/div/div/div[2]
 print(str(NY))
 total += NY
 
+#North Carolina
+driver.get("https://www.ncdhhs.gov/covid-19-case-count-nc")
+NC = int(driver.find_element_by_xpath("/html/body/div[2]/div/div[2]/main/article/div/div[2]/div/div/div/div/div/div/div/div[1]/section/section/div/div/div/table/tbody/tr[2]/td[1]/h3"
+                                      ).text.replace(",", ""))
+print(str(NC))
+total += NC
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
