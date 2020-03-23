@@ -136,7 +136,7 @@ total += FL
 '''
 #Georgia
 driver.get("https://dph.georgia.gov/covid-19-daily-status-report")
-GA = int(re.findall("\d+", re.sub(r'\([^)]*\)', '', driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/div/div[3]/div[1]/div/main/div[2]/table[1]/tbody/tr[1]/td[2]").text.replace(",", "")))[0])
+GA = int(re.findall(r"\d+", re.sub(r'\([^)]*\)', '', driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/div/div[3]/div[1]/div/main/div[2]/table[1]/tbody/tr[1]/td[2]").text.replace(",", "")))[0])
 print(str(GA))
 total += GA
 
@@ -158,6 +158,21 @@ driver.get("https://www.dph.illinois.gov/topics-services/diseases-and-conditions
 IL = int(driver.find_element_by_xpath("/html/body/div[1]/div[3]/div/article/div/div/div/dl/dd[1]/div[1]/div[1]/h3").text.replace(",", ""))
 print(str(IL))
 total += IL
+
+#Indiana
+#Arcgis quackery, to do later
+
+
+#Iowa
+#also arcgis
+
+
+#Kansas
+driver.get("https://govstatus.egov.com/coronavirus")
+#Yes, this script will only work for years 2000-2099, if you really need it to last longer, fix it yourself
+KS = int(re.findall(r"\d+", re.findall(r"\d{1,2} 2\d{3}: \d+", driver.find_element_by_xpath("/html/body/div[1]/div[2]/div/p").text.replace(",", ""))[0])[-1])
+print(str(KS))
+total += KS
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
