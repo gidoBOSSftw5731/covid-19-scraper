@@ -155,12 +155,18 @@ total += HI
 #In spanish it would be jo
 driver.get("https://coronavirus.idaho.gov/")
 #they seem to ratelimit, try waiting?
+i = 0
 while True:
     try:
         ID = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/main/div/div/div/section/div/div/div[1]/table[1]/tbody/tr[10]/td[3]").text.replace(",", ""))
     except selenium.common.exceptions.NoSuchElementException:
-        print("Idaho ratelimit, waiting 10 seconds")
-        time.sleep(10)
+        i += 1
+        if i > 2:
+            print("Idaho is being difficult, so we're gonna just load the page again")
+            driver.get("https://coronavirus.idaho.gov/")
+        else:
+            print("Idaho ratelimit, waiting 7 seconds")
+            time.sleep(7)
         continue
     break
 print(str(ID))
@@ -315,6 +321,13 @@ NH = int(driver.find_element_by_css_selector(".summary-list > table:nth-child(3)
                                               ).text.replace(",", ""))
 print(str(NH))
 total += NH
+
+#New Jersey (Make sure you fill up your gas tank before you enter, because you cant pump your own gas!)
+driver.get("https://www.nj.gov/health/")
+NJ = int(driver.find_element_by_css_selector("div.slick-slide:nth-child(5) > div:nth-child(1) > div:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > strong:nth-child(1)"
+                                             ).text.replace(",", ""))
+print(str(NJ))
+total += NJ
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
