@@ -253,7 +253,7 @@ total += MA
 
 #Michigan
 driver.get("https://www.michigan.gov/coronavirus/0,9753,7-406-98163-520743--,00.html")
-MI = int(driver.find_element_by_xpath("/html/body/div[3]/div[4]/div/div/div[3]/table[1]/tbody/tr[36]/td[2]/p/strong").text.replace(",", ""))
+MI = int(driver.find_element_by_xpath("/html/body/div[3]/div[4]/div/div/div[3]/table[1]/tbody/tr[40]/td[2]/p/strong").text.replace(",", ""))
 print(str(MI))
 total += MI
 
@@ -263,6 +263,7 @@ MN = int(re.findall(r"\d+", driver.find_element_by_xpath("/html/body/div[3]/div/
 print(str(MN))
 total += MN
 
+''' it broke
 #Mississippi
 driver.get("https://msdh.ms.gov/msdhsite/_static/14,0,420.html")
 i = 0
@@ -282,6 +283,7 @@ while True:
     break
 print(str(MS))
 total += MS
+'''
 
 #Missouri (I'm in MISERY)
 while True:
