@@ -2,6 +2,7 @@
 from lxml import html
 import requests
 import json
+import selenium
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -188,18 +189,18 @@ total += KS
 
 #Kentucky (land of the fried chicken)
 driver.get("https://govstatus.egov.com/kycovid19")
-#captcha issues
-try:
-    WebDriverWait(driver, 3).until(EC.alert_is_present(),
-                                   'Timed out waiting for PA creation ' +
-                                   'confirmation popup to appear.')
-
-    alert = driver.switch_to.alert
-    alert.accept()
-except TimeoutException:
-    print("No kentucky captcha")
 while True:
     try:
+        #captcha issues
+        try:
+            WebDriverWait(driver, 3).until(EC.alert_is_present(),
+                                        'Timed out waiting for PA creation ' +
+                                        'confirmation popup to appear.')
+
+            alert = driver.switch_to.alert
+            alert.accept()
+        except TimeoutException:
+            print("No kentucky captcha")
         KY = int(re.findall(r'\d+', re.findall(r'Positive: \d+', driver.find_elements_by_class_name("alert-success")[-1].text.replace(',', ""))[0])[0])
     except IndexError:
         print("kentucky ratelimit, sleeping for 10")
@@ -218,6 +219,19 @@ driver.get("https://www.maine.gov/dhhs/mecdc/infectious-disease/epi/airborne/cor
 ME = int(driver.find_element_by_xpath("/html/body/div[2]/div[3]/div[3]/table[1]/tbody/tr[2]/td[1]").text.replace(",", ""))
 print(str(ME))
 total += ME
+
+#Maryland
+driver.get("https://coronavirus.maryland.gov")
+while True:
+    try:
+        MD = int(re.findall(r"\d+", driver.find_element_by_xpath("/html/body/div[2]/div[5]/div[3]/div/div[1]/div/section[4]/div/div/div[2]/div/div/p[1]").text.replace(",", ""))[0])
+    except selenium.common.exceptions.NoSuchElementException:
+        print("Maryland ratelimit, sleeping for 10 seconds")
+        time.sleep(10)
+        continue
+    break
+print(str(MD))
+total += MD
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
