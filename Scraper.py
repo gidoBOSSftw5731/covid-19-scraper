@@ -245,6 +245,12 @@ MA = int(re.findall(r"\d+", driver.find_element_by_xpath("/html/body/div[1]/main
 print(str(MA))
 total += MA
 
+#Michigan
+driver.get("https://www.michigan.gov/coronavirus/0,9753,7-406-98163-520743--,00.html")
+MI = int(driver.find_element_by_xpath("/html/body/div[3]/div[4]/div/div/div[3]/table[1]/tbody/tr[36]/td[2]/p/strong").text.replace(",", ""))
+print(str(MI))
+total += MI
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
