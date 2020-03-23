@@ -2,7 +2,6 @@
 from lxml import html
 import requests
 import json
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 import sys
@@ -127,13 +126,19 @@ f.close()
 
 #Flordia (insert flordiaman joke)
 driver.get("https://experience.arcgis.com/experience/96dd742462124fa0b38ddedb9b25e429/")
-
+'''
 while len(driver.find_elements_by_xpath("/html/body/div/div/div[2]/div/div/div/margin-container/full-container/div[2]/margin-container/full-container/div/div/div/div[2]/svg/g[2]/svg/text")) == 0:
     time.sleep(.1)
 
 FL = int(driver.find_element_by_xpath("/html/body/div/div/div[2]/div/div/div/margin-container/full-container/div[2]/margin-container/full-container/div/div/div/div[2]/svg/g[2]/svg/text").replace(",", ""))
 print(FL)
 total += FL
+'''
+#Georgia
+driver.get("https://dph.georgia.gov/covid-19-daily-status-report")
+GA = int(re.findall("\d+", re.sub(r'\([^)]*\)', '', driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/div/div[3]/div[1]/div/main/div[2]/table[1]/tbody/tr[1]/td[2]").text.replace(",", "")))[0])
+print(str(GA))
+total += GA
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
