@@ -353,6 +353,15 @@ NC = int(driver.find_element_by_xpath("/html/body/div[2]/div/div[2]/main/article
 print(str(NC))
 total += NC
 
+#North Dakota (above south dakota)
+#Just photos (WTFFFF)
+
+#Ohio
+driver.get("https://coronavirus.ohio.gov/wps/portal/gov/covid-19/")
+OH = int(driver.find_element_by_css_selector("div.odh-ads__item:nth-child(1) > div:nth-child(1) > div:nth-child(1)").text.replace(",", ""))
+print(str(OH))
+total += OH
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
