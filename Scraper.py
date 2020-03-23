@@ -257,6 +257,19 @@ MN = int(re.findall(r"\d+", driver.find_element_by_xpath("/html/body/div[3]/div/
 print(str(MN))
 total += MN
 
+#Mississippi
+driver.get("https://msdh.ms.gov/msdhsite/_static/14,0,420.html")
+while True:
+    try:
+        MS = int(driver.find_element_by_xpath("/html/body/div[1]/div[3]/div[6]/div/table/tbody/tr[53]/td[2]").text.replace(",", ""))
+    except selenium.common.exceptions.NoSuchElementException:
+        print("Mississippi ratelimit, sleeping for 10 seconds")
+        time.sleep(10)
+        continue
+    break
+print(str(MS))
+total += MS
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
