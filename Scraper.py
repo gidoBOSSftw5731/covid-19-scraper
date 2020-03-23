@@ -142,20 +142,20 @@ total += GA
 
 #Hawaii
 driver.get("https://hawaiicovid19.com/")
-HI = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div/main/article/div/div/div[8]/div/div/div[2]/div/div/div/table/tbody/tr[5]/td[2]").text)
+HI = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div/main/article/div/div/div[8]/div/div/div[2]/div/div/div/table/tbody/tr[5]/td[2]").text.replace(",", ""))
 print(str(HI))
 total += HI
 
 #Idaho
 #In spanish it would be jo
 driver.get("https://coronavirus.idaho.gov/")
-ID = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/main/div/div/div/section/div/div/div[1]/table[1]/tbody/tr[10]/td[3]").text)
+ID = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/main/div/div/div/section/div/div/div[1]/table[1]/tbody/tr[10]/td[3]").text.replace(",", ""))
 print(str(ID))
 total += ID
 
 #Illinois
 driver.get("https://www.dph.illinois.gov/topics-services/diseases-and-conditions/diseases-a-z-list/coronavirus")
-IL = int(driver.find_element_by_xpath("/html/body/div[1]/div[3]/div/article/div/div/div/dl/dd[1]/div[1]/div[1]/h3").text)
+IL = int(driver.find_element_by_xpath("/html/body/div[1]/div[3]/div/article/div/div/div/dl/dd[1]/div[1]/div[1]/h3").text.replace(",", ""))
 print(str(IL))
 total += IL
 
