@@ -383,6 +383,15 @@ PA = int(driver.find_element_by_xpath("/html/body/form/div/div[2]/div/div[4]/div
 print(str(PA))
 total += PA
 
+#Rhode Island (not an island)
+driver.get("https://health.ri.gov/data/covid-19/")
+while (len((driver.find_elements_by_xpath("/html/body/div[4]/div[1]/div[2]/div/div/div[2]/div/div/table/tbody/tr[4]/td[2]"))) == 0):
+    time.sleep(.1)
+RI = int(driver.find_element_by_xpath("/html/body/div[4]/div[1]/div[2]/div/div/div[2]/div/div/table/tbody/tr[4]/td[2]"
+                                      ).text.replace(",", ""))
+print(str(RI))
+total += RI
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
