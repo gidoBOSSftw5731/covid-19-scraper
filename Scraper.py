@@ -298,6 +298,16 @@ NE = int(re.findall(r'\d+', driver.find_element_by_css_selector("#ctl00_PlaceHol
 print(str(NE))
 total += NE
 
+#Nevada
+driver.get("https://app.powerbigov.us/view?r=eyJrIjoiMjA2ZThiOWUtM2FlNS00MGY5LWFmYjUtNmQwNTQ3Nzg5N2I2IiwidCI6ImU0YTM0MGU2LWI4OWUtNGU2OC04ZWFhLTE1NDRkMjcwMzk4MCJ9")
+#Thing doesnt load instantly, so wait until you see the thing you need to check
+while (len(driver.find_elements_by_css_selector("visual-container-modern.visual-container-component:nth-child(12) > transform:nth-child(1) > div:nth-child(1) > div:nth-child(3) > visual-modern:nth-child(1) > div:nth-child(1) > svg:nth-child(2) > g:nth-child(1) > text:nth-child(1) > tspan:nth-child(1)"))
+       == 0):
+    time.sleep(.1)
+NV = int(driver.find_element_by_css_selector("visual-container-modern.visual-container-component:nth-child(12) > transform:nth-child(1) > div:nth-child(1) > div:nth-child(3) > visual-modern:nth-child(1) > div:nth-child(1) > svg:nth-child(2) > g:nth-child(1) > text:nth-child(1) > tspan:nth-child(1)").text.replace(",", ""))
+print(str(NV))
+total += NV
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
