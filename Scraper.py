@@ -251,6 +251,12 @@ MI = int(driver.find_element_by_xpath("/html/body/div[3]/div[4]/div/div/div[3]/t
 print(str(MI))
 total += MI
 
+#Minnesota
+driver.get("https://www.health.state.mn.us/diseases/coronavirus/situation.html")
+MN = int(re.findall(r"\d+", driver.find_element_by_xpath("/html/body/div[3]/div/div[2]/div[1]/ul[1]/li[1]").text.replace(",", ""))[-1])
+print(str(MN))
+total += MN
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
