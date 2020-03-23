@@ -4,6 +4,9 @@ import requests
 import json
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import sys
 import os
 import PyPDF2
@@ -125,8 +128,9 @@ f.close()
 
 
 #Flordia (insert flordiaman joke)
-driver.get("https://experience.arcgis.com/experience/96dd742462124fa0b38ddedb9b25e429/")
 '''
+driver.get("https://experience.arcgis.com/experience/96dd742462124fa0b38ddedb9b25e429/")
+
 while len(driver.find_elements_by_xpath("/html/body/div/div/div[2]/div/div/div/margin-container/full-container/div[2]/margin-container/full-container/div/div/div/div[2]/svg/g[2]/svg/text")) == 0:
     time.sleep(.1)
 
@@ -149,7 +153,15 @@ total += HI
 #Idaho
 #In spanish it would be jo
 driver.get("https://coronavirus.idaho.gov/")
-ID = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/main/div/div/div/section/div/div/div[1]/table[1]/tbody/tr[10]/td[3]").text.replace(",", ""))
+#they seem to ratelimit, try waiting?
+while True:
+    try:
+        ID = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[1]/main/div/div/div/section/div/div/div[1]/table[1]/tbody/tr[10]/td[3]").text.replace(",", ""))
+    except selenium.common.exceptions.NoSuchElementException:
+        print("Idaho ratelimit, waiting 10 seconds")
+        time.sleep(10)
+        continue
+    break
 print(str(ID))
 total += ID
 
@@ -173,6 +185,29 @@ driver.get("https://govstatus.egov.com/coronavirus")
 KS = int(re.findall(r"\d+", re.findall(r"\d{1,2} 2\d{3}: \d+", driver.find_element_by_xpath("/html/body/div[1]/div[2]/div/p").text.replace(",", ""))[0])[-1])
 print(str(KS))
 total += KS
+
+#Kentucky (land of the fried chicken)
+driver.get("https://govstatus.egov.com/kycovid19")
+#captcha issues
+try:
+    WebDriverWait(driver, 3).until(EC.alert_is_present(),
+                                   'Timed out waiting for PA creation ' +
+                                   'confirmation popup to appear.')
+
+    alert = driver.switch_to.alert
+    alert.accept()
+except TimeoutException:
+    print("No kentucky captcha")
+while True:
+    try:
+        KY = int(re.findall(r'\d+', re.findall(r'Positive: \d+', driver.find_elements_by_class_name("alert-success")[-1].text.replace(',', ""))[0])[0])
+    except IndexError:
+        print("kentucky ratelimit, sleeping for 10")
+        time.sleep(10)
+        continue
+    break
+print(str(KY))
+total += KY
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
