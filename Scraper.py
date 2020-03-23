@@ -302,7 +302,8 @@ total += MO
 
 #Nebraska
 driver.get("http://dhhs.ne.gov/Pages/Coronavirus.aspx#SectionLink3")
-NE = int(re.findall(r'\d+', driver.find_element_by_css_selector("#ctl00_PlaceHolderMain_ctl08__ControlWrapper_RichHtmlField > ul:nth-child(16) > li:nth-child(1)").text.replace(",", ""))[-1])
+NE = int(re.findall(r'\d+', driver.find_element_by_xpath("/html/body/form/div[11]/div/main/div/div[1]/div[1]/div[3]/div[4]/ul[1]/li"
+                                                         ).text.replace(",", ""))[-1])
 print(str(NE))
 total += NE
 
