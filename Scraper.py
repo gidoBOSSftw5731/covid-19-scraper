@@ -140,6 +140,12 @@ GA = int(re.findall("\d+", re.sub(r'\([^)]*\)', '', driver.find_element_by_xpath
 print(str(GA))
 total += GA
 
+#Hawaii
+driver.get("https://hawaiicovid19.com/")
+HI = int(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div/main/article/div/div/div[8]/div/div/div[2]/div/div/div/table/tbody/tr[5]/td[2]").text)
+print(str(HI))
+total += HI
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
