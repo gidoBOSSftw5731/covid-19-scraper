@@ -265,23 +265,38 @@ while True:
         MS = int(driver.find_element_by_xpath("/html/body/div[1]/div[3]/div[6]/div/table/tbody/tr[53]/td[2]").text.replace(",", ""))
     except selenium.common.exceptions.NoSuchElementException:
         i += 1
-        if (i > 3):
+        if (i > 2):
             print("Mississippi is being difficult, let's get the site again")
             driver.get("https://msdh.ms.gov/msdhsite/_static/14,0,420.html")
             i=0
         else:
-            print("Mississippi ratelimit, sleeping for 10 seconds")
-            time.sleep(10)
+            print("Mississippi ratelimit, sleeping for 7 seconds")
+            time.sleep(7)
         continue
     break
 print(str(MS))
 total += MS
 
 #Missouri (I'm in MISERY)
-driver.get("https://health.mo.gov/living/healthcondiseases/communicable/novel-coronavirus/")
+while True:
+    try:
+        driver.get("https://health.mo.gov/living/healthcondiseases/communicable/novel-coronavirus/")
+    except selenium.common.exceptions.WebDriverException:
+        continue
+    break
 MO = int(driver.find_element_by_xpath("/html/body/div/div/section[1]/div[6]/table/tbody/tr[2]/td").text.replace(",", ""))
 print(str(MO))
 total += MO
+
+#Montana
+#ARCGIS GOD DAMMIT
+
+
+#Nebraska
+driver.get("http://dhhs.ne.gov/Pages/Coronavirus.aspx#SectionLink3")
+NE = int(re.findall(r'\d+', driver.find_element_by_css_selector("#ctl00_PlaceHolderMain_ctl08__ControlWrapper_RichHtmlField > ul:nth-child(16) > li:nth-child(1)").text.replace(",", ""))[-1])
+print(str(NE))
+total += NE
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
