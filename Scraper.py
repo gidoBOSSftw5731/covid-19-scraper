@@ -324,10 +324,20 @@ total += NH
 
 #New Jersey (Make sure you fill up your gas tank before you enter, because you cant pump your own gas!)
 driver.get("https://www.nj.gov/health/")
+while (len(driver.find_elements_by_css_selector("div.slick-slide:nth-child(5) > div:nth-child(1) > div:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > strong:nth-child(1)")) == 0):
+    time.sleep(.1)
 NJ = int(driver.find_element_by_css_selector("div.slick-slide:nth-child(5) > div:nth-child(1) > div:nth-child(2) > table:nth-child(3) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > strong:nth-child(1)"
                                              ).text.replace(",", ""))
 print(str(NJ))
 total += NJ
+
+#New mexico (wallless, for now)
+driver.get("https://cv.nmhealth.org/")
+while (len(driver.find_elements_by_css_selector("h2.et_pb_module_header > span:nth-child(1)")) == 0):
+    time.sleep(.1)
+NM = int(driver.find_element_by_css_selector("h2.et_pb_module_header > span:nth-child(1)").text.replace(",", ""))
+print(str(NM))
+total += NM
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
