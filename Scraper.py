@@ -226,8 +226,8 @@ while True:
     try:
         MD = int(re.findall(r"\d+", driver.find_element_by_xpath("/html/body/div[2]/div[5]/div[3]/div/div[1]/div/section[4]/div/div/div[2]/div/div/p[1]").text.replace(",", ""))[0])
     except selenium.common.exceptions.NoSuchElementException:
-        print("Maryland ratelimit, sleeping for 10 seconds")
-        time.sleep(10)
+        print("Maryland ratelimit, sleeping for 7 seconds")
+        time.sleep(7)
         continue
     break
 print(str(MD))
@@ -259,16 +259,29 @@ total += MN
 
 #Mississippi
 driver.get("https://msdh.ms.gov/msdhsite/_static/14,0,420.html")
+i = 0
 while True:
     try:
         MS = int(driver.find_element_by_xpath("/html/body/div[1]/div[3]/div[6]/div/table/tbody/tr[53]/td[2]").text.replace(",", ""))
     except selenium.common.exceptions.NoSuchElementException:
-        print("Mississippi ratelimit, sleeping for 10 seconds")
-        time.sleep(10)
+        i += 1
+        if (i > 3):
+            print("Mississippi is being difficult, let's get the site again")
+            driver.get("https://msdh.ms.gov/msdhsite/_static/14,0,420.html")
+            i=0
+        else:
+            print("Mississippi ratelimit, sleeping for 10 seconds")
+            time.sleep(10)
         continue
     break
 print(str(MS))
 total += MS
+
+#Missouri (I'm in MISERY)
+driver.get("https://health.mo.gov/living/healthcondiseases/communicable/novel-coronavirus/")
+MO = int(driver.find_element_by_xpath("/html/body/div/div/section[1]/div[6]/table/tbody/tr[2]/td").text.replace(",", ""))
+print(str(MO))
+total += MO
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
