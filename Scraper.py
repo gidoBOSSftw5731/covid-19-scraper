@@ -209,6 +209,16 @@ while True:
 print(str(KY))
 total += KY
 
+#Louisiana (French people..?)
+#Arcgis (gross)
+
+
+#Maine
+driver.get("https://www.maine.gov/dhhs/mecdc/infectious-disease/epi/airborne/coronavirus.shtml")
+ME = int(driver.find_element_by_xpath("/html/body/div[2]/div[3]/div[3]/table[1]/tbody/tr[2]/td[1]").text.replace(",", ""))
+print(str(ME))
+total += ME
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
