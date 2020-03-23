@@ -23,8 +23,10 @@ import time
 
 options = Options()
 options.add_argument("--headless")
+profile = webdriver.FirefoxProfile()
+profile.set_preference('network.http.phishy-userpass-length', 255)
 
-driver = webdriver.Firefox(executable_path=os.getcwd()+"/geckodriver",options=options)
+driver = webdriver.Firefox(executable_path=os.getcwd()+"/geckodriver",options=options,firefox_profile=profile)
 
 #Currently requires google auth
 #auth.authenticate_user()
@@ -344,7 +346,7 @@ total += NM
 
 #New York
 driver.get("https://coronavirus.health.ny.gov/county-county-breakdown-positive-cases")
-NY = int(driver.find_element_by_xpath("/html/body/div[3]/div/main/div/div/div[2]/div/div/div/div/div[2]/table/tbody/tr[48]/td[2]/strong"
+NY = int(driver.find_element_by_css_selector(".nothead > tbody:nth-child(1) > tr:nth-child(51) > td:nth-child(2) > b:nth-child(1)"
                                       ).text.replace(",", ""))
 print(str(NY))
 total += NY
