@@ -369,6 +369,13 @@ OK = int(driver.find_element_by_xpath("/html/body/div[2]/main/div/div/div[5]/div
 print(str(OK))
 total += OK
 
+#Oregon
+driver.get("https://govstatus.egov.com/OR-OHA-COVID-19")
+OR = int(driver.find_element_by_css_selector(".table-warning > b:nth-child(1)"
+                                              ).text.replace(",", ""))
+print(str(OR))
+total += OR
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
