@@ -339,6 +339,13 @@ NM = int(driver.find_element_by_css_selector("h2.et_pb_module_header > span:nth-
 print(str(NM))
 total += NM
 
+#New York
+driver.get("https://coronavirus.health.ny.gov/county-county-breakdown-positive-cases")
+NY = int(driver.find_element_by_xpath("/html/body/div[3]/div/main/div/div/div[2]/div/div/div/div/div[2]/table/tbody/tr[48]/td[2]/strong"
+                                      ).text.replace(",", ""))
+print(str(NY))
+total += NY
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
