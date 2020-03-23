@@ -304,9 +304,17 @@ driver.get("https://app.powerbigov.us/view?r=eyJrIjoiMjA2ZThiOWUtM2FlNS00MGY5LWF
 while (len(driver.find_elements_by_css_selector("visual-container-modern.visual-container-component:nth-child(12) > transform:nth-child(1) > div:nth-child(1) > div:nth-child(3) > visual-modern:nth-child(1) > div:nth-child(1) > svg:nth-child(2) > g:nth-child(1) > text:nth-child(1) > tspan:nth-child(1)"))
        == 0):
     time.sleep(.1)
-NV = int(driver.find_element_by_css_selector("visual-container-modern.visual-container-component:nth-child(12) > transform:nth-child(1) > div:nth-child(1) > div:nth-child(3) > visual-modern:nth-child(1) > div:nth-child(1) > svg:nth-child(2) > g:nth-child(1) > text:nth-child(1) > tspan:nth-child(1)").text.replace(",", ""))
+NV = int(driver.find_element_by_css_selector("visual-container-modern.visual-container-component:nth-child(12) > transform:nth-child(1) > div:nth-child(1) > div:nth-child(3) > visual-modern:nth-child(1) > div:nth-child(1) > svg:nth-child(2) > g:nth-child(1) > text:nth-child(1) > tspan:nth-child(1)"
+                                             ).text.replace(",", ""))
 print(str(NV))
 total += NV
+
+#New hampshire
+driver.get("https://www.nh.gov/covid19/")
+NH = int(driver.find_element_by_css_selector(".summary-list > table:nth-child(3) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2)"
+                                              ).text.replace(",", ""))
+print(str(NH))
+total += NH
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
