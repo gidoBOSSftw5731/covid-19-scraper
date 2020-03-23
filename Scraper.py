@@ -233,6 +233,18 @@ while True:
 print(str(MD))
 total += MD
 
+#Massachusetts
+driver.get("https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring")
+# the thing doesnt load instantly, so we test it until it's ready
+while True:
+    if (driver.find_element_by_xpath("/html/body/div[1]/main/div[2]/div/div/div[1]/div/div/div/table/tbody/tr").text == ""):
+        time.sleep(.1)
+        continue
+    break
+MA = int(re.findall(r"\d+", driver.find_element_by_xpath("/html/body/div[1]/main/div[2]/div/div/div[1]/div/div/div/table/tbody/tr").text.replace(",", ""))[-1])
+print(str(MA))
+total += MA
+
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
 #total = store.range('F1:F52')
