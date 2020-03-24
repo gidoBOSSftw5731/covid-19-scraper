@@ -1,2 +1,3 @@
 geckodriver.log
 **/known_accurate/*
+.firebase/*.cache
