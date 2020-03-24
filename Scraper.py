@@ -434,7 +434,15 @@ print(str(RI))
 total += RI
 int2File(RI, "RI")
 
-#Wyoming
+#Wisconsin
+driver.get("https: // www.dhs.wisconsin.gov/outbreaks/index.htm")
+WI = int(driver.find_element_by_xpath("//*[@id='covid-county-table']/table/tbody/tr[31]/td[2]/strong"
+                                      ).text.replace(",", ""))
+print(str(WI))
+total += WI
+int2File(WI, "WI")
+
+#Wyoming (since when do dead bushes get corona)
 driver.get("https://health.wyo.gov/publichealth/infectious-disease-epidemiology-unit/disease/novel-coronavirus/")
 WY = int(driver.find_element_by_xpath("//*[@id='et-boc']/div/div/div/div[3]/div[1]/div/div/p[2]/strong"
                                       ).text.replace(",", ""))
