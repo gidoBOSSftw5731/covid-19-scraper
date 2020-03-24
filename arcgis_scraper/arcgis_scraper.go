@@ -11,7 +11,7 @@ import (
 	"github.com/jinzhu/configor"
 
 	"github.com/gidoBOSSftw5731/log"
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 )
 
 
