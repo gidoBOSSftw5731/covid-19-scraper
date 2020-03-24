@@ -248,6 +248,7 @@ print(str(ME))
 total += ME
 int2File(ME, "ME")
 
+'''
 #Maryland
 driver.get("https://coronavirus.maryland.gov")
 while True:
@@ -261,6 +262,7 @@ while True:
 print(str(MD))
 total += MD
 int2File(MD, "MD")
+'''
 
 #Massachusetts
 driver.get("https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring")
@@ -310,7 +312,7 @@ while True:
 print(str(MS))
 total += MS
 '''
-
+'''
 #Missouri (I'm in MISERY)
 while True:
     try:
@@ -322,7 +324,7 @@ MO = int(driver.find_element_by_xpath("/html/body/div/div/section[1]/div[6]/tabl
 print(str(MO))
 total += MO
 int2File(MO, "MO")
-
+'''
 #Montana
 #ARCGIS GOD DAMMIT
 
