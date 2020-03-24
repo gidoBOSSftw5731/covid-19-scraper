@@ -392,7 +392,7 @@ print(str(NC))
 total += NC
 int2File(NC, "NC")
 
-#North Dakota (above south dakota)
+#North Dakota (above south dakota #southdakotagang)
 #Just photos (WTFFFF)
 
 #Ohio
@@ -402,7 +402,7 @@ print(str(OH))
 total += OH
 int2File(OH, "OH")
 
-#Oklahoma (It's OK)
+#Oklahoma (It's NOT OK)
 driver.get("https://coronavirus.health.ok.gov/")
 OK = int(driver.find_element_by_xpath("/html/body/div[2]/main/div/div/div[5]/div[1]/div/div[5]/div/table[4]/tbody/tr[18]/td[2]"
                                       ).text.replace(",", ""))
@@ -426,7 +426,7 @@ print(str(PA))
 total += PA
 int2File(PA, "PA")
 
-#Rhode Island (not an island)
+#Rhode Island (not an island #mindblown)
 driver.get("https://health.ri.gov/data/covid-19/")
 while (len((driver.find_elements_by_xpath("/html/body/div[4]/div[1]/div[2]/div/div/div[2]/div/div/table/tbody/tr[4]/td[2]"))) == 0):
     time.sleep(.1)
@@ -435,6 +435,22 @@ RI = int(driver.find_element_by_xpath("/html/body/div[4]/div[1]/div[2]/div/div/d
 print(str(RI))
 total += RI
 int2File(RI, "RI")
+
+#Wisconsin
+driver.get("https: // www.dhs.wisconsin.gov/outbreaks/index.htm")
+WI = int(driver.find_element_by_xpath("//*[@id='covid-county-table']/table/tbody/tr[31]/td[2]/strong"
+                                      ).text.replace(",", ""))
+print(str(WI))
+total += WI
+int2File(WI, "WI")
+
+#Wyoming (since when do dead bushes get corona)
+driver.get("https://health.wyo.gov/publichealth/infectious-disease-epidemiology-unit/disease/novel-coronavirus/")
+WY = int(driver.find_element_by_xpath("//*[@id='et-boc']/div/div/div/div[3]/div[1]/div/div/p[2]/strong"
+                                      ).text.replace(",", ""))
+print(str(WY))
+total += WY
+int2File(WY, "WY")
 
 #Output Handling
 #store = gc.open_by_url('https://docs.google.com/spreadsheets/d/19PpoExlTc7I4V-HpxvrqDGDrKuRND10Hm3hA_pJvnjw/edit?usp=sharing').sheet2
