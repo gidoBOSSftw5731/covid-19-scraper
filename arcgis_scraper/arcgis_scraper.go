@@ -142,7 +142,7 @@ func loopingDownloader() {
 		log.Fatalf("failed to commit downloaded data: %v", err)
 	}
 
-	if err := txt.Commit(); err != nil {
+	if err := txn.Commit(); err != nil {
 		log.Fatalf("failed to commit and close the transaction: %v", err)
 	}
 
