@@ -8,29 +8,21 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jinzhu/configor"
+	"../goconf"
 
 	"github.com/gidoBOSSftw5731/log"
+	"github.com/jinzhu/configor"
 	"github.com/lib/pq"
 )
-
 
 const (
 	arcgisURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson"
 )
 
 var (
-	db      *sql.DB
-	config = struct {
-		DB struct {
-			User     string `default:"covid19scraper"`
-			Password string `required:"true" env:"DBPassword" default:"ThatsWhatICallInfected"`
-			Port     string `default:"5432"`
-			IP       string `default:"127.0.0.1"`
-		}
-	}{}
+	db     *sql.DB
+	config goconf.Config
 )
-
 
 type arcgis struct {
 	Featuress []Features `json:"features"`
@@ -71,7 +63,7 @@ func main() {
 	log.SetCallDepth(4)
 
 	var err error
-	db, err = mkDB()
+	db, err = MkDB(&config)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -92,7 +84,6 @@ func loopingDownloader() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 
 	// Create a DB Transaction, one atomic change with many rows inserted.
 	txn, err := db.Begin()
@@ -166,31 +157,4 @@ func downloadArcgis() (arcgis, error) {
 		return form, err
 	}
 	return form, nil
-}
-
-func mkDB() (*sql.DB, error) {
-	return sql.Open("postgres", fmt.Sprintf("user=%v password=%v dbname=covid19scraper host=%v port=%v",
-		config.DB.User, config.DB.Password, config.DB.IP, config.DB.Port))
-	/*
-		create database covid19scraper;
-		create user covid19scraper with encrypted password 'ThatsWhatICallInfected';
-		CREATE TABLE records (
-		country text,
-		state text,
-		county text,
-		unixtime int,
-		lat float,
-		long float,
-		deaths int,
-		confirmed int,
-		tests int,
-		recovered int,
-		fips int,
-		combined text,
-		incidentrate float,
-		inserttime TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-		);
-		GRANT ALL ON ALL TABLES IN SCHEMA public TO covid19scraper;
-		create index idx_combined on records (combined);
-	*/
 }
