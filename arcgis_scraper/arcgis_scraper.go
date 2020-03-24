@@ -15,6 +15,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+
 const (
 	arcgisURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson"
 )
@@ -30,6 +31,7 @@ var (
 		}
 	}{}
 )
+
 
 type arcgis struct {
 	Featuress []Features `json:"features"`
@@ -92,6 +94,7 @@ func loopingDownloader() {
 		log.Fatalln(err)
 	}
 
+
 	// Create a DB Transaction, one atomic change with many rows inserted.
 	txn, err := db.Begin()
 	if err != nil {
@@ -143,6 +146,7 @@ func loopingDownloader() {
 	if err := txt.Commit(); err != nil {
 		log.Fatalf("failed to commit and close the transaction: %v", err)
 	}
+
 }
 
 func downloadArcgis() (arcgis, error) {
