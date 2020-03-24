@@ -91,11 +91,11 @@ func loopingDownloader() {
 			log.Fatalln(err)
 		}
 
-		/*
-		var sqlCombined string
-
+		
+		//var sqlCombined string
+		
 		for _, entry := range form.Featuress {
-			err = db.QueryRow("SELECT combined FROM records WHERE combined=$1", entry.Properties.OBJECTID).Scan(&sqlCombined)
+		/*	err = db.QueryRow("SELECT combined FROM records WHERE combined=$1", entry.Properties.OBJECTID).Scan(&sqlCombined)
 			switch {
 				case err == sql.ErrNoRows:
 				case err != nil:
