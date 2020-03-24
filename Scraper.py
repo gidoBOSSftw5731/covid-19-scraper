@@ -436,7 +436,7 @@ int2File(RI, "RI")
 
 #Wyoming
 driver.get("https://health.wyo.gov/publichealth/infectious-disease-epidemiology-unit/disease/novel-coronavirus/")
-WI = int(driver.find_element_by_xpath("//*[@id='et-boc']/div/div/div/div[3]/div[1]/div/div/p[2]/strong"
+WY = int(driver.find_element_by_xpath("//*[@id='et-boc']/div/div/div/div[3]/div[1]/div/div/p[2]/strong"
                                       ).text.replace(",", ""))
 print(str(WY))
 total += WY
