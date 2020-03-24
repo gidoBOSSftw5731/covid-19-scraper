@@ -91,6 +91,7 @@ func loopingDownloader() {
 			log.Fatalln(err)
 		}
 
+		/*
 		var sqlCombined string
 
 		for _, entry := range form.Featuress {
@@ -102,7 +103,7 @@ func loopingDownloader() {
 					continue
 				default:
 				
-			}
+			}*/
 
 			p := &entry.Properties
 
@@ -157,6 +158,8 @@ func mkDB() (*sql.DB, error) {
 	return sql.Open("postgres", fmt.Sprintf("user=%v password=%v dbname=covid19scraper host=%v port=%v",
 		config.DB.User, config.DB.Password, config.DB.IP, config.DB.Port))
 	/*
+create database covid19scraper;
+create user covid19scraper with encrypted password 'ThatsWhatICallInfected';
 CREATE TABLE records (
 country text,
 state text,
@@ -173,6 +176,7 @@ combined text,
 incidentrate float,
 inserttime TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+GRANT ALL ON ALL TABLES IN SCHEMA public TO covid19scraper;
 create index idx_combined on records (combined);
 	*/
 }
