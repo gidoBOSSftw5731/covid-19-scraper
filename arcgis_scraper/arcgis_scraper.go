@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	db     = *sql.DB
+	db      *sql.DB
 	config = struct {
 		DB struct {
 			User     string `default:"covid19scraper"`
