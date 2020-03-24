@@ -434,6 +434,22 @@ print(str(RI))
 total += RI
 int2File(RI, "RI")
 
+#Washington (rip jeff bezos)
+driver.get("https://www.doh.wa.gov/Emergencies/Coronavirus")
+WA = int(driver.find_element_by_xpath("//*[@id='dnn_ctr33855_HtmlModule_lblContent']/table[1]/tbody/tr[33]/td[2]/strong"
+                                      ).text.replace(",", ""))
+print(str(WA))
+total += WA
+int2File(WA, "WA")
+
+#West Virginia
+driver.get("https://dhhr.wv.gov/COVID-19/Pages/default.aspx")
+WV = int(driver.find_element_by_xpath("//*[@id='column']/div/div[2]/div"
+                                      ).text.replace(",", ""))
+print(str(WV))
+total += WV
+int2File(WV, "WV")
+
 #Wisconsin
 driver.get("https: // www.dhs.wisconsin.gov/outbreaks/index.htm")
 WI = int(driver.find_element_by_xpath("//*[@id='covid-county-table']/table/tbody/tr[31]/td[2]/strong"
