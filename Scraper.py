@@ -19,6 +19,7 @@ import urllib3
 from tqdm import tqdm
 import time
 
+print("NO LONGER UP TO DATE, WILL MOST LIKELY ERROR")
 
 def int2File(number, filename):
     file = open(os.getcwd() + "/arcgis_test/known_accurate/" + filename, "w+")

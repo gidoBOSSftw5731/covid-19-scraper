@@ -1,5 +1,5 @@
 # covid-19-scraper
-covid-19 scraper in python
+covid-19 arcgis in golang
 
 
 
