@@ -8,7 +8,7 @@ client.on("ready", () => {
 
 client.on("message", msg => {
     if (msg.content === "GA") {
-        msg.reply("1097 Confirmed Cases in Georgia")
+        msg.reply("42069 Confirmed Cases in Georgia")
     }
 })
 
