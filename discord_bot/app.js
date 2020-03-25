@@ -1,3 +1,4 @@
+require("dotenv").config()
 const Discord = require("discord.js")
 const client = new Discord.Client()
 
@@ -11,4 +12,4 @@ client.on("message", msg => {
     }
 })
 
-client.login("NjkyMTE3MjA2MTA4MjA5MjUz.Xnqxsw.w_X_kQ4duMdgtyFu8gKaO29HYzk")
+client.login(process.env.BOT_TOKEN)

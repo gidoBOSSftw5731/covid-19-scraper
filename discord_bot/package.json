@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "discord.js": "^12.0.2",
+    "dotenv": "^8.2.0",
     "nodemon": "^2.0.2"
   },
   "devDependencies": {},
