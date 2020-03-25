@@ -1,0 +1,23 @@
+{
+  "name": "covid-19-scraper",
+  "version": "1.0.0",
+  "description": "covid-19 arcgis in golang",
+  "main": "index.js",
+  "dependencies": {
+    "firebase": "^7.12.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gidoBOSSftw5731/covid-19-scraper.git"
+  },
+  "author": "PenisButtInc.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gidoBOSSftw5731/covid-19-scraper/issues"
+  },
+  "homepage": "https://github.com/gidoBOSSftw5731/covid-19-scraper#readme"
+}
