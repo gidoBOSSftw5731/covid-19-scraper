@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -63,7 +62,7 @@ func main() {
 	log.SetCallDepth(4)
 
 	var err error
-	db, err = MkDB(&config)
+	db, err = goconf.MkDB(&config)
 	if err != nil {
 		log.Fatalln(err)
 	}

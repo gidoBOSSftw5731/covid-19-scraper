@@ -10,8 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"../goconf"
+	"github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/goconf"
+	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
 	"github.com/gidoBOSSftw5731/log"
+	"github.com/golang/protobuf/proto"
 	"github.com/jinzhu/configor"
 )
 
@@ -75,13 +77,27 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			return
 		}
 	case "liststates":
-		if len(urlSplit) >= 1 {
+		if len(urlSplit) < 2 {
 			ErrorHandler(resp, req, 400, "Ya did it wrong (this is a logically impossible error)")
 			return
 		}
-		if len(urlSplit) == 2 {
-			//list states
-		} else if len(urlSplit) == 3 {
+		if len(urlSplit) == 3 {
+			//log.Traceln(urlSplit[2])
+			stateList, err := listStates(urlSplit[2])
+			if err != nil {
+				log.Errorln(err)
+				ErrorHandler(resp, req, 404, "Returned Nothing, country not available")
+				return
+			}
+
+			stateListByte, err := proto.Marshal(&stateList)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			resp.Write(stateListByte)
+		} else if len(urlSplit) == 4 {
 			//list counties
 		} else {
 			ErrorHandler(resp, req, 400, "Too many arguments")
@@ -103,4 +119,32 @@ func ErrorHandler(resp http.ResponseWriter, req *http.Request, status int, alert
 	log.Errorf("HTTP error: %v, witty message: %v", status, alert)
 	fmt.Fprintf(resp, "You have found an error! This error is of type %v. Built in alert: \n'%v',\n Would you like a <a href='https://http.cat/%v'>cat</a> or a <a href='https://httpstatusdogs.com/%v'>dog?</a>",
 		status, alert, status, status)
+}
+
+func listStates(country string) (pb.ListOfStates, error) {
+	var stateList pb.ListOfStates
+
+	rows, err := db.Query("SELECT DISTINCT country, state FROM records WHERE country = $1", country)
+	if err != nil {
+		return stateList, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return stateList, fmt.Errorf("Missing rows")
+	}
+
+	stateList.Country = country
+
+	i := 0
+	for rows.Next() {
+		var country string
+		rows.Scan(&country, &stateList.States[i])
+		if country != stateList.Country {
+			log.Errorln("Returned state for a different country? not exiting")
+		}
+
+		i++
+	}
+	return stateList, nil
 }

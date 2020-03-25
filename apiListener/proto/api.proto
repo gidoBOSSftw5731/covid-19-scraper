@@ -1,0 +1,42 @@
+// Proto definition for API service.
+
+syntax = "proto3";
+package api.proto;
+option go_package = ".;proto";
+
+message ListOfStates {
+   string Country = 1;
+   repeated string States = 2;
+}
+
+//Is a list of countries, as strings. Does NOT return data on
+//each country, that must be called explicitly, per country.
+//This is in contrast to Counties.
+message ListOfCountries {
+   repeated string Countries = 1;
+}
+
+//Returns a list of Counties, and the data for each as type
+//AreaInfo. 
+message ListOfCounties {
+   string Country = 1;
+   string State = 2;
+   repeated string Counties = 3;
+}
+
+message AreaInfo {
+   uint64 UnixTimeOfRequest = 1;
+   float Lat = 2;
+   float Long = 3;
+   uint32 Deaths = 4;
+   uint32 ConfirmedCases = 5;
+   uint32 TestsGiven = 6;
+   uint32 Recoveries = 7;
+   float Incidentrate = 8;
+   
+   enum LocationType {
+      COUNTY = 0;
+      STATE = 1;
+      COUNTRY = 2;
+   }
+}
