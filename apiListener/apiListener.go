@@ -89,6 +89,8 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		}
 	case "tos":
 		http.ServeFile(resp, req, filepath.Join(wd, "ToS.html"))
+	case "robots.txt":
+		http.ServeFile(resp, req, "robots.txt")
 	default:
 		ErrorHandler(resp, req, 400, "Bad request")
 		return
