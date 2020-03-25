@@ -1,4 +1,3 @@
 **/known_accurate/*
-.firebase/*.cache
 node_modules
 discord_bot/.env
