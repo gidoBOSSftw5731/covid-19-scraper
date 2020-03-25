@@ -11,7 +11,7 @@ import (
 	"github.com/jinzhu/configor"
 )
 
-type handler struct{}
+type newFCGI struct{}
 
 var (
 	config goconf.Config
@@ -20,7 +20,7 @@ var (
 
 func main() {
 	//Boilerplate config
-	configor.Load(config, "config.yml")
+	configor.Load(&config, "config.yml")
 	log.SetCallDepth(4)
 
 	//init the DB
@@ -39,10 +39,10 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	var h handler
+	var h newFCGI
 	fcgi.Serve(listener, h)
 }
 
-func (h handler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 }

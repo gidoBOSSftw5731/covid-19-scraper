@@ -20,6 +20,7 @@ type Config struct {
 
 //MkDB is a function that takes a config struct and returns a pointer to a database.
 func MkDB(config *Config) (*sql.DB, error) {
+	//var err error
 	return sql.Open("postgres", fmt.Sprintf("user=%v password=%v dbname=covid19scraper host=%v port=%v",
 		config.DB.User, config.DB.Password, config.DB.IP, config.DB.Port))
 	/*
