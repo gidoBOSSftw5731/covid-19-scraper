@@ -6,6 +6,8 @@ import (
 	"net"
 	"net/http"
 	"net/http/fcgi"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"../goconf"
@@ -18,6 +20,7 @@ type newFCGI struct{}
 var (
 	config goconf.Config
 	db     *sql.DB
+	wd, _  = os.Getwd()
 )
 
 func main() {
@@ -55,6 +58,8 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	log.Traceln(urlSplit)
+
 	switch urlSplit[1] {
 	case "stateinfo":
 		if len(urlSplit) >= 2 {
@@ -82,6 +87,8 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			ErrorHandler(resp, req, 400, "Too many arguments")
 			return
 		}
+	case "tos":
+		http.ServeFile(resp, req, filepath.Join(wd, "ToS.html"))
 	default:
 		ErrorHandler(resp, req, 400, "Bad request")
 		return
