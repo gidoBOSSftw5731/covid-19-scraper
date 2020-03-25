@@ -136,15 +136,15 @@ func listStates(country string) (pb.ListOfStates, error) {
 
 	stateList.Country = country
 
-	i := 0
 	for rows.Next() {
-		var country string
-		rows.Scan(&country, &stateList.States[i])
+		var country, state string
+		rows.Scan(&country, &state)
 		if country != stateList.Country {
 			log.Errorln("Returned state for a different country? not exiting")
 		}
 
-		i++
+		stateList.States = append(stateList.States, state)
+
 	}
 	return stateList, nil
 }
