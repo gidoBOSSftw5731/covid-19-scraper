@@ -192,6 +192,7 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 	}
 
 	for _, i := range infoMap {
+		i.Type = pb.AreaInfo_STATE
 		hInfo.Info = append(hInfo.Info, &i)
 	}
 	return hInfo, nil
