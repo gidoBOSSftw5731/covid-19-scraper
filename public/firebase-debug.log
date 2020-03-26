@@ -1,0 +1,54 @@
+[debug] [2020-03-26T00:42:08.037Z] ----------------------------------------------------------------------
+[debug] [2020-03-26T00:42:08.039Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\md_sh\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init functions
+[debug] [2020-03-26T00:42:08.039Z] CLI Version:   7.16.1
+[debug] [2020-03-26T00:42:08.039Z] Platform:      win32
+[debug] [2020-03-26T00:42:08.039Z] Node Version:  v11.8.0
+[debug] [2020-03-26T00:42:08.040Z] Time:          Wed Mar 25 2020 20:42:08 GMT-0400 (Eastern Daylight Time)
+[debug] [2020-03-26T00:42:08.040Z] ----------------------------------------------------------------------
+[debug] [2020-03-26T00:42:08.040Z] 
+[debug] [2020-03-26T00:42:08.045Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-03-26T00:42:08.045Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\md_sh\Desktop\covid-19-scraper
+
+Before we get started, keep in mind:
+
+  * You are initializing in an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[info] i  .firebaserc already has a default project, using coronavirusbot19.
+[debug] [2020-03-26T00:42:10.409Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/coronavirusbot19  
+ 
+[debug] [2020-03-26T00:42:10.796Z] <<< HTTP RESPONSE 200
+[info] 
+=== Functions Setup
+[info] 
+[info] A functions directory will be created in your project with a Node.js
+[info] package pre-configured. Functions can be deployed with firebase deploy.
+[info] 
+[debug] [2020-03-26T00:42:10.804Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-03-26T00:42:10.804Z] > authorizing via signed-in user
+[debug] [2020-03-26T00:42:10.805Z] [iam] checking project coronavirusbot19 for permissions ["firebase.projects.get"]
+[debug] [2020-03-26T00:42:10.805Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/coronavirusbot19:testIamPermissions  
+
+[debug] [2020-03-26T00:42:11.150Z] <<< HTTP RESPONSE 200
+[debug] [2020-03-26T00:42:11.150Z] >>> HTTP REQUEST POST https://serviceusage.googleapis.com/v1/projects/coronavirusbot19/services/cloudfunctions.googleapis.com:enable  
+ 
+[debug] [2020-03-26T00:42:11.151Z] >>> HTTP REQUEST POST https://serviceusage.googleapis.com/v1/projects/coronavirusbot19/services/runtimeconfig.googleapis.com:enable  
+ 
+[debug] [2020-03-26T00:42:11.583Z] <<< HTTP RESPONSE 200
+[debug] [2020-03-26T00:42:11.595Z] <<< HTTP RESPONSE 200

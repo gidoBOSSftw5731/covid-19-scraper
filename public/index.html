@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>COVIDBot19</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+    <script src="https://kit.fontawesome.com/c54efb68d5.js" SameSite="none" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.orange-indigo.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://thx4sharing.web.app/main.css">
+    <link rel="stylesheet" href="https://thx4sharing.web.app/index.css">
 
     <script defer src="/__/firebase/7.12.0/firebase-app.js"></script>
     <script defer src="/__/firebase/7.12.0/firebase-auth.js"></script>
@@ -12,18 +20,154 @@
     <script defer src="/__/firebase/7.12.0/firebase-storage.js"></script>
     <script defer src="/__/firebase/init.js"></script>
     <script src="script.js"></script>
+    <script src="auth.js"></script>
+    <script type="module" src="app.js"></script>
   </head>
+
   <body>
-    
     <header>
       <nav>
-        <!-- Nav Bar -->
+        <a id="signin" class="navelement" onclick="signIn()">Sign In</a>
       </nav>
     </header>
 
-    <div>
-      
+    <!--Popup-->
+    <div id="popupsignin" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+      class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+          <div class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+    
+            <div class="mdl-card__title mdl-color--light-blue-600 mdl-color-text--white">
+              <h2 class="mdl-card__title-text">Sign In or Sign Up</h2>
+            </div>
+    
+            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+              <button class="signinoptions" onclick="togglepsi(); display('email')">Email</button>
+              <br><br>
+              <button class="signinoptions" onclick="gToggleSignIn()">Google</button>
+              <br><br>
+              <button class="signinoptions" onclick="display('popupsignin'); display('signup')">Sign Up</button>
+              <br><br>
+              <button class="signinoptions" onclick="togglepsi()">Close</button>
+            </div>
+    
+          </div>
+        </div>
+      </main>
     </div>
+    <!--Popup  End-->
+    
+    <!--Email Popup-->
+    <div id="email" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+      class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+          <div class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+    
+              <p>Enter an email and password below to sign in.</p>
+    
+              <input class="mdl-textfield__input" style="display:inline;" type="text" id="emailemail" name="email"
+                placeholder="Email" />
+              &nbsp;&nbsp;&nbsp;
+              <input class="mdl-textfield__input" style="display:inline;" type="password" id="password" name="password"
+                placeholder="Password" />
+              <br /><br />
+              <button class="mdl-button mdl-js-button mdl-button--raised" onclick="eToggleSignIn()" name="signin">Sign
+                In</button>
+              &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised"
+                onclick="display('email'); display('pwreset')">Reset Password</button>
+              &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="signIn"
+                onclick="display('email'); signIn()">Return to Sign In</button>
+    
+              <p>
+                <li>
+                  <a onclick="display('email')">Close</a>
+                </li>
+              </p>
+    
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!--Email Popup End-->
+    
+    <!--Signup Popup-->
+    <div id="signup" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+      class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+          <div class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+    
+              <p>Enter the information below to create an account and gain full access to this very cool site!</p>
+    
+              <input class="mdl-textfield__input" style="display:inline;" type="text" id="suusername" name="username"
+                placeholder="Username" />
+              &nbsp;&nbsp;&nbsp;
+              <input class="mdl-textfield__input" style="display:inline;" type="text" id="suemail" name="email"
+                placeholder="Email" />
+              &nbsp;&nbsp;&nbsp;
+              <input class="mdl-textfield__input" style="display:inline;" type="password" id="supassword" name="password"
+                placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                title="Your password must contain at least: one number, one uppercase letter, one lowercase letter, and at least 8 characters">
+              <br /><br />
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="signup" onclick="handleSignUp()">Sign
+                Up</button>
+              &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="signIn"
+                onclick="display('signup'); signIn()">Return to Sign In</button>
+    
+              <p>
+                <li>
+                  <a onclick="display('signup')">Close</a>
+                </li>
+              </p>
+    
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!--Signup Popup End-->
+    
+    <!--Password Reset-->
+    <div id="pwreset" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+      class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+          <div class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+    
+              <p>Enter your email below and, if an account associated with that email exists, you will be sent an email with
+                instructions on how to reset your password.</p>
+    
+              <input class="mdl-textfield__input" style="display:inline;" type="text" id="premail" name="email"
+                placeholder="Email" />
+              <br /> <br />
+              &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
+                onclick="sendPasswordReset()">Send Password Reset Email</button>
+              &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="signIn"
+                onclick="display('pwreset'); signIn()">Return to Sign In</button>
+    
+              <p>
+                <li>
+                  <a onclick="display('pwreset')">Close</a>
+                </li>
+              </p>
+    
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!--Password Reset End-->
 
   </body>
 </html>
