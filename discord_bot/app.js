@@ -33,12 +33,10 @@ client.on("message", msg => {
 
     switch (command) {
         case "signup":
-            if (msg.content === "!signup") {
-                msg.reply(msg.author.id);
-                let userDoc = db.collection('users').doc(msg.author.id).set({
-                    id: msg.author.id
-                });
-            }
+            msg.reply(msg.author.id);
+            let userDoc = db.collection('users').doc(msg.author.id).set({
+                id: msg.author.id
+            });
             break;
         case "location":
             if (!args.length) {
@@ -61,10 +59,42 @@ client.on("message", msg => {
                 msg.reply(`Location added!\n${o}`);
             }
             break;
-        case "botinfo":
+        case "subscribe":
+            msg.reply('Subscribed! (not really)');
+            break;
+        case "cases":
+            var docRef = db.collection("test").doc("test");
+            docRef.get().then(function (doc) {
+                if (doc.exists) {
+                    msg.reply("Cases: " + doc.data().confirmed.toString() + "\n Deaths: " + doc.data().deaths.toString());
+                } else {
+                    msg.reply("No such document!");
+                }
+            }).catch(function (error) {
+                msg.reply("Error getting document:", error);
+            });
+            break;
+        case "help":
+            const help = new Discord.MessageEmbed()
+                .setColor('#C70039')
+                .setTitle('Command List')
+                .setURL('https://covidbot19.web.app/')
+                .setThumbnail('https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg')
+                .addFields(
+                    {name: 'Commands', value: "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n" +
+                            "!location <state (abbreviation)> <county (optional)> - saves your location in case you want to see local data later.\n" +
+                            "!subscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n" +
+                            "!cases <level (county, state, country)> <chart (optional)> - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"},
+                )
+                .setTimestamp()
+                .setFooter('Data Source: Arcgis');
+            msg.reply(help);
+            break;
+        case "":
+            msg.reply('You must add a command for me to know what to do! Use !help to see a list of commands');
             break;
         default:
-            msg.reply('You must add a command for me to know what to do! Use !help to see a list of commands');
+            break;
     }
 })
 client.login(process.env.BOT_TOKEN)
