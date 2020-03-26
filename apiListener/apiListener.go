@@ -145,6 +145,8 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		}
 	case "tos":
 		http.ServeFile(resp, req, filepath.Join(wd, "ToS.html"))
+	case "proto":
+		http.ServeFile(resp, req, filepath.Join(wd, "proto/api.proto"))
 	case "robots.txt":
 		http.ServeFile(resp, req, "robots.txt")
 	default:
