@@ -6,3 +6,4 @@ discord_bot\package-lock.json
 package-lock.json
 **/.env
 .vscode 
+apiListener/apiListener
