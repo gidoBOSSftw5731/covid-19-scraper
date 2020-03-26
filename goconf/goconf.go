@@ -44,5 +44,6 @@ func MkDB(config *Config) (*sql.DB, error) {
 		);
 		GRANT ALL ON ALL TABLES IN SCHEMA public TO covid19scraper;
 		create index idx_combined on records (combined);
+		create index idx_country_state_county on records (country, state, county);
 	*/
 }

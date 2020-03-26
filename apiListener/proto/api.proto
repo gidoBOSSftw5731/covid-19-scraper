@@ -24,8 +24,12 @@ message ListOfCounties {
    repeated string Counties = 3;
 }
 
+message CountyInfo {
+   repeated AreaInfo Info = 1;
+}
+
 message AreaInfo {
-   uint64 UnixTimeOfRequest = 1;
+   int64 UnixTimeOfRequest = 1;
    float Lat = 2;
    float Long = 3;
    uint32 Deaths = 4;
@@ -33,6 +37,7 @@ message AreaInfo {
    uint32 TestsGiven = 6;
    uint32 Recoveries = 7;
    float Incidentrate = 8;
+   LocationType Type = 9;
    
    enum LocationType {
       COUNTY = 0;

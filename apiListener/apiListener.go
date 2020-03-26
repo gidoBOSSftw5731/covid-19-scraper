@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/goconf"
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
@@ -64,14 +65,27 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 	switch urlSplit[1] {
 	case "stateinfo":
-		if len(urlSplit) >= 2 {
+		if len(urlSplit) <= 3 {
 			ErrorHandler(resp, req, 400, "Specify a state or county there bud")
 			return
 		}
-		if len(urlSplit) == 3 {
+		if len(urlSplit) == 4 {
 			//indentify by state
-		} else if len(urlSplit) == 4 {
-			//identify by county
+		} else if len(urlSplit) == 5 {
+			data, err := countyData(urlSplit[2], urlSplit[3], urlSplit[4])
+			if err != nil {
+				log.Errorln(err)
+				ErrorHandler(resp, req, 404, "Bad Data")
+			}
+
+			dataByte, err := proto.Marshal(&data)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			//log.Traceln(data)
+			resp.Write(dataByte)
 		} else {
 			ErrorHandler(resp, req, 400, "Too many arguments")
 			return
@@ -166,7 +180,7 @@ func listCounties(country, state string) (pb.ListOfCounties, error) {
 	var countyList pb.ListOfCounties
 
 	rows, err := db.Query("SELECT DISTINCT county FROM records WHERE country = $1 AND state = $2",
-	 country, state)
+		country, state)
 	if err != nil {
 		return countyList, err
 	}
@@ -187,6 +201,35 @@ func listCounties(country, state string) (pb.ListOfCounties, error) {
 
 	}
 	return countyList, nil
+}
+
+func countyData(country, state, county string) (pb.CountyInfo, error) {
+	var countyData pb.CountyInfo
+
+	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM records  WHERE country=$1 AND state=$2 AND county=$3",
+		country, state, county)
+	if err != nil {
+		return countyData, err
+	}
+
+	for rows.Next() {
+		var countyinfo pb.AreaInfo
+		var insertTime time.Time
+		err = rows.Scan(&countyinfo.Lat, &countyinfo.Long, &countyinfo.Deaths, &countyinfo.ConfirmedCases, &countyinfo.TestsGiven, &countyinfo.Recoveries, &countyinfo.Incidentrate, &insertTime)
+		if err != nil {
+			log.Errorln(err)
+			continue
+		}
+
+		countyinfo.UnixTimeOfRequest = insertTime.Unix()
+
+		countyinfo.Type = pb.AreaInfo_COUNTY
+
+		countyData.Info = append(countyData.Info, &countyinfo)
+
+	}
+
+	return countyData, nil
 }
 
 /*
