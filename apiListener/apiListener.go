@@ -98,7 +98,20 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 			resp.Write(stateListByte)
 		} else if len(urlSplit) == 4 {
-			//list counties
+			countyList, err := listCounties(urlSplit[2], urlSplit[3])
+			if err != nil {
+				log.Errorln(err)
+				ErrorHandler(resp, req, 404, "Returned Nothing, country not available")
+				return
+			}
+
+			countyListByte, err := proto.Marshal(&countyList)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			resp.Write(countyListByte)
 		} else {
 			ErrorHandler(resp, req, 400, "Too many arguments")
 			return
@@ -148,3 +161,37 @@ func listStates(country string) (pb.ListOfStates, error) {
 	}
 	return stateList, nil
 }
+
+func listCounties(country, state string) (pb.ListOfCounties, error) {
+	var countyList pb.ListOfCounties
+
+	rows, err := db.Query("SELECT DISTINCT county FROM records WHERE country = $1 AND state = $2",
+	 country, state)
+	if err != nil {
+		return countyList, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return countyList, fmt.Errorf("Missing rows")
+	}
+
+	countyList.Country = country
+	countyList.State = state
+
+	for rows.Next() {
+		var countyName string
+		rows.Scan(&countyName)
+
+		countyList.Counties = append(countyList.Counties, countyName)
+
+	}
+	return countyList, nil
+}
+
+/*
+and I will save you for later
+		var county pb.AreaInfo
+		err = db.QueryRow("SELECT lat, long, deaths, confirmed, tests, recovered, incidentrate, inserttime FROM (SELECT combined, lat, long, deaths, confirmed, tests, recovered, incidentrate, inserttime ROW_NUMBER() OVER (PARTITION BY combined ORDER BY time_stamp DESC) rn FROM records) tmp WHERE rn = 1 AND county = $1",
+	countyName).Scan(&county.Lat, &county.Long, &)
+*/
