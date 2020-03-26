@@ -24,7 +24,7 @@ message ListOfCounties {
    repeated string Counties = 3;
 }
 
-message CountyInfo {
+message HistoricalInfo {
    repeated AreaInfo Info = 1;
 }
 

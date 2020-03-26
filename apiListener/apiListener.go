@@ -70,7 +70,20 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			return
 		}
 		if len(urlSplit) == 4 {
-			//indentify by state
+			data, err := stateData(urlSplit[2], urlSplit[3])
+			if err != nil {
+				log.Errorln(err)
+				ErrorHandler(resp, req, 404, "Bad Data")
+			}
+
+			dataByte, err := proto.Marshal(&data)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			//log.Traceln(data)
+			resp.Write(dataByte)
 		} else if len(urlSplit) == 5 {
 			data, err := countyData(urlSplit[2], urlSplit[3], urlSplit[4])
 			if err != nil {
@@ -140,12 +153,61 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func stateData(country, state string) (pb.HistoricalInfo, error) {
+	var hInfo pb.HistoricalInfo
+	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM records  WHERE country=$1 AND state=$2",
+		country, state)
+	if err != nil {
+		return hInfo, err
+
+	}
+
+	infoMap := make(map[time.Time]pb.AreaInfo)
+
+	for rows.Next() {
+		var info pb.AreaInfo
+		var insertTime time.Time
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
+		if err != nil {
+			log.Errorln(err)
+			continue
+		}
+
+		unique := true
+		for i, j := range infoMap {
+			if inTimeSpan(i.Add(30*time.Second), i.Add(-30*time.Second), insertTime) {
+				unique = false
+				j.Deaths += info.Deaths
+				j.Recoveries += info.Recoveries
+				j.ConfirmedCases += info.ConfirmedCases
+				j.TestsGiven += info.TestsGiven
+				j.ConfirmedCases += info.ConfirmedCases
+				// once incident rate is defined in ARCGIS, I'll figure out how to handle it
+				break
+			}
+		}
+		if unique {
+			infoMap[insertTime] = info
+		}
+	}
+
+	for _, i := range infoMap {
+		hInfo.Info = append(hInfo.Info, &i)
+	}
+	return hInfo, nil
+
+}
+
 //ErrorHandler is a function to handle HTTP errors
 func ErrorHandler(resp http.ResponseWriter, req *http.Request, status int, alert string) {
 	resp.WriteHeader(status)
 	log.Errorf("HTTP error: %v, witty message: %v", status, alert)
 	fmt.Fprintf(resp, "You have found an error! This error is of type %v. Built in alert: \n'%v',\n Would you like a <a href='https://http.cat/%v'>cat</a> or a <a href='https://httpstatusdogs.com/%v'>dog?</a>",
 		status, alert, status, status)
+}
+
+func inTimeSpan(start, end, check time.Time) bool {
+	return check.After(start) && check.Before(end)
 }
 
 func listStates(country string) (pb.ListOfStates, error) {
@@ -203,8 +265,8 @@ func listCounties(country, state string) (pb.ListOfCounties, error) {
 	return countyList, nil
 }
 
-func countyData(country, state, county string) (pb.CountyInfo, error) {
-	var countyData pb.CountyInfo
+func countyData(country, state, county string) (pb.HistoricalInfo, error) {
+	var countyData pb.HistoricalInfo
 
 	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM records  WHERE country=$1 AND state=$2 AND county=$3",
 		country, state, county)
