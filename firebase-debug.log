@@ -38,3 +38,20 @@
 [debug] [2020-03-27T02:32:10.020Z] [runtime-status] [5204] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.5.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-functions\\lib\\index.js"}
 [info] i  functions[sendDM]: function ignored because the firestore emulator does not exist or is not running.
 [debug] [2020-03-27T02:32:10.253Z] [worker-~diagnostic~-92e1536d-da52-4d7a-bf36-39305034f3af]: IDLE
+[debug] [2020-03-27T04:57:45.532Z] File C:\Users\md_sh\Desktop\covid-19-scraper\functions\package.json changed, reloading triggers
+[debug] [2020-03-27T04:57:45.563Z] File C:\Users\md_sh\Desktop\covid-19-scraper\functions\package-lock.json changed, reloading triggers
+[debug] [2020-03-27T04:57:46.566Z] [worker-pool] Shutting down IDLE worker (~diagnostic~)
+[debug] [2020-03-27T04:57:46.566Z] [worker-~diagnostic~-92e1536d-da52-4d7a-bf36-39305034f3af]: FINISHING
+[debug] [2020-03-27T04:57:46.573Z] [worker-pool] addWorker(~diagnostic~)
+[debug] [2020-03-27T04:57:46.573Z] [worker-pool] Adding worker with key ~diagnostic~, total=2
+[debug] [2020-03-27T04:57:46.573Z] [worker-pool] submitWork(triggerId=)
+[debug] [2020-03-27T04:57:46.573Z] [worker-~diagnostic~-d95a6ffe-23c9-4efa-bfad-5735499cc3c9]: Assigning socketPath: \\?\pipe\C:\Users\md_sh\Desktop\covid-19-scraper\functions\12112
+[debug] [2020-03-27T04:57:46.573Z] [worker-~diagnostic~-d95a6ffe-23c9-4efa-bfad-5735499cc3c9]: BUSY
+[debug] [2020-03-27T04:57:46.574Z] [worker-~diagnostic~-92e1536d-da52-4d7a-bf36-39305034f3af]: exited
+[debug] [2020-03-27T04:57:46.574Z] [worker-~diagnostic~-92e1536d-da52-4d7a-bf36-39305034f3af]: FINISHED
+[debug] [2020-03-27T04:57:46.896Z] [runtime-status] [12112] Functions runtime initialized. {"cwd":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions","node_version":"11.8.0"}
+[debug] [2020-03-27T04:57:46.898Z] [runtime-status] [12112] Disabled runtime features: {"functions_config_helper":true,"network_filtering":true,"timeout":true,"memory_limiting":true,"admin_stubs":true,"pubsub_emulator":true}
+[debug] [2020-03-27T04:57:46.903Z] [runtime-status] [12112] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.10.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-admin\\lib\\index.js"}
+[debug] [2020-03-27T04:57:46.904Z] [runtime-status] [12112] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.5.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-functions\\lib\\index.js"}
+[debug] [2020-03-27T04:57:46.905Z] [runtime-status] [12112] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.5.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-functions\\lib\\index.js"}
+[debug] [2020-03-27T04:57:47.165Z] [worker-~diagnostic~-d95a6ffe-23c9-4efa-bfad-5735499cc3c9]: IDLE
