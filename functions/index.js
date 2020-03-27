@@ -47,7 +47,7 @@ exports.protobuffer = functions.https.onRequest((req, res) => {
         //all this is just creating a 'ListCountries' message instance, encoding it into proto,
         //decoding it, and then logging to console (hopefully) returning the payload again?
         //just for checking how i can get data stuff
-        var ListOfCountries = root.lookupType("api.proto.ListOfCountries");
+        var ListOfCountries = root.lookupType("api_proto.ListOfCountries");
 
         var payload = { Countries: "US" };
 
