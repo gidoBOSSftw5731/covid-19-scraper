@@ -10,3 +10,4 @@ apiListener/apiListener
 **/config.yml
 functions/.eslintrc.json
 firebase-debug.log
+/functions/compilerjs.txt
