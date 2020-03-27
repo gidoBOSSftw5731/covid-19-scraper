@@ -18,6 +18,7 @@
   "storage": {
     "rules": "storage.rules"
   },
+
   "emulators": {
     "functions": {
       "port": 5001
@@ -30,6 +31,9 @@
     },
     "hosting": {
       "port": 5000
-    }
+    },
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
   }
 }
