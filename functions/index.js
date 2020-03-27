@@ -19,9 +19,10 @@ firebase.initializeApp({
 
 const db = firebase.firestore();
 
-const AGFileURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson"
-var oldArcGISData
+const AGFileURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson";
+var oldArcGISData;
 
+const protobuf = require('protobufjs');
 const Schema = require('../apiListener/proto/api.proto');
 
 exports.sendDM = functions.firestore.document('users/{userID}').onWrite((change, context) => {
@@ -33,16 +34,41 @@ exports.sendDM = functions.firestore.document('users/{userID}').onWrite((change,
 
     client.fetchUser("377934017548386307", false).then(user => {
         user.send("42069");
-    })
+    });
 
-    client.login(process.env.BOT_TOKEN)
+    client.login(process.env.BOT_TOKEN);
 });
 
 exports.protobuffer = functions.https.onRequest((req, res) => {
+    protobuf.load(Schema, function (err, root) {
+        if (err)
+            throw err;
+
+        //all this is just creating a 'ListCountries' message instance, encoding it into proto,
+        //decoding it, and then logging to console (hopefully) returning the payload again?
+        //just for checking how i can get data stuff
+        var ListOfCountries = root.lookupType("api.proto.ListOfCountries");
+
+        var payload = { Countries: "US" };
+
+        var errMsg = ListOfCountries.verify(payload);
+        if (errMsg)
+            throw Error(errMsg);
+
+        var message = ListOfCountries.create(payload);
+
+        var buffer = ListOfCountries.encode(message).finish();
+
+        var message = ListOfCountries.decode(buffer);
+        console.log(message);
+    });
+
+    //pretend i'm interating over urls
     const CAStateInfo = require('https://buttstuff.ops-netman.net/stateinfo/US/California');
 
+    // use to get the counties from the proto? is that the correct way to call the function?
     const CA = new Schema.ListOfCounties();
-    CA.listCounties('US', 'CA')
+    CA.listCounties('US', 'CA');
 });
 
 exports.arcgisgetter = functions.https.onRequest((req, res) => {
