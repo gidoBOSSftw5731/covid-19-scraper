@@ -1,0 +1,40 @@
+[debug] [2020-03-27T02:32:06.973Z] ----------------------------------------------------------------------
+[debug] [2020-03-27T02:32:06.975Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\md_sh\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2020-03-27T02:32:06.975Z] CLI Version:   7.16.1
+[debug] [2020-03-27T02:32:06.975Z] Platform:      win32
+[debug] [2020-03-27T02:32:06.975Z] Node Version:  v11.8.0
+[debug] [2020-03-27T02:32:06.976Z] Time:          Thu Mar 26 2020 22:32:06 GMT-0400 (Eastern Daylight Time)
+[debug] [2020-03-27T02:32:06.976Z] ----------------------------------------------------------------------
+[debug] [2020-03-27T02:32:06.976Z] 
+[debug] [2020-03-27T02:32:06.982Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-03-27T02:32:06.982Z] > authorizing via signed-in user
+[debug] [2020-03-27T02:32:06.982Z] [iam] checking project coronavirusbot19 for permissions ["firebase.projects.get"]
+[debug] [2020-03-27T02:32:06.984Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/coronavirusbot19:testIamPermissions  
+
+[debug] [2020-03-27T02:32:07.272Z] <<< HTTP RESPONSE 200
+[debug] [2020-03-27T02:32:07.273Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/coronavirusbot19  
+ 
+[debug] [2020-03-27T02:32:07.656Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'C:\Users\md_sh\Desktop\covid-19-scraper'...
+[info] 
+[debug] [2020-03-27T02:32:07.661Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/coronavirusbot19/webApps/-/config  
+ 
+[debug] [2020-03-27T02:32:08.038Z] <<< HTTP RESPONSE 200
+[info] i  hosting[covidbot19]: Serving hosting files from: public
+[info] +  hosting[covidbot19]: Local server: http://localhost:5000
+[warn] !  Your requested "node" version "8" doesn't match your global version "11"
+[info] +  functions: functions emulator started at http://localhost:5001
+[info] i  functions: Watching "C:\Users\md_sh\Desktop\covid-19-scraper\functions" for Cloud Functions...
+[debug] [2020-03-27T02:32:09.691Z] [worker-pool] addWorker(~diagnostic~)
+[debug] [2020-03-27T02:32:09.691Z] [worker-pool] Adding worker with key ~diagnostic~, total=1
+[debug] [2020-03-27T02:32:09.691Z] [worker-pool] submitWork(triggerId=)
+[debug] [2020-03-27T02:32:09.691Z] [worker-~diagnostic~-92e1536d-da52-4d7a-bf36-39305034f3af]: Assigning socketPath: \\?\pipe\C:\Users\md_sh\Desktop\covid-19-scraper\functions\5204
+[debug] [2020-03-27T02:32:09.691Z] [worker-~diagnostic~-92e1536d-da52-4d7a-bf36-39305034f3af]: BUSY
+[debug] [2020-03-27T02:32:10.014Z] [runtime-status] [5204] Functions runtime initialized. {"cwd":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions","node_version":"11.8.0"}
+[debug] [2020-03-27T02:32:10.015Z] [runtime-status] [5204] Disabled runtime features: {"functions_config_helper":true,"network_filtering":true,"timeout":true,"memory_limiting":true,"admin_stubs":true,"pubsub_emulator":true}
+[debug] [2020-03-27T02:32:10.018Z] [runtime-status] [5204] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.10.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-admin\\lib\\index.js"}
+[debug] [2020-03-27T02:32:10.019Z] [runtime-status] [5204] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.5.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-functions\\lib\\index.js"}
+[debug] [2020-03-27T02:32:10.020Z] [runtime-status] [5204] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.5.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-functions\\lib\\index.js"}
+[info] i  functions[sendDM]: function ignored because the firestore emulator does not exist or is not running.
+[debug] [2020-03-27T02:32:10.253Z] [worker-~diagnostic~-92e1536d-da52-4d7a-bf36-39305034f3af]: IDLE

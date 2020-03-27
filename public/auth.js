@@ -172,6 +172,17 @@ function handleSignUp() {
 };
 // Signup End
 
+// Connect Discord
+function discordConnect() {
+    document.getElementById('discordToken').value;
+    if (user) {
+        
+    } else {
+        alert("Oh no! It looks like you're not signed in but somehow seeing this! That shouldn't be happening! Sign in and try again!");
+    }
+};
+// Connect Discord End
+
 // Password Reset
 function sendPasswordReset() {
     var email = document.getElementById('premail').value;
