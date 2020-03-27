@@ -105,7 +105,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		}
 	case "liststates":
 		if len(urlSplit) < 2 {
-			ErrorHandler(resp, req, 400, "Ya did it wrong (this is a logically impossible error)")
+			ErrorHandler(resp, req, 400, "Ya did it wrong (this is a logically impossible error)") // aight bet 
 			return
 		}
 		if len(urlSplit) == 3 {
