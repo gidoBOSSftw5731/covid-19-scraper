@@ -38,9 +38,9 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
     //console.log(oldArcGISData)
 
     fetch(AGFileURL).then(res => res.buffer()).then(buffer => {
-        if (buffer == oldArcGISData) {
+        if (buffer.toString() == oldArcGISData) {
             res.status(200).send("no change")
-            //return
+            return
         } else {
             res.status(200).send("This means they were not the same")
             oldArcGISData = buffer.toString()
@@ -58,7 +58,7 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
         data.features.forEach(function(value){
             p = value.properties
             //console.log(p.Combined_Key)
-            if (i > 490) {
+            if (i > 19) {
                 try {
                     console.log("batch commit inbound")
                     batch.commit()
@@ -69,7 +69,7 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
                 } catch(err) {
                 console.log(err)
                 }
-                var waitTill = new Date(new Date().getTime() + 1 * 3000) // prevent rate limiting
+                var waitTill = new Date(new Date().getTime() + 1 * 30) // prevent rate limiting
                 while(waitTill > new Date()){}
             }
 
@@ -79,5 +79,6 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
             i++
         });
 
+        batch.commit()
     })
 });
