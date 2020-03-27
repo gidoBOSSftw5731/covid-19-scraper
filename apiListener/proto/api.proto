@@ -1,7 +1,7 @@
 // Proto definition for API service.
 
 syntax = "proto3";
-package api.proto;
+package api_proto;
 option go_package = ".;proto";
 
 message ListOfStates {
