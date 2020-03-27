@@ -1,6 +1,6 @@
-// require("dotenv").config();
-// const Discord = require("discord.js");
-// const client = new Discord.Client();
+require("dotenv").config();
+const Discord = require("discord.js");
+const client = new Discord.Client();
 const firebase = require('firebase');
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
@@ -47,7 +47,7 @@ exports.protobuffer = functions.https.onRequest((req, res) => {
         //all this is just creating a 'ListCountries' message instance, encoding it into proto,
         //decoding it, and then logging to console (hopefully) returning the payload again?
         //just for checking how i can get data stuff
-        var ListOfCountries = root.lookupType("api.proto.ListOfCountries");
+        var ListOfCountries = root.lookupType("apiproto.ListOfCountries");
 
         var payload = { Countries: "US" };
 
@@ -64,10 +64,11 @@ exports.protobuffer = functions.https.onRequest((req, res) => {
     });
 
     //pretend i'm interating over urls
-    const CAStateInfo = require('https://buttstuff.ops-netman.net/stateinfo/US/California');
+    const CAStateInfo = 'https://buttstuff.ops-netman.net/stateinfo/US/California';
+    // var message = ListOfCounties.decode(CAStateInfo);
 
     // use to get the counties from the proto? is that the correct way to call the function?
-    const CA = new Schema.ListOfCounties();
+    const CA = new CAStateInfo.ListOfCounties();
     CA.listCounties('US', 'CA');
 });
 
