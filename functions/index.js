@@ -7,20 +7,6 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const db = firebase.firestore();
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  response.send("Hello from Firebase!");
-});
-
-exports.addUser = functions.https.onRequest((request, response) => {
-    // const id = data.text;
-    // db.collection('users').doc(id).set({
-    //     id: id
-    // })
-
-    response.send(request);
-});
-
-
 exports.sendDM = functions.firestore.document('users/{userID}').onWrite((change, context) => {
     console.log('change triggered');
 

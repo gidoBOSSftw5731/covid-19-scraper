@@ -14,17 +14,15 @@ firebase.initializeApp({
     measurementId: "G-4TKZD7504L"
 });
 
-let db = firebase.firestore();
+var admin = require("firebase-admin");
 
-// var admin = require("firebase-admin");
+var serviceAccount = require("./coronavirusbot19-firebase-adminsdk-sckiv-6ca1e54162.json");
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://coronavirusbot19.firebaseio.com"
+});
 
-// var serviceAccount = require("./coronavirusbot19-firebase-adminsdk-sckiv-6ca1e54162.json");
-// admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//     databaseURL: "https://coronavirusbot19.firebaseio.com"
-// });
-
-// let db = admin.firestore();
+let db = admin.firestore();
 
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
@@ -47,15 +45,11 @@ client.on("message", msg => {
 
     switch (command) {
         case "signup":
-            var helloWorld = firebase.functions().httpsCallable('helloWorld');
-            helloWorld();
-            var addUser = firebase.functions().httpsCallable('addUser');
-            addUser({ text: 3 }).catch(function (error) {
-                var code = error.code;
-                var message = error.message;
-                var details = error.details;
-                console.log(code.toString(), message.toString(), details);
+            var id = msg.author.id;
+            db.collection('users').doc(id).set({
+                id: id
             });
+            msg.reply('User created with id: ' + id)
             break;
         case "location":
             if (!args.length) {
