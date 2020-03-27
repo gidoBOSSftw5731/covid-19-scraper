@@ -1,16 +1,30 @@
 require("dotenv").config()
 const Discord = require("discord.js")
 const client = new Discord.Client()
-const firebase = require("firebase/app");
-var admin = require("firebase-admin");
 
-var serviceAccount = require("./coronavirusbot19-firebase-adminsdk-sckiv-6ca1e54162.json");
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://coronavirusbot19.firebaseio.com"
+var firebase = require("firebase");
+firebase.initializeApp({
+    apiKey: "AIzaSyDMq0mi1Se1KXRyqaIwVZnv1csYshtrgu0",
+    authDomain: "coronavirusbot19.firebaseapp.com",
+    databaseURL: "https://coronavirusbot19.firebaseio.com",
+    projectId: "coronavirusbot19",
+    storageBucket: "coronavirusbot19.appspot.com",
+    messagingSenderId: "814043085257",
+    appId: "1:814043085257:web:d4151d18cb5d4a16ca1018",
+    measurementId: "G-4TKZD7504L"
 });
 
-let db = admin.firestore();
+let db = firebase.firestore();
+
+// var admin = require("firebase-admin");
+
+// var serviceAccount = require("./coronavirusbot19-firebase-adminsdk-sckiv-6ca1e54162.json");
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount),
+//     databaseURL: "https://coronavirusbot19.firebaseio.com"
+// });
+
+// let db = admin.firestore();
 
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
@@ -33,9 +47,14 @@ client.on("message", msg => {
 
     switch (command) {
         case "signup":
-            msg.reply(msg.author.id);
-            let userDoc = db.collection('users').doc(msg.author.id).set({
-                id: msg.author.id
+            var helloWorld = firebase.functions().httpsCallable('helloWorld');
+            helloWorld();
+            var addUser = firebase.functions().httpsCallable('addUser');
+            addUser({ text: 3 }).catch(function (error) {
+                var code = error.code;
+                var message = error.message;
+                var details = error.details;
+                console.log(code.toString(), message.toString(), details);
             });
             break;
         case "location":
