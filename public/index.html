@@ -13,9 +13,11 @@
     <link rel="stylesheet" href="https://thx4sharing.web.app/main.css">
     <link rel="stylesheet" href="https://thx4sharing.web.app/index.css">
 
+    <script src="//cdn.rawgit.com/dcodeIO/protobuf.js/6.X.X/dist/protobuf.js"></script>
+
     <script defer src="/__/firebase/7.12.0/firebase-app.js"></script>
     <script defer src="/__/firebase/7.12.0/firebase-auth.js"></script>
-    <script defer src="/__/firebase/7.12.0/firebase-database.js"></script>
+    <script defer src="/__/firebase/7.12.0/firebase-firestore.js"></script>
     <script defer src="/__/firebase/7.12.0/firebase-messaging.js"></script>
     <script defer src="/__/firebase/7.12.0/firebase-storage.js"></script>
     <script defer src="/__/firebase/init.js"></script>
@@ -155,6 +157,39 @@
               &nbsp;&nbsp;&nbsp;
               <button class="mdl-button mdl-js-button mdl-button--raised" name="signIn"
                 onclick="display('pwreset'); signIn()">Return to Sign In</button>
+    
+              <p>
+                <li>
+                  <a onclick="display('pwreset')">Close</a>
+                </li>
+              </p>
+    
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!--Password Reset End-->
+
+    <!--Password Reset-->
+    <div id="discord" style="display: block; z-index: 5; background-color: rgba(0,0,0,0.5);"
+      class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+          <div
+            class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+    
+              <p>Enter your Discord ID here (can be found by running the command !signup to the bot). 
+                Once submitted, you should receive a DM with a unique token to verify that the account is yours.</p>
+    
+              <input class="mdl-textfield__input" style="display:inline;" type="text" id="discordToken" name="discordToken"
+                placeholder="Discord Token" />
+              <br /> <br />
+              &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
+                onclick="discordConnect()">Submit</button>
+              &nbsp;&nbsp;&nbsp;
     
               <p>
                 <li>
