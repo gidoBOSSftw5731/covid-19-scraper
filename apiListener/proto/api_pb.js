@@ -265,7 +265,7 @@ proto.apiproto.ListOfStates.prototype.getCountry = function() {
 
 /**
  * @param {string} value
- * @return {!proto.apiproto.ListOfStates} returns this
+ * @return {!proto.apiproto.ListOfStates}return {!proto.apiproto.ListOfStates} returns this
  */
 proto.apiproto.ListOfStates.prototype.setCountry = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
