@@ -60,7 +60,7 @@ exports.countyUpdate = functions.firestore.document('AGData/{string}').onWrite((
 exports.getCountyData = functions.https.onCall((data, context) => {
     res.set('Cache-Control', 'public, max-age=600, s-maxage=3600');
     
-    return db.collection('AGData').where("Admin2", "==", data.county).get().then(function(doc) {
+    db.collection('AGData').where("Admin2", "==", data.county).get().then(function(doc) {
         console.log('New Message written');
         // Returning the sanitized message to the client.
         return { data: doc.data() };

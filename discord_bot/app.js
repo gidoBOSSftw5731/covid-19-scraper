@@ -60,8 +60,8 @@ client.on("message", msg => {
             break;
         case "location":
             if (!args.length) {
-                return msg.reply("To use location command, please follow the paradigm:\n" +
-                    "```!location <state (abbreviation)> <county (optional)>```\n Note: At this moment, only the US is supported.");
+                return msg.reply("To use the location command, please follow the paradigm:\n" +
+                    "```!location <state (abbreviation)> <county (optional)>```Note: At this moment, only the US is supported.");
             } else if (!states.includes(args[0])) {
                 return msg.reply('Looks like you may have entered the parameters wrong!\n Please follow the paradigm:\n' +
                     "```!location <state> <county (optional)>```\n Note: At this moment, only the US is supported.");
@@ -80,6 +80,10 @@ client.on("message", msg => {
             }
             break;
         case "subscribe":
+            if (!args.length) {
+                return msg.reply("To use the subscribe command, please follow the paradigm:\n" +
+                    "```!subscribe <level (county, state, country)>```Note: At this moment, only the US is supported.");
+            }
             switch (args[0]) {
                 case "county":
                     db.collection('users').doc(msg.author.id).set({
@@ -108,6 +112,10 @@ client.on("message", msg => {
             }
             break;
         case "unsubscribe":
+            if (!args.length) {
+                return msg.reply("To use the unsubscribe command, please follow the paradigm:\n" +
+                    "```!unsubscribe <level (county, state, country)>```Note: At this moment, only the US is supported.");
+            }
             switch (args[0]) {
                 case "county":
                     db.collection('users').doc(msg.author.id).update({
@@ -134,15 +142,16 @@ client.on("message", msg => {
             break;
         case "cases":
             var getCountyCases = firebase.functions().httpsCallable('getCountyData');
+            console.log(getCountyCases)
             getCountyCases({ county: 'Forsyth' }).then(function (result) {
                 console.log('Cloud Function called successfully.', result);
-                var data = result.data;
-                msg.reply(data);
+                msg.reply(result);
             }).catch(function (error) {
                 var code = error.code;
                 var message = error.message;
                 var details = error.details;
-                console.alert('There was an error when calling the Cloud Function:\n\nError Code: '
+                console.log(error);
+                console.log('1There was an error when calling the Cloud Function:\n\nError Code: '
                     + code + '\nError Message:' + message + '\nError Details:' + details);
             });
             break;
