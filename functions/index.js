@@ -59,46 +59,48 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
 
     //console.log(oldArcGISData)
 
-    fetch(AGFileURL).then(res => res.buffer()).then(buffer => {
-        if (buffer.toString() == oldArcGISData) {
-            res.status(200).send("no change");
-            return;
-        } else {
-            res.status(200).send("This means they were not the same");
-            oldArcGISData = buffer.toString();
-        }
+    buffer = req.files.data
 
-        try {
-            data = JSON.parse(buffer.toString());
-        } catch(err) {
-            console.error(err);
-        }
+  
+    if (buffer.toString() == oldArcGISData) {
+        res.status(200).send("no change");
+        return;
+    } else {
+        res.status(200).send("This means they were not the same");
+        oldArcGISData = buffer.toString();
+    }
 
-        batch = db.batch();
-        i = 0;
-        data.features.forEach(function(value) {
-            p = value.properties;
-            console.log(p);
-            db.collection('test').doc('test1').set({name: "hello"});
-            //console.log(p.Combined_Key)
-            if (i > 19) {
-                try {
-                    console.log("batch commit inbound");
-                    batch.commit();
-                    i = 0;
-                    batch = db.batch();
-                } catch (err) {
-                    console.log(err);
-                }
-                var waitTill = new Date(new Date().getTime() + 1 * 30); // prevent rate limiting
-                while(waitTill > new Date()){};
+    try {
+        data = JSON.parse(buffer.toString());
+    } catch(err) {
+        console.error(err);
+    }
+
+    batch = db.batch();
+    i = 0;
+    data.features.forEach(function(value) {
+        p = value.properties;
+        console.log(p);
+        db.collection('test').doc('test1').set({name: "hello"});
+        //console.log(p.Combined_Key)
+        if (i > 19) {
+            try {
+                console.log("batch commit inbound");
+                batch.commit();
+                i = 0;
+                batch = db.batch();
+            } catch (err) {
+                console.log(err);
             }
+            var waitTill = new Date(new Date().getTime() + 1 * 30); // prevent rate limiting
+            while(waitTill > new Date()){};
+        }
 
-            let ref = db.collection('AGData').doc(p.Combined_Key);
-            batch.set(ref, p);
+        let ref = db.collection('AGData').doc(p.Combined_Key);
+        batch.set(ref, p);
 
-            i++;
-        });
-        batch.commit();
+        i++;
     });
+    batch.commit();
+    
 });
