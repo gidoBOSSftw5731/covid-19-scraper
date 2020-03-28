@@ -29,15 +29,13 @@ var oldArcGISData;
 const protobuf = require('protobufjs');
 const Schema = require('../apiListener/proto/api_pb.js');
 
-exports.sendDM = functions.firestore.document('users/{userID}').onWrite((change, context) => {
-    console.log('change triggered');
-
+exports.userJoinMessage = functions.firestore.document('users/{userID}').onWrite((change, context) => {
     client.on("ready", () => {
         console.log(`Client user tag: ${client.user.tag}!`);
     });
 
-    client.fetchUser("377934017548386307", false).then(user => {
-        user.send("42069");
+    client.fetchUser(client.user.tag, false).then(user => {
+        user.send("You just signed up for CovidBot19! Use !help to pick a next move! What will it be?");
     });
 
     client.login(process.env.BOT_TOKEN);

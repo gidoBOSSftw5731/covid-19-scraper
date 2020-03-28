@@ -80,7 +80,57 @@ client.on("message", msg => {
             }
             break;
         case "subscribe":
-            msg.reply('Subscribed! (not really)');
+            switch (args[0]) {
+                case "county":
+                    db.collection('users').doc(msg.author.id).set({
+                        id: msg.author.id,
+                        countySubscription: true
+                    }, { merge: true }).then(function () {
+                        msg.reply('Subscribed to all county-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe county```');
+                    });
+                    break;
+                case "state":
+                    db.collection('users').doc(msg.author.id).set({
+                        id: msg.author.id,
+                        stateSubscription: true
+                    }, { merge: true }).then(function () {
+                        msg.reply('Subscribed to all state-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe state```');
+                    });
+                    break;
+                case "country":
+                    db.collection('users').doc(msg.author.id).set({
+                        id: msg.author.id,
+                        countrySubscription: true
+                    }, { merge: true }).then(function () {
+                        msg.reply('Subscribed to all country-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe country```');
+                    });
+                    break;
+            }
+            break;
+        case "unsubscribe":
+            switch (args[0]) {
+                case "county":
+                    db.collection('users').doc(msg.author.id).update({
+                        countySubscription: false
+                    }).then(function () {
+                        msg.reply('Unsubcribed from all county-level updates.\n Subscribe at any time using the command ```!subscribe county```');
+                    });
+                    break;
+                case "state":
+                    db.collection('users').doc(msg.author.id).update({
+                        stateSubscription: false
+                    }).then(function () {
+                        msg.reply('Unsubcribed from all state-level updates.\n Subscribe at any time using the command ```!subscribe state```');
+                    });
+                    break;
+                case "country":
+                    db.collection('users').doc(msg.author.id).update({
+                        countrySubscription: false
+                    }).then(function () {
+                        msg.reply('Unsubcribed from all country-level updates.\n Subscribe at any time using the command ```!subscribe country```');
+                    });
+                    break;
+            }
             break;
         case "cases":
             var docRef = db.collection("test").doc("test");
@@ -104,10 +154,11 @@ client.on("message", msg => {
                     {name: 'Commands', value: "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n" +
                             "!location <state (abbreviation)> <county (optional)> - saves your location in case you want to see local data later.\n" +
                             "!subscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n" +
+                            "!unsubscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: does not delete your\n" +
                             "!cases <level (county, state, country)> <chart (optional)> - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"},
                 )
                 .setTimestamp()
-                .setFooter('Data Source: Arcgis');
+                .setFooter('Data Source: Arcgis')
             msg.reply(help);
             break;
         case "":
