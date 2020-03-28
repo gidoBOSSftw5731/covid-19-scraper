@@ -29,18 +29,42 @@ var oldArcGISData;
 const protobuf = require('protobufjs');
 const Schema = require('../apiListener/proto/api_pb.js');
 
-exports.userJoinMessage = functions.firestore.document('users/{userID}').onWrite((change, context) => {
+exports.userJoinMessage = functions.firestore.document('users/{userID}').onCreate((change, context) => {
     console.log('change triggered');
 
     client.on("ready", () => {
-        console.log(`Client user tag: ${client.user.tag}!`);
+        console.log(`Client user tag: ${context.params.userID}!`);
     });
 
-    client.fetchUser(client.user.tag, false).then(user => {
+    client.fetchUser(context.params.userID, false).then(user => {
         user.send("You just signed up for CovidBot19! Use !help to pick a next move! What will it be?");
     });
 
     client.login(process.env.BOT_TOKEN);
+});
+
+exports.countyUpdate = functions.firestore.document('AGData/{string}').onWrite((change, context) => {
+    const newData = change.after.data();
+    console.log(newData);
+
+    const location = context.params.string.split(', ');
+    const county = location[0];
+    const state = location[1];
+    console.log('State: ', state, " County: ", county);
+
+    client.fetchUser('377934017548386307', false).then(user => {
+        user.send("Some updates on ")
+    })
+});
+
+exports.getCountyData = functions.https.onCall((data, context) => {
+    res.set('Cache-Control', 'public, max-age=600, s-maxage=3600');
+    
+    return db.collection('AGData').where("Admin2", "==", data.county).get().then(function(doc) {
+        console.log('New Message written');
+        // Returning the sanitized message to the client.
+        return { data: doc.data() };
+    })
 });
 
 /*
@@ -70,7 +94,6 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
     } else {
         res.status(200).send("This means they were not the same");
         oldArcGISData = buffer;
-
     }
 
     try {
@@ -106,5 +129,4 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
         i++;
     });
     batch.commit();
-    
 });

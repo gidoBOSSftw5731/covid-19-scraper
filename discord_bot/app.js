@@ -55,7 +55,7 @@ client.on("message", msg => {
             var id = msg.author.id;
             db.collection('users').doc(id).set({
                 id: id
-            });
+            }, { merge: true });
             msg.reply('User created with id: ' + id)
             break;
         case "location":
@@ -133,15 +133,17 @@ client.on("message", msg => {
             }
             break;
         case "cases":
-            var docRef = db.collection("test").doc("test");
-            docRef.get().then(function (doc) {
-                if (doc.exists) {
-                    msg.reply("Cases: " + doc.data().confirmed.toString() + "\n Deaths: " + doc.data().deaths.toString());
-                } else {
-                    msg.reply("No such document!");
-                }
+            var getCountyCases = firebase.functions().httpsCallable('getCountyData');
+            getCountyCases({ county: 'Forsyth' }).then(function (result) {
+                console.log('Cloud Function called successfully.', result);
+                var data = result.data;
+                msg.reply(data);
             }).catch(function (error) {
-                msg.reply("Error getting document:", error);
+                var code = error.code;
+                var message = error.message;
+                var details = error.details;
+                console.alert('There was an error when calling the Cloud Function:\n\nError Code: '
+                    + code + '\nError Message:' + message + '\nError Details:' + details);
             });
             break;
         case "help":

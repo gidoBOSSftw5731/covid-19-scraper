@@ -7,10 +7,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "public",
-    "site": "covidbot19",
-    "cleanUrls": true,
-      "trailingSlash": false,
+    "public": "",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -20,7 +17,6 @@
   "storage": {
     "rules": "storage.rules"
   },
-
   "emulators": {
     "functions": {
       "port": 5001
@@ -34,8 +30,8 @@
     "hosting": {
       "port": 5000
     },
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint"
-      ]
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint"
+    ]
   }
 }
