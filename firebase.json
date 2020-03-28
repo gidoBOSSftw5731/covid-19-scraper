@@ -7,7 +7,8 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "",
+    "public": "public",
+    "site": "covidbot19",
     "ignore": [
       "firebase.json",
       "**/.*",

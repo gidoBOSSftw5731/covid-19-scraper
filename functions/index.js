@@ -23,9 +23,11 @@ firebase.initializeApp({
 
 const db = admin.firestore();
 
+
 const AGFileURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson";
 var oldArcGISData;
 
+/*
 const protobuf = require('protobufjs');
 const Schema = require('../apiListener/proto/api_pb.js');
 
@@ -60,11 +62,63 @@ exports.countyUpdate = functions.firestore.document('AGData/{string}').onWrite((
 exports.getCountyData = functions.https.onCall((data, context) => {
     res.set('Cache-Control', 'public, max-age=600, s-maxage=3600');
     
-    db.collection('AGData').where("Admin2", "==", data.county).get().then(function(doc) {
-        console.log('New Message written');
-        // Returning the sanitized message to the client.
-        return { data: doc.data() };
-    })
+    db.collection('AGData').where("Admin2", "==", data.county).get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            console.log(doc.id, " => ", doc.data());
+            return {
+                "data": doc.data()
+            };
+        });
+    });
+});
+*/
+
+exports.addNumbers = functions.https.onCall((data) => {
+    // res.set('Cache-Control', 'public, max-age=600, s-maxage=3600');
+
+    const county = data.county;
+    console.log(county);
+
+    /*
+    db.collection('AGData').where("Admin2", "==", county).get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            console.log(doc.id, " => ", doc.data());
+            return {
+                confirmed: doc.data().Confirmed,
+                deaths: doc.data().Deaths,
+                time: doc.data().Last_Update
+            };
+        });
+    });
+    */
+    
+    var confirmed = function () {
+        db.collection('AGData').doc('Forsyth, Georgia, US').get().then((doc) => {
+            var confirmed = doc.data().Confirmed;
+            console.log(confirmed);
+            return confirmed;
+        });
+    }
+    var deaths = function () {
+        db.collection('AGData').doc('Forsyth, Georgia, US').get().then((doc) => {
+            var deaths = doc.data().Deaths;
+            console.log(deaths);
+            return deaths;
+        });
+    }
+    var time = function () {
+        db.collection('AGData').doc('Forsyth, Georgia, US').get().then((doc) => {
+            var time = doc.data().Last_Update;
+            console.log(time);
+            return time;
+        });
+    }
+
+    return {
+        confirmed: confirmed(),
+        deaths: deaths(),
+        time: time()
+    };
 });
 
 /*

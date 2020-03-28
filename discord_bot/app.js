@@ -141,19 +141,36 @@ client.on("message", msg => {
             }
             break;
         case "cases":
-            var getCountyCases = firebase.functions().httpsCallable('getCountyData');
-            console.log(getCountyCases)
-            getCountyCases({ county: 'Forsyth' }).then(function (result) {
+            var county = args[0];
+            var sendNotification = firebase.functions().httpsCallable('addNumbers');
+            sendNotification({ county: county }).then(function (result) {
                 console.log('Cloud Function called successfully.', result);
-                msg.reply(result);
+                var confirmed = result.data.confirmed;
+                var deaths = result.data.deaths;
+                var time = result.data.time;
+                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ', Last Updated: ' + time);
             }).catch(function (error) {
                 var code = error.code;
                 var message = error.message;
                 var details = error.details;
-                console.log(error);
-                console.log('1There was an error when calling the Cloud Function:\n\nError Code: '
+                console.error('There was an error when calling the Cloud Function', error);
+                console.log('There was an error when calling the Cloud Function:\n\nError Code: '
                     + code + '\nError Message:' + message + '\nError Details:' + details);
             });
+
+            // var getCountyCases = firebase.functions().httpsCallable('getCountyData');
+            // console.log(getCountyCases)
+            // getCountyCases({ "data": { "county": 'Forsyth' } }).then(function (result) {
+            //     console.log('Cloud Function called successfully.', result);
+            //     msg.reply(result);
+            // }).catch(function (error) {
+            //     var code = error.code;
+            //     var message = error.message;
+            //     var details = error.details;
+            //     console.log('There was an error when calling the Cloud Function:\n\nError Code: '
+            //         + code + '\nError Message:' + message + '\nError Details:' + details);
+            //     msg.reply("oof");
+            // });
             break;
         case "help":
             const help = new Discord.MessageEmbed()
