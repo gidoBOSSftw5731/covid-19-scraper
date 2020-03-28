@@ -37,6 +37,13 @@ client.on("ready", () => {
 })
 
 client.on("message", msg => {
+    //easter eggs
+    if (msg.content == "so how was your day") {
+        msg.reply("eh, not bad, u?");
+    }
+    if (msg.content == "so whatcha up to tomorrow?") {
+        msg.reply('nothing much, just beating up some bitches');
+    }
     
     if (!msg.content.startsWith("!") || msg.author.bot) return;
 

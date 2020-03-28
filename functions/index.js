@@ -44,18 +44,10 @@ exports.sendDM = functions.firestore.document('users/{userID}').onWrite((change,
 });
 
 exports.protobuffer = functions.https.onRequest((req, res) => {
-    protobuf.load(Schema, function (err, root) {
-        if (err)
-            throw err;
-        
-        var decodedMessage = Schema.decode('https://buttstuff.ops-netman.net/stateinfo/US/Virginia/Fairfax');
-        var message = Schema.fromObject({ awesomeField: 42 });
-        
-        // var ListOfCountries = root.lookupType('apiproto.getCountry');
-    });
+    var pieceofbullshit = new Schema.HistoricalInfo();
+    console.log(pieceofbullshit);
 
-    console.log(Schema);
-    console.log(Schema.ListOfCounties());
+    pieceofbullshit.getHistoricalInfo();
 });
 
 exports.arcgisgetter = functions.https.onRequest((req, res) => {
@@ -64,7 +56,6 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
 
     console.log(req.file)
     buffer = req.file.data
-
   
     if (buffer.toString() == oldArcGISData) {
         res.status(200).send("no change");
