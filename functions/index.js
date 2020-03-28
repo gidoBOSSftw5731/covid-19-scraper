@@ -62,7 +62,8 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
 
     //console.log(oldArcGISData)
 
-    buffer = req.files.data
+    console.log(req.file)
+    buffer = req.file.data
 
   
     if (buffer.toString() == oldArcGISData) {
