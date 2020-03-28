@@ -48,6 +48,9 @@ exports.protobuffer = functions.https.onRequest((req, res) => {
         if (err)
             throw err;
         
+        var decodedMessage = Schema.decode('https://buttstuff.ops-netman.net/stateinfo/US/Virginia/Fairfax');
+        var message = Schema.fromObject({ awesomeField: 42 });
+        
         // var ListOfCountries = root.lookupType('apiproto.getCountry');
     });
 
