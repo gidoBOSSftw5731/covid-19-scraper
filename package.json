@@ -4,13 +4,16 @@
   "description": "covid-19 arcgis in golang",
   "main": "index.js",
   "dependencies": {
+    "discord.js": "^12.1.1",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "firebase": "^7.13.0",
     "firebase-admin": "^8.10.0",
     "firebase-functions": "^3.5.0",
     "firebase-tools": "^7.16.1",
     "google-protobuf": "^3.11.4",
     "lint": "^0.7.0",
+    "multer": "^1.4.2",
     "protobufjs": "^6.8.9"
   },
   "devDependencies": {},

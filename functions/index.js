@@ -30,6 +30,8 @@ const protobuf = require('protobufjs');
 const Schema = require('../apiListener/proto/api_pb.js');
 
 exports.userJoinMessage = functions.firestore.document('users/{userID}').onWrite((change, context) => {
+    console.log('change triggered');
+
     client.on("ready", () => {
         console.log(`Client user tag: ${client.user.tag}!`);
     });
@@ -41,32 +43,41 @@ exports.userJoinMessage = functions.firestore.document('users/{userID}').onWrite
     client.login(process.env.BOT_TOKEN);
 });
 
+/*
 exports.protobuffer = functions.https.onRequest((req, res) => {
     var pieceofbullshit = new Schema.HistoricalInfo();
     console.log(pieceofbullshit);
 
     pieceofbullshit.getHistoricalInfo();
 });
+*/
 
 exports.arcgisgetter = functions.https.onRequest((req, res) => {
 
     //console.log(oldArcGISData)
 
-    console.log(req.file)
-    buffer = req.file.data
-  
-    if (buffer.toString() == oldArcGISData) {
+    //let buff = new Buffer(req.body.toString(), 'base64');
+
+    //buffer = buff.toString('ascii');
+
+    buffer = req.body.toString()
+
+    //console.log(buffer)
+    
+    if (buffer == oldArcGISData) {
         res.status(200).send("no change");
         return;
     } else {
         res.status(200).send("This means they were not the same");
-        oldArcGISData = buffer.toString();
+        oldArcGISData = buffer;
+
     }
 
     try {
-        data = JSON.parse(buffer.toString());
+        data = JSON.parse(buffer);
     } catch(err) {
         console.error(err);
+        return
     }
 
     batch = db.batch();
@@ -74,7 +85,7 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
     data.features.forEach(function(value) {
         p = value.properties;
         console.log(p);
-        db.collection('test').doc('test1').set({name: "hello"});
+        db.collection('AGData').doc(p.Combined_Key).set(p);
         //console.log(p.Combined_Key)
         if (i > 19) {
             try {
