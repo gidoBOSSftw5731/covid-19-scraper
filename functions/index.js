@@ -60,7 +60,6 @@ exports.countyUpdate = functions.firestore.document('AGData/{string}').onWrite((
 });
 
 exports.getCountyData = functions.https.onCall((data, context) => {
-    res.set('Cache-Control', 'public, max-age=600, s-maxage=3600');
     
     db.collection('AGData').where("Admin2", "==", data.county).get().then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
@@ -73,52 +72,73 @@ exports.getCountyData = functions.https.onCall((data, context) => {
 });
 */
 
-exports.addNumbers = functions.https.onCall((data) => {
-    // res.set('Cache-Control', 'public, max-age=600, s-maxage=3600');
+exports.addNumbers = functions.https.onCall((data, context) => {
 
     const county = data.county;
-    console.log(county);
+    const state = data.state;
+
+    if (!county || !state) {
+        return {
+            failure: 'failure'
+        };
+    }
+
+    const location = county + ", " + state + ", US";
+    console.log(location);
+    
+    // return async function () {
+    //     await db.collection('AGData').doc(location).get();
+    // }.then(async function(doc) {
+    //     var confirmed = await doc.data().Confirmed;
+    //     var deaths = await doc.data().Deaths();
+    //     return {
+    //         confirmed: confirmed,
+    //         deaths: deaths,
+    //     };
+    // });
 
     /*
-    db.collection('AGData').where("Admin2", "==", county).get().then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-            console.log(doc.id, " => ", doc.data());
-            return {
-                confirmed: doc.data().Confirmed,
-                deaths: doc.data().Deaths,
-                time: doc.data().Last_Update
-            };
+    function Data() {
+        db.collection('AGData').doc(location).get().then((doc) => {
+            const docData = doc.data();
         });
-    });
-    */
-    
-    var confirmed = function () {
-        db.collection('AGData').doc('Forsyth, Georgia, US').get().then((doc) => {
-            var confirmed = doc.data().Confirmed;
-            console.log(confirmed);
-            return confirmed;
-        });
-    }
-    var deaths = function () {
-        db.collection('AGData').doc('Forsyth, Georgia, US').get().then((doc) => {
-            var deaths = doc.data().Deaths;
-            console.log(deaths);
-            return deaths;
-        });
-    }
-    var time = function () {
-        db.collection('AGData').doc('Forsyth, Georgia, US').get().then((doc) => {
-            var time = doc.data().Last_Update;
-            console.log(time);
-            return time;
-        });
+        return {
+            confirmed: function () {
+                db.collection('AGData').doc(location).get().then((doc) => {
+                    const docData = doc.data();
+                    return docData.Confirmed;
+                });
+            },
+
+            decrement: function () {
+                db.collection('AGData').doc(location).get().then((doc) => {
+                    const docData = doc.data();
+                    return docData.Deaths;
+                });
+            }
+        }
     }
 
+    let dataObj = Data();
+    let confirmed = dataObj.confirmed();
+    let deaths = dataObj.deaths();
+
     return {
-        confirmed: confirmed(),
-        deaths: deaths(),
-        time: time()
+        confirmed: confirmed,
+        deaths: deaths
     };
+    */
+    async function getData() {
+        try {
+            d = await db.collection('AGData').doc(location).get().then((doc) => {
+                const docData = doc.data();
+                console.log(docData);
+            });
+        } catch (e) {
+            console.log("failure");
+        }
+        return (docData);
+    }
 });
 
 /*

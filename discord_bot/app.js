@@ -142,13 +142,14 @@ client.on("message", msg => {
             break;
         case "cases":
             var county = args[0];
+            var state = args[1];
             var sendNotification = firebase.functions().httpsCallable('addNumbers');
-            sendNotification({ county: county }).then(function (result) {
+            sendNotification({ county: county, state: state }).then(function (result) {
+                if(result.data.failure == 'failure') { return };
                 console.log('Cloud Function called successfully.', result);
                 var confirmed = result.data.confirmed;
                 var deaths = result.data.deaths;
-                var time = result.data.time;
-                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ', Last Updated: ' + time);
+                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths);
             }).catch(function (error) {
                 var code = error.code;
                 var message = error.message;
