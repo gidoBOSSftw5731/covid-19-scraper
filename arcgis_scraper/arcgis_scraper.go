@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"../goconf"
+	"github.com/gidoBOSSftw5731/covid-19-scraper/goconf"
 
 	"github.com/gidoBOSSftw5731/log"
 	"github.com/jinzhu/configor"
