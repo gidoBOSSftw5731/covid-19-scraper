@@ -110,7 +110,7 @@ exports.addNumbers = functions.https.onCall((data, context) => {
                 });
             },
 
-            decrement: function () {
+            deaths: function () {
                 db.collection('AGData').doc(location).get().then((doc) => {
                     const docData = doc.data();
                     return docData.Deaths;
