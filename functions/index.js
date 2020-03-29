@@ -83,7 +83,7 @@ exports.addNumbers = functions.https.onCall((data, context) => {
         };
     }
 
-    const location = county + ", " + state + ", US";
+    const location = county + ", " + state + ", US";// this is bad
     console.log(location);
     
     // return async function () {
@@ -128,17 +128,22 @@ exports.addNumbers = functions.https.onCall((data, context) => {
         deaths: deaths
     };
     */
-    async function getData() {
-        try {
-            d = await db.collection('AGData').doc(location).get().then((doc) => {
-                const docData = doc.data();
-                console.log(docData);
-            });
-        } catch (e) {
-            console.log("failure");
-        }
-        return (docData);
+
+    try {
+        var testVar
+        d = db.collection('AGData').doc(location).get().then((doc) => {
+            var docData = doc.data();
+            console.log(docData);
+            testVar = docData
+            return docData
+        });
+    } catch (e) {
+        console.log("failure");
+    } finally {
+        return docData
     }
+
+    
 });
 
 /*

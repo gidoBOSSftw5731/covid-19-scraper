@@ -24,6 +24,9 @@ admin.initializeApp({
 
 let db = admin.firestore();
 
+var fs = require('fs');
+var state_convert = JSON.parse(fs.readFileSync('stateConversions.json', 'utf8'));
+
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
     'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
@@ -79,7 +82,7 @@ client.on("message", msg => {
                 msg.reply(`Location added!\n${o}`);
             }
             break;
-        case "subscribe":
+        case "subscribe": // this should add the user to a table in firestore
             if (!args.length) {
                 return msg.reply("To use the subscribe command, please follow the paradigm:\n" +
                     "```!subscribe <level (county, state, country)>```Note: At this moment, only the US is supported.");
@@ -111,7 +114,7 @@ client.on("message", msg => {
                     break;
             }
             break;
-        case "unsubscribe":
+        case "unsubscribe": 
             if (!args.length) {
                 return msg.reply("To use the unsubscribe command, please follow the paradigm:\n" +
                     "```!unsubscribe <level (county, state, country)>```Note: At this moment, only the US is supported.");
@@ -143,13 +146,19 @@ client.on("message", msg => {
         case "cases":
             var county = args[0];
             var state = args[1];
+
+            if (state_convert[state.toUpperCase()] != null) {
+                state = state_convert[state.toUpperCase()]
+            }
+
             var sendNotification = firebase.functions().httpsCallable('addNumbers');
             sendNotification({ county: county, state: state }).then(function (result) {
+                //console.log(result)
                 if(result.data.failure == 'failure') { return };
                 console.log('Cloud Function called successfully.', result);
-                var confirmed = result.data.confirmed;
-                var deaths = result.data.deaths;
-                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths);
+                var confirmed = result.data.Confirmed;
+                var deaths = result.data.Deaths;
+                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + result.data.Combined_Key + ' as of ' + result.data.Last_Update);
             }).catch(function (error) {
                 var code = error.code;
                 var message = error.message;
