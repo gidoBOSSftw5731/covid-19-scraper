@@ -181,10 +181,10 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
     i = 0;
     data.features.forEach(function(value) {
         p = value.properties;
-        console.log(p);
-        db.collection('AGData').doc(p.Combined_Key).set(p);
+        //console.log(p);
+        //db.collection('AGData').doc(p.Combined_Key).set(p);
         //console.log(p.Combined_Key)
-        if (i > 19) {
+        if (i == 19) {
             try {
                 console.log("batch commit inbound");
                 batch.commit();
@@ -203,4 +203,14 @@ exports.arcgisgetter = functions.https.onRequest((req, res) => {
         i++;
     });
     batch.commit();
+
+    /*
+    db.collection("AGData").doc('Accomack, Virginia, US').get().then(doc => { // debug
+        if (!doc.exists) {
+            console.log('No such document!');
+          } else {
+            console.log('Document data:', doc.data());
+          }
+      
+    })*/
 });
