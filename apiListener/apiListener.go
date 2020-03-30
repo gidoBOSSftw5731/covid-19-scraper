@@ -164,7 +164,19 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			//log.Traceln(data)
 			resp.Write(dataByte)
 		case 4:
-			//state info
+			data, err := currentStateInfo(urlSplit[2], urlSplit[3])
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Query error")
+			}
+
+			dataByte, err := proto.Marshal(&data)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			//log.Traceln(data)
+			resp.Write(dataByte)
 		case 5:
 			//county info
 		default:
@@ -229,6 +241,46 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 }
 
+func currentStateInfo(country, state string) (pb.AreaInfo, error) {
+	var cInfo pb.AreaInfo
+	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM currentdata WHERE country=$1 AND state=$2",
+		country, state)
+	if err != nil {
+		return cInfo, err
+
+	}
+
+	rows.Next()
+	var insertTime time.Time
+	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases, &cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
+	if err != nil {
+		log.Errorln(err)
+		return cInfo, err
+	}
+
+	cInfo.Type = pb.AreaInfo_STATE
+
+	cInfo.UnixTimeOfRequest = insertTime.Unix()
+
+	for rows.Next() {
+		var info pb.AreaInfo
+		var insertTime time.Time
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
+		if err != nil {
+			log.Errorln(err)
+			continue
+		}
+
+		cInfo.Deaths += info.Deaths
+		cInfo.Recoveries += info.Recoveries
+		cInfo.ConfirmedCases += info.ConfirmedCases
+		cInfo.TestsGiven += info.TestsGiven
+		cInfo.ConfirmedCases += info.ConfirmedCases
+	}
+
+	return cInfo, nil
+}
+
 func currentCountryInfo(country string) (pb.AreaInfo, error) {
 	var cInfo pb.AreaInfo
 	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM currentdata  WHERE country=$1",
@@ -245,6 +297,8 @@ func currentCountryInfo(country string) (pb.AreaInfo, error) {
 		log.Errorln(err)
 		return cInfo, err
 	}
+
+	cInfo.Type = pb.AreaInfo_COUNTRY
 
 	cInfo.UnixTimeOfRequest = insertTime.Unix()
 
