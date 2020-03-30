@@ -30,6 +30,7 @@ var oldArcGISData;
 /*
 const protobuf = require('protobufjs');
 const Schema = require('../apiListener/proto/api_pb.js');
+*/
 
 exports.userJoinMessage = functions.firestore.document('users/{userID}').onCreate((change, context) => {
     console.log('change triggered');
@@ -54,96 +55,33 @@ exports.countyUpdate = functions.firestore.document('AGData/{string}').onWrite((
     const state = location[1];
     console.log('State: ', state, " County: ", county);
 
+    db.collection("subscriptions").where("capital", "==", true).get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+            console.log(doc.id, " => ", doc.data());
+        });
+    })
+    .catch(function (error) {
+        console.log("Error getting documents: ", error);
+    });
+
     client.fetchUser('377934017548386307', false).then(user => {
         user.send("Some updates on ")
     })
 });
 
-exports.getCountyData = functions.https.onCall((data, context) => {
-    
-    db.collection('AGData').where("Admin2", "==", data.county).get().then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-            console.log(doc.id, " => ", doc.data());
-            return {
-                "data": doc.data()
-            };
-        });
-    });
-});
-*/
+exports.addNumbers = functions.https.onCall(async (data, context) => {
 
-exports.addNumbers = functions.https.onCall((data, context) => {
+    let { county, state } = data;
+    let location = `${county}, ${state}, US`;
 
-    const county = data.county;
-    const state = data.state;
-
-    if (!county || !state) {
-        return {
-            failure: 'failure'
-        };
-    }
-
-    const location = county + ", " + state + ", US";// this is bad
-    console.log(location);
-    
-    // return async function () {
-    //     await db.collection('AGData').doc(location).get();
-    // }.then(async function(doc) {
-    //     var confirmed = await doc.data().Confirmed;
-    //     var deaths = await doc.data().Deaths();
-    //     return {
-    //         confirmed: confirmed,
-    //         deaths: deaths,
-    //     };
-    // });
-
-    /*
-    function Data() {
-        db.collection('AGData').doc(location).get().then((doc) => {
-            const docData = doc.data();
-        });
-        return {
-            confirmed: function () {
-                db.collection('AGData').doc(location).get().then((doc) => {
-                    const docData = doc.data();
-                    return docData.Confirmed;
-                });
-            },
-
-            deaths: function () {
-                db.collection('AGData').doc(location).get().then((doc) => {
-                    const docData = doc.data();
-                    return docData.Deaths;
-                });
-            }
-        }
-    }
-
-    let dataObj = Data();
-    let confirmed = dataObj.confirmed();
-    let deaths = dataObj.deaths();
+    let doc = await db.collection('AGData').doc(location).get();
+    let { Confirmed, Deaths, Last_Update } = doc.data();
 
     return {
-        confirmed: confirmed,
-        deaths: deaths
+        confirmed: Confirmed,
+        deaths: Deaths,
+        update: Last_Update
     };
-    */
-
-    try {
-        var testVar
-        d = db.collection('AGData').doc(location).get().then((doc) => {
-            var docData = doc.data();
-            console.log(docData);
-            testVar = docData
-            return docData
-        });
-    } catch (e) {
-        console.log("failure");
-    } finally {
-        return docData
-    }
-
-    
 });
 
 /*

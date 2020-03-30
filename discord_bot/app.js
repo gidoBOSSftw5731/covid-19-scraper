@@ -52,10 +52,10 @@ client.on("message", msg => {
 
     const args = msg.content.slice(1).split(' ');
     const command = args.shift().toLowerCase();
+    const id = msg.author.id;
 
     switch (command) {
         case "signup":
-            var id = msg.author.id;
             db.collection('users').doc(id).set({
                 id: id
             }, { merge: true });
@@ -89,26 +89,23 @@ client.on("message", msg => {
             }
             switch (args[0]) {
                 case "county":
-                    db.collection('users').doc(msg.author.id).set({
-                        id: msg.author.id,
-                        countySubscription: true
-                    }, { merge: true }).then(function () {
+                    db.collection('subscriptions').doc('county').update({
+                        users: firebase.firestore.FieldValue.arrayUnion(id)
+                    }).then(function () {
                         msg.reply('Subscribed to all county-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe county```');
                     });
                     break;
                 case "state":
-                    db.collection('users').doc(msg.author.id).set({
-                        id: msg.author.id,
-                        stateSubscription: true
-                    }, { merge: true }).then(function () {
+                    db.collection('subscriptions').doc('state').update({
+                        users: firebase.firestore.FieldValue.arrayUnion(id)
+                    }).then(function () {
                         msg.reply('Subscribed to all state-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe state```');
                     });
                     break;
                 case "country":
-                    db.collection('users').doc(msg.author.id).set({
-                        id: msg.author.id,
-                        countrySubscription: true
-                    }, { merge: true }).then(function () {
+                    db.collection('subscriptions').doc('country').update({
+                        users: firebase.firestore.FieldValue.arrayUnion(id)
+                    }).then(function () {
                         msg.reply('Subscribed to all country-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe country```');
                     });
                     break;
@@ -121,22 +118,22 @@ client.on("message", msg => {
             }
             switch (args[0]) {
                 case "county":
-                    db.collection('users').doc(msg.author.id).update({
-                        countySubscription: false
+                    db.collection('subscriptions').doc('county').update({
+                        users: firebase.firestore.FieldValue.arrayRemove(id)
                     }).then(function () {
                         msg.reply('Unsubcribed from all county-level updates.\n Subscribe at any time using the command ```!subscribe county```');
                     });
                     break;
                 case "state":
-                    db.collection('users').doc(msg.author.id).update({
-                        stateSubscription: false
+                    db.collection('subscriptions').doc('state').update({
+                        users: firebase.firestore.FieldValue.arrayRemove(id)
                     }).then(function () {
                         msg.reply('Unsubcribed from all state-level updates.\n Subscribe at any time using the command ```!subscribe state```');
                     });
                     break;
                 case "country":
-                    db.collection('users').doc(msg.author.id).update({
-                        countrySubscription: false
+                    db.collection('subscriptions').doc('country').update({
+                        users: firebase.firestore.FieldValue.arrayRemove(id)
                     }).then(function () {
                         msg.reply('Unsubcribed from all country-level updates.\n Subscribe at any time using the command ```!subscribe country```');
                     });
@@ -144,21 +141,24 @@ client.on("message", msg => {
             }
             break;
         case "cases":
+            if (!args.length) {
+                return msg.reply("To use the cases command, please follow the paradigm:\n" +
+                    "```!cases <level (county, state, country)> <chart (optional)>```Note: At this moment, only the US is supported.");
+            }
+
             var county = args[0];
             var state = args[1];
-
+            
             if (state_convert[state.toUpperCase()] != null) {
-                state = state_convert[state.toUpperCase()]
+                state = state_convert[state.toUpperCase()];
             }
 
             var sendNotification = firebase.functions().httpsCallable('addNumbers');
             sendNotification({ county: county, state: state }).then(function (result) {
-                //console.log(result)
-                if(result.data.failure == 'failure') { return };
-                console.log('Cloud Function called successfully.', result);
-                var confirmed = result.data.Confirmed;
-                var deaths = result.data.Deaths;
-                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + result.data.Combined_Key + ' as of ' + result.data.Last_Update);
+                var confirmed = result.data.confirmed;
+                var deaths = result.data.deaths;
+                var update = result.data.update;
+                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + county + ' as of ' + update);
             }).catch(function (error) {
                 var code = error.code;
                 var message = error.message;
@@ -167,20 +167,6 @@ client.on("message", msg => {
                 console.log('There was an error when calling the Cloud Function:\n\nError Code: '
                     + code + '\nError Message:' + message + '\nError Details:' + details);
             });
-
-            // var getCountyCases = firebase.functions().httpsCallable('getCountyData');
-            // console.log(getCountyCases)
-            // getCountyCases({ "data": { "county": 'Forsyth' } }).then(function (result) {
-            //     console.log('Cloud Function called successfully.', result);
-            //     msg.reply(result);
-            // }).catch(function (error) {
-            //     var code = error.code;
-            //     var message = error.message;
-            //     var details = error.details;
-            //     console.log('There was an error when calling the Cloud Function:\n\nError Code: '
-            //         + code + '\nError Message:' + message + '\nError Details:' + details);
-            //     msg.reply("oof");
-            // });
             break;
         case "help":
             const help = new Discord.MessageEmbed()
@@ -188,13 +174,14 @@ client.on("message", msg => {
                 .setTitle('Command List')
                 .setURL('https://covidbot19.web.app/')
                 .setThumbnail('https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg')
-                .addFields(
-                    {name: 'Commands', value: "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n" +
-                            "!location <state (abbreviation)> <county (optional)> - saves your location in case you want to see local data later.\n" +
-                            "!subscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n" +
-                            "!unsubscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: does not delete your\n" +
-                            "!cases <level (county, state, country)> <chart (optional)> - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"},
-                )
+                .addFields({
+                    name: 'Commands',
+                    value: "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
+                        "!location <state (abbreviation)> <county (optional)> - saves your location in case you want to see local data later.\n\n" +
+                        "!subscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
+                        "!unsubscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: does not delete your\n\n" +
+                        "!cases <level (county, state, country)> <chart (optional)> - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n\n"
+                })
                 .setTimestamp()
                 .setFooter('Data Source: Arcgis')
             msg.reply(help);
