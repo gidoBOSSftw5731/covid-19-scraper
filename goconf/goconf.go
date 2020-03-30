@@ -24,26 +24,46 @@ func MkDB(config *Config) (*sql.DB, error) {
 	return sql.Open("postgres", fmt.Sprintf("user=%v password=%v dbname=covid19scraper host=%v port=%v",
 		config.DB.User, config.DB.Password, config.DB.IP, config.DB.Port))
 	/*
-		create database covid19scraper;
-		create user covid19scraper with encrypted password 'ThatsWhatICallInfected';
-		CREATE TABLE records (
-		country text,
-		state text,
-		county text,
-		unixtime int,
-		lat float,
-		long float,
-		deaths int,
-		confirmed int,
-		tests int,
-		recovered int,
-		fips int,
-		combined text,
-		incidentrate float,
-		inserttime TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-		);
-		GRANT ALL ON ALL TABLES IN SCHEMA public TO covid19scraper;
-		create index idx_combined on records (combined);
-		create index idx_country_state_county on records (country, state, county);
+create database covid19scraper;
+create user covid19scraper with encrypted password 'ThatsWhatICallInfected';
+CREATE TABLE records (
+country text,
+state text,
+county text,
+unixtime int,
+lat float,
+long float,
+deaths int,
+confirmed int,
+tests int,
+recovered int,
+fips int,
+combined text,
+incidentrate float,
+inserttime TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+create index idxr_country_state_county on records (country, state, county);
+create index idxr_country_state on records (country, state);
+create index idxr_country on records (country);
+CREATE TABLE currentdata (
+country text,
+state text,
+county text,
+unixtime int,
+lat float,
+long float,
+deaths int,
+confirmed int,
+tests int,
+recovered int,
+fips int,
+combined text,
+incidentrate float,
+inserttime TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+create index idxc_country_state_county on currentdata (country, state, county);
+create index idxc_country_state on currentdata (country, state);
+create index idxc_country on currentdata (country);
+GRANT ALL ON ALL TABLES IN SCHEMA public TO covid19scraper;
 	*/
 }
