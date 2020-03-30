@@ -1,6 +1,10 @@
 require("dotenv").config()
 const Discord = require("discord.js")
 const client = new Discord.Client()
+var protobuf = require('protocol-buffers')
+var fs = require('fs');
+var pb = protobuf(fs.readFileSync('./api.proto'))
+const request = require('request');
 
 var firebase = require("firebase");
 firebase.initializeApp({
@@ -22,9 +26,10 @@ admin.initializeApp({
     databaseURL: "https://coronavirusbot19.firebaseio.com"
 });
 
+const httpAPI = "https://buttstuff.ops-netman.net"
+
 let db = admin.firestore();
 
-var fs = require('fs');
 var state_convert = JSON.parse(fs.readFileSync('stateConversions.json', 'utf8'));
 
 const states = [
@@ -38,6 +43,14 @@ const states = [
 client.on("ready", () => {
     console.log(`Client user tag: ${client.user.tag}!`);
 })
+
+const get_data = async url => {
+   res = request(url, { json: true }, function (err, resp, body) {
+    console.log(body.explanation)
+    return resp.body
+   })
+   return res
+};
 
 client.on("message", msg => {
     //easter eggs
@@ -148,16 +161,26 @@ client.on("message", msg => {
 
             var county = args[0];
             var state = args[1];
+            var country = "US" // someone will fix this later
             
             if (state_convert[state.toUpperCase()] != null) {
                 state = state_convert[state.toUpperCase()];
             }
 
-            var sendNotification = firebase.functions().httpsCallable('addNumbers');
-            sendNotification({ county: county, state: state }).then(function (result) {
-                var confirmed = result.data.confirmed;
-                var deaths = result.data.deaths;
-                var update = result.data.update;
+            if (county == "") {
+                ext = "/"+country + "/" + state
+            } else {
+                ext = "/currentinfo/"+country + "/" + state + "/" + county
+            }
+
+            get_data(httpAPI + ext).then(function (text) {
+                
+                //console.log(text)
+                result = pb.AreaInfo.decode(text)
+                console.log(result)
+                var confirmed = result.ConfirmedCases;
+                var deaths = result.Deaths;
+                var update = new Date(result.UnixTimeOfRequest).toISOString();
                 msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + county + ' as of ' + update);
             }).catch(function (error) {
                 var code = error.code;
