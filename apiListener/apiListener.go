@@ -178,7 +178,19 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			//log.Traceln(data)
 			resp.Write(dataByte)
 		case 5:
-			//county info
+			data, err := currentCountyInfo(urlSplit[2], urlSplit[3], urlSplit[4])
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Query error")
+			}
+
+			dataByte, err := proto.Marshal(&data)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			//log.Traceln(data)
+			resp.Write(dataByte)
 		default:
 			ErrorHandler(resp, req, 400, "too many arguments")
 			return
@@ -299,6 +311,46 @@ func currentCountryInfo(country string) (pb.AreaInfo, error) {
 	}
 
 	cInfo.Type = pb.AreaInfo_COUNTRY
+
+	cInfo.UnixTimeOfRequest = insertTime.Unix()
+
+	for rows.Next() {
+		var info pb.AreaInfo
+		var insertTime time.Time
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
+		if err != nil {
+			log.Errorln(err)
+			continue
+		}
+
+		cInfo.Deaths += info.Deaths
+		cInfo.Recoveries += info.Recoveries
+		cInfo.ConfirmedCases += info.ConfirmedCases
+		cInfo.TestsGiven += info.TestsGiven
+		cInfo.ConfirmedCases += info.ConfirmedCases
+	}
+
+	return cInfo, nil
+}
+
+func currentCountyInfo(country, state, county string) (pb.AreaInfo, error) {
+	var cInfo pb.AreaInfo
+	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM currentdata WHERE country=$1 AND state=$2 AND county=$3",
+		country, state, county)
+	if err != nil {
+		return cInfo, err
+
+	}
+
+	rows.Next()
+	var insertTime time.Time
+	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases, &cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
+	if err != nil {
+		log.Errorln(err)
+		return cInfo, err
+	}
+
+	cInfo.Type = pb.AreaInfo_COUNTY
 
 	cInfo.UnixTimeOfRequest = insertTime.Unix()
 
