@@ -105,7 +105,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 		}
 	case "liststates":
 		if len(urlSplit) < 2 {
-			ErrorHandler(resp, req, 400, "Ya did it wrong (this is a logically impossible error)") // aight bet 
+			ErrorHandler(resp, req, 400, "Ya did it wrong (this is a logically impossible error)") // aight bet
 			return
 		}
 		if len(urlSplit) == 3 {
@@ -141,6 +141,34 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			resp.Write(countyListByte)
 		} else {
 			ErrorHandler(resp, req, 400, "Too many arguments")
+			return
+		}
+	case "currentinfo":
+		if len(urlSplit) < 3 {
+			ErrorHandler(resp, req, 400, "argument missing")
+			return
+		}
+		switch len(urlSplit) {
+		case 3:
+			data, err := currentCountryInfo(urlSplit[2])
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Query error")
+			}
+
+			dataByte, err := proto.Marshal(&data)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			//log.Traceln(data)
+			resp.Write(dataByte)
+		case 4:
+			//state info
+		case 5:
+			//county info
+		default:
+			ErrorHandler(resp, req, 400, "too many arguments")
 			return
 		}
 	case "tos":
@@ -199,6 +227,44 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 	}
 	return hInfo, nil
 
+}
+
+func currentCountryInfo(country string) (pb.AreaInfo, error) {
+	var cInfo pb.AreaInfo
+	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM currentdata  WHERE country=$1",
+		country)
+	if err != nil {
+		return cInfo, err
+
+	}
+
+	rows.Next()
+	var insertTime time.Time
+	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases, &cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
+	if err != nil {
+		log.Errorln(err)
+		return cInfo, err
+	}
+
+	cInfo.UnixTimeOfRequest = insertTime.Unix()
+
+	for rows.Next() {
+		var info pb.AreaInfo
+		var insertTime time.Time
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
+		if err != nil {
+			log.Errorln(err)
+			continue
+		}
+
+		cInfo.Deaths += info.Deaths
+		cInfo.Recoveries += info.Recoveries
+		cInfo.ConfirmedCases += info.ConfirmedCases
+		cInfo.TestsGiven += info.TestsGiven
+		cInfo.ConfirmedCases += info.ConfirmedCases
+	}
+
+	return cInfo, nil
 }
 
 //ErrorHandler is a function to handle HTTP errors
