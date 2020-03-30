@@ -61,7 +61,7 @@ type Properties struct {
 
 func main() {
 	configor.Load(&config, "config.yml")
-	log.SetCallDepth(4)
+	log.SetCallDepth(3)
 
 	var err error
 	db, err = goconf.MkDB(&config)
@@ -86,25 +86,44 @@ func loopingDownloader() {
 		log.Fatalln(err)
 	}
 
+	jsonMap := make(map[string]bool)
+
+	// I hate literally everything
+	// no exceptions
+	// seriously, none
+	// dont push me on this
+	rows, err := db.Query("SELECT combined FROM currentdata")
+	switch err {
+	case sql.ErrNoRows, nil:
+	default:
+		log.Fatalln("Error checking for rows")
+	}
+
+	for rows.Next() {
+		var ckey string
+		rows.Scan(&ckey)
+
+		jsonMap[ckey] = true
+	}
+
 	// Create a DB Transaction, one atomic change with many rows inserted.
 	txn, err := db.Begin()
 	if err != nil {
 		log.Fatalf("failed to create transation: %v", err)
 	}
 
-	// Create the cursor, which gets filled with the Exec statement inside the for loop.
+	txn2, err := db.Begin()
+	if err != nil {
+		log.Fatalf("failed to create transation: %v", err)
+	}
 
-	uStmt, err := txn.Prepare("UPDATE currentdata SET unixtime = $1, deaths = $2, confirmed = $3, tests = $4, recovered = $5, incidentrate = $6 WHERE country = $7 AND state = $8 AND county = $9")
+	// Create the cursor, which gets filled with the Exec statement inside the for loop.
 	iStmt, err := txn.Prepare(
 		pq.CopyIn("currentdata", "country", "state", "county", "unixtime",
 			"lat", "long", "deaths", "confirmed",
 			"tests", "recovered", "fips", "combined",
 			"incidentrate"))
-	sStmt, err := db.Prepare("SELECT FROM currentdata WHERE country = $1 AND state = $2 AND county = $3")
-	if err != nil {
-		log.Fatalf("failed to create cursor: %v", err)
-	}
-	defer sStmt.Close()
+	uStmt, err := txn2.Prepare("UPDATE currentdata SET unixtime = $1, deaths = $2, confirmed = $3, tests = $4, recovered = $5, incidentrate = $6 WHERE country = $7 AND state = $8 AND county = $9")
 
 	for _, entry := range form.Featuress {
 		p := &entry.Properties
@@ -125,22 +144,13 @@ func loopingDownloader() {
 			p.FIPS = "0"
 		}
 
-		var exists bool
-		err = sStmt.QueryRow(p.CountryRegion, p.ProvinceState, p.County).Scan()
-		switch err {
-		case sql.ErrNoRows:
-			exists = false
-		case nil:
-			exists = true
-		default:
-			log.Fatalln("Error checking for rows")
-		}
-
+		exists := jsonMap[p.CombinedKey]
 		log.Traceln(exists)
 
 		switch exists {
 		case true:
-			_, err = uStmt.Exec(uTimeUnix, p.Deaths, p.Confirmed, p.PeopleTested, p.Recovered, p.IncidentRate, p.CountryRegion, p.ProvinceState, p.County)
+			_, err = uStmt.Exec(uTimeUnix, p.Deaths, p.Confirmed, p.PeopleTested,
+				p.Recovered, p.IncidentRate, p.CountryRegion, p.ProvinceState, p.County)
 			if err != nil {
 				log.Fatalf("failed to exec the cursor: %v\nstruct: %v", err, p)
 			}
@@ -159,6 +169,13 @@ func loopingDownloader() {
 	_, err = iStmt.Exec()
 	if err != nil {
 		log.Fatalf("failed to commit downloaded data: %v", err)
+	}
+
+	log.Traceln(db.Ping())
+
+	err = txn2.Commit()
+	if err != nil {
+		log.Fatalln(err)
 	}
 
 	if err := txn.Commit(); err != nil {
