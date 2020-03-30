@@ -23,7 +23,6 @@ firebase.initializeApp({
 
 const db = admin.firestore();
 
-
 const AGFileURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson";
 var oldArcGISData;
 
@@ -84,6 +83,30 @@ exports.addNumbers = functions.https.onCall(async (data, context) => {
     };
 });
 
+exports.arcgisgetter = functions.https.onCall(async (data, context) => {
+
+    $.getJSON(AGFileURL, function (data) {
+        return buffer = data.body.toString();
+    });
+
+    if (buffer == oldArcGISData) {
+        return {
+            change: "no change"
+        };
+    } else {
+        console.log("Data change detected");
+        oldArcGISData = buffer;
+    }
+
+    try {
+        let data = await JSON.parse(buffer);
+        return data;
+    } catch (err) {
+        console.error(err);
+        return;
+    }
+});
+
 /*
 exports.protobuffer = functions.https.onRequest((req, res) => {
     var pieceofbullshit = new Schema.HistoricalInfo();
@@ -93,63 +116,45 @@ exports.protobuffer = functions.https.onRequest((req, res) => {
 });
 */
 
-exports.arcgisgetter = functions.https.onRequest((req, res) => {
-
-    //let buff = new Buffer(req.body.toString(), 'base64');
-    //buffer = buff.toString('ascii');
-
-    buffer = req.body.toString()
-
-    
-    if (buffer == oldArcGISData) {
-        res.status(200).send("no change");
-        return;
-    } else {
-        res.status(200).send("This means they were not the same");
-        oldArcGISData = buffer;
-    }
-
-    try {
-        data = JSON.parse(buffer);
-    } catch(err) {
-        console.error(err);
-        return
-    }
-
-    batch = db.batch();
-    i = 0;
-    data.features.forEach(function(value) {
-        p = value.properties;
-        //console.log(p);
-        //db.collection('AGData').doc(p.Combined_Key).set(p);
-        //console.log(p.Combined_Key)
-        if (i == 19) {
-            try {
-                console.log("batch commit inbound");
-                batch.commit();
-                i = 0;
-                batch = db.batch();
-            } catch (err) {
-                console.log(err);
-            }
-            var waitTill = new Date(new Date().getTime() + 1 * 30); // prevent rate limiting
-            while(waitTill > new Date()){};
-        }
-
-        let ref = db.collection('AGData').doc(p.Combined_Key);
-        batch.set(ref, p);
-
-        i++;
-    });
-    batch.commit();
-
-    /*
-    db.collection("AGData").doc('Accomack, Virginia, US').get().then(doc => { // debug
-        if (!doc.exists) {
-            console.log('No such document!');
-          } else {
-            console.log('Document data:', doc.data());
-          }
-      
-    })*/
-});
+// exports.arcgisgetter = functions.https.onRequest((req, res) => {
+//     //let buff = new Buffer(req.body.toString(), 'base64');
+//     //buffer = buff.toString('ascii');
+//     buffer = req.body.toString()
+//     if (buffer == oldArcGISData) {
+//         res.status(200).send("no change");
+//         return;
+//     } else {
+//         res.status(200).send("This means they were not the same");
+//         oldArcGISData = buffer;
+//     
+//     try {
+//         data = JSON.parse(buffer);
+//     } catch(err) {
+//         console.error(err);
+//         return
+//     }
+//     batch = db.batch();
+//     i = 0;
+//     data.features.forEach(function(value) {
+//         p = value.properties;
+//         //console.log(p);
+//         //db.collection('AGData').doc(p.Combined_Key).set(p);
+//         //console.log(p.Combined_Key)
+//         if (i == 19) {
+//             try {
+//                 console.log("batch commit inbound");
+//                 batch.commit();
+//                 i = 0;
+//                 batch = db.batch();
+//             } catch (err) {
+//                 console.log(err);
+//             }
+//             var waitTill = new Date(new Date().getTime() + 1 * 30); // prevent rate limiting
+//             while(waitTill > new Date()){};
+//         }
+//         let ref = db.collection('AGData').doc(p.Combined_Key);
+//         batch.set(ref, p);
+//         i++;
+//     });
+//     batch.commit();
+// });

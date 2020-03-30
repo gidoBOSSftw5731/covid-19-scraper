@@ -186,6 +186,20 @@ client.on("message", msg => {
                 .setFooter('Data Source: Arcgis')
             msg.reply(help);
             break;
+        case "test":
+            const AGFileURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson";
+            var sendNotification = firebase.functions().httpsCallable('arcgisgetter');
+            sendNotification(AGFileURL).then(function (result) {
+                msg.reply(result);
+            }).catch(function (error) {
+                var code = error.code;
+                var message = error.message;
+                var details = error.details;
+                console.error('There was an error when calling the Cloud Function', error);
+                console.log('There was an error when calling the Cloud Function:\n\nError Code: '
+                    + code + '\nError Message:' + message + '\nError Details:' + details);
+            });
+            break;
         case "":
             msg.reply('You must add a command for me to know what to do! Use !help to see a list of commands');
             break;
