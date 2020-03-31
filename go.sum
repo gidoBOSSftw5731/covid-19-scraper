@@ -5,6 +5,7 @@ github.com/gidoBOSSftw5731/covid-19-scraper/apiListener v0.0.0-20200326083907-e8
 github.com/gidoBOSSftw5731/covid-19-scraper/apiListener v0.0.0-20200327163825-fe4723dc32c1 h1:YDPfKyt9VGCKOUoU4FAdOiNxTpI5NtNsTc2W445gqLA=
 github.com/gidoBOSSftw5731/covid-19-scraper/apiListener v0.0.0-20200328000029-adc0dcfcaf6a h1:0XbBHX7IFjJ4eXd8yayZuD95Slg5HNN2nJdqkm6yLZk=
 github.com/gidoBOSSftw5731/covid-19-scraper/apiListener v0.0.0-20200330010647-c45819d44cf9 h1:s3WbjDLiNKoU/SQI1WI1AeuoWRRbyOTIwn2Z2pY5hJw=
+github.com/gidoBOSSftw5731/covid-19-scraper/apiListener v0.0.0-20200331040140-312c240dd02f h1:MYPNUvEs11IT1B+8gafzNwtOREEeP819FycztLQLNkw=
 github.com/gidoBOSSftw5731/log v0.0.0-20190718204308-3ae037c6203f h1:vg/m9Ir/7GFkx2+ZWxdVjIF7ExwETtWZA99uqJtwuiQ=
 github.com/gidoBOSSftw5731/log v0.0.0-20190718204308-3ae037c6203f/go.mod h1:a8Ke7EvCSaGUHJbc4PB7gaOgeqAsb8TgGX0kOaunaOY=
 github.com/golang/protobuf v1.3.5 h1:F768QJ1E9tib+q5Sc8MkdJi1RxLTbRcTf8LJV56aRls=

@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"encoding/base64"
 
 	"github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/goconf"
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
@@ -83,7 +84,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			}
 
 			//log.Traceln(data)
-			resp.Write(dataByte)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
 		} else if len(urlSplit) == 5 {
 			data, err := countyData(urlSplit[2], urlSplit[3], urlSplit[4])
 			if err != nil {
@@ -98,7 +99,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			}
 
 			//log.Traceln(data)
-			resp.Write(dataByte)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
 		} else {
 			ErrorHandler(resp, req, 400, "Too many arguments")
 			return
@@ -123,7 +124,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			resp.Write(stateListByte)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(stateListByte)))
 		} else if len(urlSplit) == 4 {
 			countyList, err := listCounties(urlSplit[2], urlSplit[3])
 			if err != nil {
@@ -138,7 +139,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			resp.Write(countyListByte)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(countyListByte)))
 		} else {
 			ErrorHandler(resp, req, 400, "Too many arguments")
 			return
@@ -162,7 +163,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			}
 
 			//log.Traceln(data)
-			resp.Write(dataByte)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
 		case 4:
 			data, err := currentStateInfo(urlSplit[2], urlSplit[3])
 			if err != nil {
@@ -176,7 +177,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			}
 
 			//log.Traceln(data)
-			resp.Write(dataByte)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
 		case 5:
 			data, err := currentCountyInfo(urlSplit[2], urlSplit[3], urlSplit[4])
 			if err != nil {
@@ -190,7 +191,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			}
 
 			//log.Traceln(data)
-			resp.Write(dataByte)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
 		default:
 			ErrorHandler(resp, req, 400, "too many arguments")
 			return
