@@ -7,13 +7,22 @@ var fs = require('fs');
 var proto = require("protobufjs");
 const request = require('request');
 
-var pb = fs.readFile(('../apiListener/proto/api.proto'), (data) => {
-    protobuf(data);
-});
+var x = async function() {
+    fs.readFile('../apiListener/proto/api.proto', async (data) => {
+        await console.log("gg", data);
+    });
+}
+var x = async function () {
+    fs.readFile('./ToS.html', async (data) => {
+        await console.log("gg", data);
+    });
+}
+
+
 var messages = require("../apiListener/proto/api_pb.js");
-var builder = proto.load("./api.proto");
-const AreaInfo = yield (builder.roots.default.apiproto.AreaInfo);
-console.log(wait.for(AreaInfo))
+var builder = proto.load("../apiListener/proto/api.proto");
+// const AreaInfo = yield (builder.roots.default.apiproto.AreaInfo);
+// console.log(wait.for(AreaInfo))
 
 var firebase = require("firebase");
 firebase.initializeApp({
