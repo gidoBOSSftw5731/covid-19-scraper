@@ -172,10 +172,29 @@ function handleSignUp() {
 };
 // Signup End
 
+// Discord Token Generate
+function discordTokenGenerate(use) {
+    var id = document.getElementById(use + "discordID").value;
+    var token = Math.floor(100000 + Math.random() * 900000);
+    if (use == "C") {
+        var method = "connect your Discord account to a regular site account";
+    } else {
+        var method = "authenticate with Discord";
+    }
+    
+    client.fetchUser(id, false).then(user => {
+        user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
+    });
+
+    client.login(process.env.BOT_TOKEN);
+}
+// Discord Token Generate End
+
 // Discord Auth
 function discordAuth() {
-    var dAuthToken = document.getElementById('dAuthToken').value;
-    if (dAuthToken) {
+    var dID = document.getElementById('AdiscordID');
+
+    if (dID) {
         users.doc(dAuthToken).set({
             id: dAuthToken
         }).then(function () {
@@ -191,8 +210,8 @@ function discordAuth() {
 // Connect Discord
 function discordConnect() {
     if (user) {
-        var discordToken = document.getElementById('discordToken').value;
-        var discordUserDoc = users.doc(discordToken);
+        var dID = document.getElementById('AdiscordID');
+        var discordUserDoc = users.doc(dID);
         var siteUserDoc = users.doc(displayName);
 
         discordUserDoc.get().then(function (doc) {

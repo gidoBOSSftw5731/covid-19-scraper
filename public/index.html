@@ -176,12 +176,14 @@
               <p>Enter your Discord ID here (can be found by running the command !signup to the bot).
                 Once submitted, you should receive a DM with a unique token to verify that the account is yours.</p>
     
-              <input class="mdl-textfield__input" style="display:inline;" type="text" id="discordToken" name="discordToken"
+              <input class="mdl-textfield__input" style="display:inline;" type="text" id="CdiscordID" name="CdiscordID"
+                placeholder="Discord ID" />
+              <input class="mdl-textfield__input" style="display:block;" type="text" id="CdiscordToken" name="CdiscordToken"
                 placeholder="Discord Token" />
               <br /> <br />
               &nbsp;&nbsp;&nbsp;
               <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
-                onclick="discordConnect()">Submit</button>
+                onclick="discordTokenGenerate('C')">Submit</button>
               &nbsp;&nbsp;&nbsp;
     
               <p>
@@ -197,8 +199,8 @@
     </div>
     <!--Discord Connect End-->
 
-    <!--Discord Connect-->
-    <div id="discordConnect" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+    <!--Discord Auth-->
+    <div id="discordAuth" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
       class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <main class="popupwrap mdl-layout__content mdl-color--grey-100">
         <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
@@ -209,12 +211,14 @@
               <p>Enter your Discord ID here (can be found by running the command !signup to the bot).
                 Once submitted, you should receive a DM with a unique token to verify that the account is yours.</p>
     
-              <input class="mdl-textfield__input" style="display:inline;" type="text" id="discordToken" name="discordToken"
+              <input class="mdl-textfield__input" style="display:inline;" type="text" id="AdiscordID" name="AdiscordID"
+                placeholder="Discord ID" />
+              <input class="mdl-textfield__input" style="display:block;" type="text" id="AdiscordToken" name="AdiscordToken"
                 placeholder="Discord Token" />
               <br /> <br />
               &nbsp;&nbsp;&nbsp;
               <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
-                onclick="discordAuth()">Submit</button>
+                onclick="discordTokenGenerate('A')">Submit</button>
               &nbsp;&nbsp;&nbsp;
     
               <p>
@@ -228,7 +232,7 @@
         </div>
       </main>
     </div>
-    <!--Discord Connect End-->
+    <!--Discord Auth End-->
 
   </body>
 </html>

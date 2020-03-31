@@ -136,3 +136,5 @@ Before we get started, keep in mind:
 [debug] [2020-03-31T03:36:41.367Z] [runtime-status] [24964] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.5.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-functions\\lib\\index.js"}
 [debug] [2020-03-31T03:36:41.368Z] [runtime-status] [24964] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.5.0","resolution":"C:\\Users\\md_sh\\Desktop\\covid-19-scraper\\functions\\node_modules\\firebase-functions\\lib\\index.js"}
 [debug] [2020-03-31T03:36:41.965Z] [worker-~diagnostic~-33716093-4174-4e1b-ab6d-24a51e44c472]: IDLE
+[debug] [2020-03-31T04:01:47.692Z] [worker-~diagnostic~-33716093-4174-4e1b-ab6d-24a51e44c472]: exited
+[debug] [2020-03-31T04:01:47.692Z] [worker-~diagnostic~-33716093-4174-4e1b-ab6d-24a51e44c472]: FINISHED
