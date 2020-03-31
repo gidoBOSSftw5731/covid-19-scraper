@@ -12,7 +12,7 @@ var pb = fs.readFile(('../apiListener/proto/api.proto'), (data) => {
 });
 var messages = require("../apiListener/proto/api_pb.js");
 var builder = proto.load("./api.proto");
-const AreaInfo = yield wait.for(builder.roots.default.apiproto.AreaInfo);
+const AreaInfo = yield (builder.roots.default.apiproto.AreaInfo);
 console.log(wait.for(AreaInfo))
 
 var firebase = require("firebase");
