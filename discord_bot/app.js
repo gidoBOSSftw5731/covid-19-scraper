@@ -1,10 +1,16 @@
 require("dotenv").config()
+var wait=require('wait.for-es6');
 const Discord = require("discord.js")
 const client = new Discord.Client()
 var protobuf = require('protocol-buffers')
 var fs = require('fs');
 var pb = protobuf(fs.readFileSync('./api.proto'))
 const request = require('request');
+var messages = require("./api_pb.js")
+var proto = require("protobufjs");
+var builder = proto.load("./api.proto")
+const AreaInfo = yield (builder.roots.default.apiproto.AreaInfo)
+console.log(wait.for(AreaInfo))
 
 var firebase = require("firebase");
 firebase.initializeApp({
@@ -45,12 +51,30 @@ client.on("ready", () => {
 })
 
 const get_data = async url => {
-   res = request(url, { json: true }, function (err, resp, body) {
-    console.log(body.explanation)
-    return resp.body
-   })
-   return res
+    let res = await request(url, { json: true })
+    console.log("Body: " + res.body)
+      
+    //callback(res)
+
+   return res.body
 };
+
+async function doRequestWrap(url) {
+    return await doRequest(url)
+}
+
+function doRequest(url) {
+    return new Promise(function (resolve, reject) {
+      request(url, function (error, res, body) {
+        if (!error && res.statusCode == 200) {
+          resolve(body);
+        } else {
+          reject(error);
+        }
+      });
+    });
+  }
+  
 
 client.on("message", msg => {
     //easter eggs
@@ -153,44 +177,43 @@ client.on("message", msg => {
                     break;
             }
             break;
-        case "cases":
-            if (!args.length) {
-                return msg.reply("To use the cases command, please follow the paradigm:\n" +
-                    "```!cases <level (county, state, country)> <chart (optional)>```Note: At this moment, only the US is supported.");
-            }
-
-            var county = args[0];
-            var state = args[1];
-            var country = "US" // someone will fix this later
-            
-            if (state_convert[state.toUpperCase()] != null) {
-                state = state_convert[state.toUpperCase()];
-            }
-
-            if (county == "") {
-                ext = "/"+country + "/" + state
-            } else {
-                ext = "/currentinfo/"+country + "/" + state + "/" + county
-            }
-
-            get_data(httpAPI + ext).then(function (text) {
+            case "cases":
+                if (!args.length) {
+                    return msg.reply("To use the cases command, please follow the paradigm:\n" +
+                        "```!cases <level (county, state, country)> <chart (optional)>```Note: At this moment, only the US is supported.");
+                }
+    
+                var county = args[0];
+                var state = args[args.length-1];
+                var country = "US" // someone will fix this later
                 
-                //console.log(text)
-                result = pb.AreaInfo.decode(text)
-                console.log(result)
-                var confirmed = result.ConfirmedCases;
-                var deaths = result.Deaths;
-                var update = new Date(result.UnixTimeOfRequest).toISOString();
-                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + county + ' as of ' + update);
-            }).catch(function (error) {
-                var code = error.code;
-                var message = error.message;
-                var details = error.details;
-                console.error('There was an error when calling the Cloud Function', error);
-                console.log('There was an error when calling the Cloud Function:\n\nError Code: '
-                    + code + '\nError Message:' + message + '\nError Details:' + details);
-            });
-            break;
+                if (state_convert[state.toUpperCase()] != null) {
+                    state = state_convert[state.toUpperCase()];
+                }
+    
+                if (county == "") {
+                    ext = "/"+country + "/" + state
+                } else {
+                    ext = "/currentinfo/"+country + "/" + state + "/" + county
+                }
+                
+                let text;
+                doRequestWrap(httpAPI + ext).then(function (text){
+                    console.log(text)
+                    
+                    buf = []
+                    for (var i = 0; i < Buffer.from(text.toString(), 'base64').length; i++) {
+                        buf.push(Buffer.from(text.toString(), 'base64')[i]);
+                    }
+
+                    result = AreaInfo.decode(buf)
+                    var confirmed = result.ConfirmedCases;
+                    var deaths = result.Deaths;
+                    var update = new Date(result.UnixTimeOfRequest).toISOString();
+                    msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + county + ' as of ' + update);
+                })
+                
+                break;
         case "help":
             const help = new Discord.MessageEmbed()
                 .setColor('#C70039')
