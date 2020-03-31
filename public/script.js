@@ -19,6 +19,18 @@ db.enablePersistence();
 var users = db.collection("users");
 
 var messaging = firebase.messaging();
+messaging.requestPermission().then(function () {
+    console.log('Permission granted');
+    return messaging.getToken();
+}).then(function (token) {
+    console.log(token);
+}).catch(function (err) {
+    console.log('Error occurred.');
+});
+
+messaging.onMessage(function (payload) {
+    console.log('onMessage: ', payload);
+});
 
 document.addEventListener('keydown', function (event) {
     const key = event.key;

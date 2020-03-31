@@ -1,15 +1,17 @@
-require("dotenv").config()
-var wait=require('wait.for-es6');
-const Discord = require("discord.js")
-const client = new Discord.Client()
-var protobuf = require('protocol-buffers')
+require("dotenv").config();
+var wait = require('wait.for-es6');
+const Discord = require("discord.js");
+const client = new Discord.Client();
+var protobuf = require('protocol-buffers');
 var fs = require('fs');
-var pb = protobuf(fs.readFileSync('./api.proto'))
+var pb = fs.readFile(('../apiListener/proto/api.proto'), (data) => {
+    protobuf(data);
+});
 const request = require('request');
-var messages = require("./api_pb.js")
+var messages = require("../apiListener/proto/api_pb.js");
 var proto = require("protobufjs");
-var builder = proto.load("./api.proto")
-const AreaInfo = yield (builder.roots.default.apiproto.AreaInfo)
+var builder = proto.load("./api.proto");
+const AreaInfo = yield wait.for(builder.roots.default.apiproto.AreaInfo);
 console.log(wait.for(AreaInfo))
 
 var firebase = require("firebase");
@@ -51,7 +53,7 @@ client.on("ready", () => {
 })
 
 const get_data = async url => {
-    let res = await request(url, { json: true })
+    let res = request(url, { json: true })
     console.log("Body: " + res.body)
       
     //callback(res)
