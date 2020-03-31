@@ -4,12 +4,13 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 var protobuf = require('protocol-buffers');
 var fs = require('fs');
+var proto = require("protobufjs");
+const request = require('request');
+
 var pb = fs.readFile(('../apiListener/proto/api.proto'), (data) => {
     protobuf(data);
 });
-const request = require('request');
 var messages = require("../apiListener/proto/api_pb.js");
-var proto = require("protobufjs");
 var builder = proto.load("./api.proto");
 const AreaInfo = yield wait.for(builder.roots.default.apiproto.AreaInfo);
 console.log(wait.for(AreaInfo))
@@ -33,13 +34,10 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://coronavirusbot19.firebaseio.com"
 });
-
-const httpAPI = "https://buttstuff.ops-netman.net"
-
 let db = admin.firestore();
 
+const httpAPI = "https://buttstuff.ops-netman.net"
 var state_convert = JSON.parse(fs.readFileSync('stateConversions.json', 'utf8'));
-
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
     'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
@@ -56,7 +54,7 @@ const get_data = async url => {
     let res = request(url, { json: true })
     console.log("Body: " + res.body)
       
-    //callback(res)
+    // callback(res)
 
    return res.body
 };
@@ -67,15 +65,15 @@ async function doRequestWrap(url) {
 
 function doRequest(url) {
     return new Promise(function (resolve, reject) {
-      request(url, function (error, res, body) {
-        if (!error && res.statusCode == 200) {
-          resolve(body);
-        } else {
-          reject(error);
-        }
-      });
+        request(url, function (error, res, body) {
+            if (!error && res.statusCode == 200) {
+                resolve(body);
+            } else {
+                reject(error);
+            }
+        });
     });
-  }
+};
   
 
 client.on("message", msg => {
@@ -187,7 +185,7 @@ client.on("message", msg => {
     
                 var county = args[0];
                 var state = args[args.length-1];
-                var country = "US" // someone will fix this later
+                var country = "US" // someone will fix this later // better not be me
                 
                 if (state_convert[state.toUpperCase()] != null) {
                     state = state_convert[state.toUpperCase()];
