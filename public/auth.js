@@ -172,11 +172,50 @@ function handleSignUp() {
 };
 // Signup End
 
+// Discord Auth
+function discordAuth() {
+    var dAuthToken = document.getElementById('dAuthToken').value;
+    if (dAuthToken) {
+        users.doc(dAuthToken).set({
+            id: dAuthToken
+        }).then(function () {
+            console.log("Document successfully written!");
+            display('discordAuth');
+            pageLoad(true);
+        }).catch(function (error) {
+            console.error("Error writing document: ", error);
+        });
+    }
+};
+
 // Connect Discord
 function discordConnect() {
-    document.getElementById('discordToken').value;
     if (user) {
-        
+        var discordToken = document.getElementById('discordToken').value;
+        var discordUserDoc = users.doc(discordToken);
+        var siteUserDoc = users.doc(displayName);
+
+        discordUserDoc.get().then(function (doc) {
+            if (!doc.exists) {
+                if (confirm("You don't have an account registered with us on Discord yet! Would you like to register now?")) {
+                    var discordUserData = doc.data();
+                    siteUserDoc.get().then(function (doc) {
+                        doc.set(discordUserData, { merge: true });
+                    });
+                }
+            } else {
+                var discordUserData = doc.data();
+                siteUserDoc.get().then(function (doc) {
+                    doc.set(discordUserData, { merge: true });
+                }).then(function () {
+                    alert('Successfully merged your accounts! You should receive a DM on Discord confirming this. If not, please contact a developer.');
+                    display('discordConnect');
+                    pageLoad(true);
+                }).catch(function (error) {
+                    console.error("Error writing document: ", error);
+                });
+            }
+        });
     } else {
         alert("Oh no! It looks like you're not signed in but somehow seeing this! That shouldn't be happening! Sign in and try again!");
     }
@@ -187,7 +226,7 @@ function discordConnect() {
 function sendPasswordReset() {
     var email = document.getElementById('premail').value;
     
-    if (email != null) {
+    if (email) {
         firebase.auth().sendPasswordResetEmail(email).then(function () {
             alert('Password Reset Email Sent!');
         }).catch(function (error) {

@@ -1,3 +1,7 @@
+require("dotenv").config();
+const Discord = require("discord.js");
+const client = new Discord.Client();
+
 firebase.initializeApp({
     apiKey: "AIzaSyDMq0mi1Se1KXRyqaIwVZnv1csYshtrgu0",
     authDomain: "coronavirusbot19.firebaseapp.com",
@@ -13,7 +17,8 @@ var db = firebase.firestore();
 db.enablePersistence();
 
 var users = db.collection("users");
-var data = db.collection("data");
+
+var messaging = firebase.messaging();
 
 document.addEventListener('keydown', function (event) {
     const key = event.key;
@@ -43,6 +48,9 @@ function pageLoad(u) {
         document.getElementById("signin").innerHTML = "Sign Out";
 
         window.user = firebase.auth().currentUser;
+        window.displayName = user.uid;
+        window.usersUser = users.doc(displayName);
+        
     } else {
         window.user = null;
     }

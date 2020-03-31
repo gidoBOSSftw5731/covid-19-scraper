@@ -13,14 +13,7 @@
     <link rel="stylesheet" href="https://thx4sharing.web.app/main.css">
     <link rel="stylesheet" href="https://thx4sharing.web.app/index.css">
 
-    <script src="//cdn.rawgit.com/dcodeIO/protobuf.js/6.X.X/dist/protobuf.js"></script>
-
-    <script defer src="/__/firebase/7.12.0/firebase-app.js"></script>
-    <script defer src="/__/firebase/7.12.0/firebase-auth.js"></script>
-    <script defer src="/__/firebase/7.12.0/firebase-firestore.js"></script>
-    <script defer src="/__/firebase/7.12.0/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/7.12.0/firebase-storage.js"></script>
-    <script defer src="/__/firebase/init.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.13.1/firebase.js"></script>
     <script src="script.js"></script>
     <script src="auth.js"></script>
     <script type="module" src="app.js"></script>
@@ -171,8 +164,8 @@
     </div>
     <!--Password Reset End-->
 
-    <!--Password Reset-->
-    <div id="discord" style="display: block; z-index: 5; background-color: rgba(0,0,0,0.5);"
+    <!--Discord Connect-->
+    <div id="discordConnect" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
       class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <main class="popupwrap mdl-layout__content mdl-color--grey-100">
         <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
@@ -180,7 +173,7 @@
             class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
             <div class="mdl-card__supporting-text mdl-color-text--grey-600">
     
-              <p>Enter your Discord ID here (can be found by running the command !signup to the bot). 
+              <p>Enter your Discord ID here (can be found by running the command !signup to the bot).
                 Once submitted, you should receive a DM with a unique token to verify that the account is yours.</p>
     
               <input class="mdl-textfield__input" style="display:inline;" type="text" id="discordToken" name="discordToken"
@@ -193,7 +186,7 @@
     
               <p>
                 <li>
-                  <a onclick="display('pwreset')">Close</a>
+                  <a onclick="display('discordConnect')">Close</a>
                 </li>
               </p>
     
@@ -202,7 +195,40 @@
         </div>
       </main>
     </div>
-    <!--Password Reset End-->
+    <!--Discord Connect End-->
+
+    <!--Discord Connect-->
+    <div id="discordConnect" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+      class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+          <div
+            class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+            <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+    
+              <p>Enter your Discord ID here (can be found by running the command !signup to the bot).
+                Once submitted, you should receive a DM with a unique token to verify that the account is yours.</p>
+    
+              <input class="mdl-textfield__input" style="display:inline;" type="text" id="discordToken" name="discordToken"
+                placeholder="Discord Token" />
+              <br /> <br />
+              &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
+                onclick="discordAuth()">Submit</button>
+              &nbsp;&nbsp;&nbsp;
+    
+              <p>
+                <li>
+                  <a onclick="display('discordAuth')">Close</a>
+                </li>
+              </p>
+    
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <!--Discord Connect End-->
 
   </body>
 </html>
