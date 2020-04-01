@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="https://thx4sharing.web.app/index.css">
 
     <script src="https://www.gstatic.com/firebasejs/7.13.1/firebase.js"></script>
-    <script type="module" src="script.js"></script>
+    <script src="bundle.js"></script>
+    <script src="script.js"></script>
     <script src="auth.js"></script>
   </head>
 
@@ -40,6 +41,8 @@
               <button class="signinoptions" onclick="togglepsi(); display('email')">Email</button>
               <br><br>
               <button class="signinoptions" onclick="gToggleSignIn()">Google</button>
+              <br><br>
+              <button class="signinoptions" onclick="togglepsi(); display('discordAuth')">Discord</button>
               <br><br>
               <button class="signinoptions" onclick="display('popupsignin'); display('signup')">Sign Up</button>
               <br><br>
@@ -177,13 +180,15 @@
     
               <input class="mdl-textfield__input" style="display:inline;" type="text" id="CdiscordID" name="CdiscordID"
                 placeholder="Discord ID" />
-              <input class="mdl-textfield__input" style="display:block;" type="text" id="CdiscordToken" name="CdiscordToken"
+              <input class="mdl-textfield__input" style="display:none;" type="text" id="CdiscordToken" name="CdiscordToken"
                 placeholder="Discord Token" />
               <br /> <br />
               &nbsp;&nbsp;&nbsp;
               <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
                 onclick="discordTokenGenerate('C')">Submit</button>
               &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="dAuthSignIn" onclick="display('discordConnect'); signIn()">Return
+                to Sign In</button>
     
               <p>
                 <li>
@@ -210,19 +215,21 @@
               <p>Enter your Discord ID here (can be found by running the command !signup to the bot).
                 Once submitted, you should receive a DM with a unique token to verify that the account is yours.</p>
     
-              <input class="mdl-textfield__input" style="display:inline;" type="text" id="AdiscordID" name="AdiscordID"
+              <input class="mdl-textfield__input" style="display:block;" type="text" id="AdiscordID" name="AdiscordID"
                 placeholder="Discord ID" />
-              <input class="mdl-textfield__input" style="display:block;" type="text" id="AdiscordToken" name="AdiscordToken"
+              <input class="mdl-textfield__input" style="display:none;" type="text" id="AdiscordToken" name="AdiscordToken"
                 placeholder="Discord Token" />
               <br /> <br />
               &nbsp;&nbsp;&nbsp;
-              <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="dAuthSubmit"
                 onclick="discordTokenGenerate('A')">Submit</button>
               &nbsp;&nbsp;&nbsp;
+              <button class="mdl-button mdl-js-button mdl-button--raised" name="dAuthSignIn" onclick="display('discordAuth'); signIn()">Return
+                to Sign In</button>
     
               <p>
                 <li>
-                  <a onclick="display('discordAuth')">Close</a>
+                  <a onclick="display('discordAuth');">Close</a>
                 </li>
               </p>
     

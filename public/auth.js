@@ -174,25 +174,50 @@ function handleSignUp() {
 
 // Discord Token Generate
 function discordTokenGenerate(use) {
-    var id = document.getElementById(use + "discordID").value;
+    var id = document.getElementById(use + "discordID").value; 
     var token = Math.floor(100000 + Math.random() * 900000);
+
     if (use == "C") {
         var method = "connect your Discord account to a regular site account";
     } else {
         var method = "authenticate with Discord";
     }
-    
+
+    client.login(process.env.BOT_TOKEN);
     client.fetchUser(id, false).then(user => {
         user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
     });
 
-    client.login(process.env.BOT_TOKEN);
-}
+    display(use + 'discordToken');
+    display(use + 'discordTokenSubmit');
+
+    document.getElementById(use + 'discordTokenSubmit').addEventListener('click', function () {
+        discordTokenVerify(use, token);
+    });
+};
 // Discord Token Generate End
+
+// Disord Token Verification
+function discordTokenVerify(use, token) {
+    var userToken = document.getElementById(use + 'discordUserToken').value;
+
+    if (!userToken) {
+        return alert('Please enter the token!');
+    } else if (userToken == token) {
+        if (use == "C") {
+            discordConnect();
+        } else {
+            discordAuth();
+        }
+    } else {
+        return alert('Invalid token!');
+    }
+};
+// Discord Token Verification End
 
 // Discord Auth
 function discordAuth() {
-    var dID = document.getElementById('AdiscordID');
+    var dID = document.getElementById('AdiscordID').value;
 
     if (dID) {
         users.doc(dAuthToken).set({
@@ -206,11 +231,12 @@ function discordAuth() {
         });
     }
 };
+// Discord Auth End
 
 // Connect Discord
 function discordConnect() {
     if (user) {
-        var dID = document.getElementById('AdiscordID');
+        var dID = document.getElementById('AdiscordID').value;
         var discordUserDoc = users.doc(dID);
         var siteUserDoc = users.doc(displayName);
 

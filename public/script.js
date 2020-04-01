@@ -1,7 +1,3 @@
-require("dotenv").config();
-const Discord = require("discord.js");
-const client = new Discord.Client();
-
 firebase.initializeApp({
     apiKey: "AIzaSyDMq0mi1Se1KXRyqaIwVZnv1csYshtrgu0",
     authDomain: "coronavirusbot19.firebaseapp.com",
@@ -13,10 +9,15 @@ firebase.initializeApp({
     measurementId: "G-4TKZD7504L"
 });
 
+require("dotenv").config();
+const Discord = require("discord.js");
+const client = new Discord.Client();
+console.log('hello');
 var db = firebase.firestore();
 db.enablePersistence();
 
 var users = db.collection("users");
+var emails = db.collection("emails");
 
 var messaging = firebase.messaging();
 messaging.requestPermission().then(function () {
