@@ -4,6 +4,8 @@ const client = new Discord.Client();
 var fs = require('fs');
 const request = require('request');
 
+var proto = require("protobufjs");
+
 // API Proto
 var apiproto = '../apiListener/proto/api.proto';
 fs.readFile(apiproto, (err, data) => {
@@ -71,7 +73,7 @@ let db = admin.firestore();
 // Firebase End
 
 // Discord
-client.login('NjkyMTE3MjA2MTA4MjA5MjUz.XoVAmw.HyomXm_V7iqYda-MVs8XEmO0o_o').catch(err => {
+client.login('NjkyMTE3MjA2MTA4MjA5MjUz.XoVdvQ.QHwGe1it2-L5lFFsTWqLclUhzVw').catch(err => {
     console.log("err3 ", err);
 });
 
@@ -212,7 +214,24 @@ client.on("message", msg => {
                 }
                 console.log(buf);
 
-                result = AreaInfo.decode(buf);
+                let Message = proto.load('../apiListener/proto/api.proto', (err, builder) => {
+                    if (err) throw err;
+
+                    var Message = builder.build('AreaInfo');
+                    console.log(Message);
+                })
+
+                var builder = proto.load("../apiListener/proto/api.proto", function (err, root) {
+                    if (err) throw err;
+
+                    
+
+                    // console.log("lookup ", root.lookup('apiproto.AreaInfo'));
+                    // console.log("get", root.get('apiproto'));
+                });
+                // const AreaInfo = builder.roots.default.apiproto.AreaInfo;
+
+                var result = AreaInfo.decode(buf);
                 var confirmed = result.ConfirmedCases;
                 var deaths = result.Deaths;
                 var update = new Date(result.UnixTimeOfRequest).toISOString();
