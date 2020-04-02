@@ -6,13 +6,13 @@ var protobuf = require('protocol-buffers');
 var fs = require('fs');
 var proto = require("protobufjs");
 const request = require('request');
-
+/*
 var testFile = '../apiListener/proto/api.proto';
 fs.readFile(testFile, (err, data) => {
     if (err) throw err;
     console.log("gg", data.toString());
 });
-
+*/
 var firebase = require("firebase");
 firebase.initializeApp({
     apiKey: "AIzaSyDMq0mi1Se1KXRyqaIwVZnv1csYshtrgu0",
@@ -47,15 +47,6 @@ const states = [
 client.on("ready", () => {
     console.log(`Client user tag: ${client.user.tag}!`);
 })
-
-const get_data = async url => {
-    let res = request(url, { json: true })
-    console.log("Body: " + res.body)
-      
-    // callback(res)
-
-   return res.body
-};
 
 async function doRequestWrap(url) {
     return await doRequest(url)
