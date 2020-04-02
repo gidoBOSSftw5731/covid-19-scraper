@@ -23,14 +23,6 @@ firebase.initializeApp({
 
 const db = admin.firestore();
 
-const AGFileURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson";
-var oldArcGISData;
-
-/*
-const protobuf = require('protobufjs');
-const Schema = require('../apiListener/proto/api_pb.js');
-*/
-
 exports.userJoinMessage = functions.firestore.document('users/{userID}').onCreate((change, context) => {
     console.log('change triggered');
 
@@ -44,50 +36,3 @@ exports.userJoinMessage = functions.firestore.document('users/{userID}').onCreat
 
     client.login(process.env.BOT_TOKEN);
 });
-
-exports.countyUpdate = functions.firestore.document('AGData/{string}').onWrite((change, context) => {
-    const newData = change.after.data();
-    console.log(newData);
-
-    const location = context.params.string.split(', ');
-    const county = location[0];
-    const state = location[1];
-    console.log('State: ', state, " County: ", county);
-
-    db.collection("subscriptions").where("capital", "==", true).get().then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-            console.log(doc.id, " => ", doc.data());
-        });
-    })
-    .catch(function (error) {
-        console.log("Error getting documents: ", error);
-    });
-
-    client.fetchUser('377934017548386307', false).then(user => {
-        user.send("Some updates on ")
-    })
-});
-
-exports.addNumbers = functions.https.onCall(async (data, context) => {
-
-    let { county, state } = data;
-    let location = `${county}, ${state}, US`;
-
-    let doc = await db.collection('AGData').doc(location).get();
-    let { Confirmed, Deaths, Last_Update } = doc.data();
-
-    return {
-        confirmed: Confirmed,
-        deaths: Deaths,
-        update: Last_Update
-    };
-});
-
-/*
-exports.protobuffer = functions.https.onRequest((req, res) => {
-    var pieceofbullshit = new Schema.HistoricalInfo();
-    console.log(pieceofbullshit);
-
-    pieceofbullshit.getHistoricalInfo();
-});
-*/

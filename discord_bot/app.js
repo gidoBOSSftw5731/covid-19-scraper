@@ -72,7 +72,10 @@ function doRequest(url) {
         });
     });
 };
-  
+
+client.fetchUser('377934017548386307').catch(function (err) {
+    console.log(err);
+});//.send("hello");
 
 client.on("message", msg => {
     //easter eggs

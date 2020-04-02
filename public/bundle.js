@@ -7654,7 +7654,7 @@ class BaseClient extends EventEmitter {
 module.exports = BaseClient;
 
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
-},{"../rest/RESTManager":119,"../util/Constants":170,"../util/Util":180,"events":6,"setimmediate":182,"timers":30}],42:[function(require,module,exports){
+},{"../rest/RESTManager":119,"../util/Constants":170,"../util/Util":180,"events":6,"setimmediate":181,"timers":30}],42:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -28221,123 +28221,6 @@ module.exports = Util;
 
 }).call(this,require("buffer").Buffer)
 },{"../errors":98,"./Collection":169,"./Constants":170,"buffer":4,"node-fetch":38,"path":11}],181:[function(require,module,exports){
-(function (process){
-/* @flow */
-/*::
-
-type DotenvParseOptions = {
-  debug?: boolean
-}
-
-// keys and values from src
-type DotenvParseOutput = { [string]: string }
-
-type DotenvConfigOptions = {
-  path?: string, // path to .env file
-  encoding?: string, // encoding of .env file
-  debug?: string // turn on logging for debugging purposes
-}
-
-type DotenvConfigOutput = {
-  parsed?: DotenvParseOutput,
-  error?: Error
-}
-
-*/
-
-const fs = require('fs')
-const path = require('path')
-
-function log (message /*: string */) {
-  console.log(`[dotenv][DEBUG] ${message}`)
-}
-
-const NEWLINE = '\n'
-const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/
-const RE_NEWLINES = /\\n/g
-const NEWLINES_MATCH = /\n|\r|\r\n/
-
-// Parses src into an Object
-function parse (src /*: string | Buffer */, options /*: ?DotenvParseOptions */) /*: DotenvParseOutput */ {
-  const debug = Boolean(options && options.debug)
-  const obj = {}
-
-  // convert Buffers before splitting into lines and processing
-  src.toString().split(NEWLINES_MATCH).forEach(function (line, idx) {
-    // matching "KEY' and 'VAL' in 'KEY=VAL'
-    const keyValueArr = line.match(RE_INI_KEY_VAL)
-    // matched?
-    if (keyValueArr != null) {
-      const key = keyValueArr[1]
-      // default undefined or missing values to empty string
-      let val = (keyValueArr[2] || '')
-      const end = val.length - 1
-      const isDoubleQuoted = val[0] === '"' && val[end] === '"'
-      const isSingleQuoted = val[0] === "'" && val[end] === "'"
-
-      // if single or double quoted, remove quotes
-      if (isSingleQuoted || isDoubleQuoted) {
-        val = val.substring(1, end)
-
-        // if double quoted, expand newlines
-        if (isDoubleQuoted) {
-          val = val.replace(RE_NEWLINES, NEWLINE)
-        }
-      } else {
-        // remove surrounding whitespace
-        val = val.trim()
-      }
-
-      obj[key] = val
-    } else if (debug) {
-      log(`did not match key and value when parsing line ${idx + 1}: ${line}`)
-    }
-  })
-
-  return obj
-}
-
-// Populates process.env from .env file
-function config (options /*: ?DotenvConfigOptions */) /*: DotenvConfigOutput */ {
-  let dotenvPath = path.resolve(process.cwd(), '.env')
-  let encoding /*: string */ = 'utf8'
-  let debug = false
-
-  if (options) {
-    if (options.path != null) {
-      dotenvPath = options.path
-    }
-    if (options.encoding != null) {
-      encoding = options.encoding
-    }
-    if (options.debug != null) {
-      debug = true
-    }
-  }
-
-  try {
-    // specifying an encoding returns a string instead of a buffer
-    const parsed = parse(fs.readFileSync(dotenvPath, { encoding }), { debug })
-
-    Object.keys(parsed).forEach(function (key) {
-      if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
-        process.env[key] = parsed[key]
-      } else if (debug) {
-        log(`"${key}" is already defined in \`process.env\` and will not be overwritten`)
-      }
-    })
-
-    return { parsed }
-  } catch (e) {
-    return { error: e }
-  }
-}
-
-module.exports.config = config
-module.exports.parse = parse
-
-}).call(this,require('_process'))
-},{"_process":13,"fs":1,"path":11}],182:[function(require,module,exports){
 (function (process,global){
 (function (global, undefined) {
     "use strict";
@@ -28527,301 +28410,124 @@ module.exports.parse = parse
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":13}],183:[function(require,module,exports){
+},{"_process":13}],182:[function(require,module,exports){
 (function (process){
-function signIn() {
-    if (firebase.auth().currentUser == null){
-        console.log(firebase.auth().currentUser);
-        togglepsi();
-    } else {
-        firebase.auth().signOut();
-        $('#signin').text("Sign In");
-        console.log(document.getElementById("signin").innerHTML);
-        console.log(firebase.auth().currentUser);
-    }
-};
+/* @flow */
+/*::
 
-function eToggleSignIn() {
-    var password = document.getElementById('password').value;
-    var email = document.getElementById('emailemail').value;
-    if (email.length < 8) {
-        alert('Please enter a longer email.');
-        return;
-    }
-    if (password.length < 4) {
-        alert('Please enter a longer password.');
-        return;
-    }
+type DotenvParseOptions = {
+  debug?: boolean
+}
 
-    firebase.auth().signInWithEmailAndPassword(email, password).then(function () {
-        firebase.auth().onAuthStateChanged(function (user) {
-            display("email");
-            pageLoad(true);
-        });
-    }).catch(function (error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        if (errorCode === 'auth/wrong-password') {
-            alert('Wrong password.');
-        } else {
-            alert(errorMessage);
+// keys and values from src
+type DotenvParseOutput = { [string]: string }
+
+type DotenvConfigOptions = {
+  path?: string, // path to .env file
+  encoding?: string, // encoding of .env file
+  debug?: string // turn on logging for debugging purposes
+}
+
+type DotenvConfigOutput = {
+  parsed?: DotenvParseOutput,
+  error?: Error
+}
+
+*/
+
+const fs = require('fs')
+const path = require('path')
+
+function log (message /*: string */) {
+  console.log(`[dotenv][DEBUG] ${message}`)
+}
+
+const NEWLINE = '\n'
+const RE_INI_KEY_VAL = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/
+const RE_NEWLINES = /\\n/g
+const NEWLINES_MATCH = /\n|\r|\r\n/
+
+// Parses src into an Object
+function parse (src /*: string | Buffer */, options /*: ?DotenvParseOptions */) /*: DotenvParseOutput */ {
+  const debug = Boolean(options && options.debug)
+  const obj = {}
+
+  // convert Buffers before splitting into lines and processing
+  src.toString().split(NEWLINES_MATCH).forEach(function (line, idx) {
+    // matching "KEY' and 'VAL' in 'KEY=VAL'
+    const keyValueArr = line.match(RE_INI_KEY_VAL)
+    // matched?
+    if (keyValueArr != null) {
+      const key = keyValueArr[1]
+      // default undefined or missing values to empty string
+      let val = (keyValueArr[2] || '')
+      const end = val.length - 1
+      const isDoubleQuoted = val[0] === '"' && val[end] === '"'
+      const isSingleQuoted = val[0] === "'" && val[end] === "'"
+
+      // if single or double quoted, remove quotes
+      if (isSingleQuoted || isDoubleQuoted) {
+        val = val.substring(1, end)
+
+        // if double quoted, expand newlines
+        if (isDoubleQuoted) {
+          val = val.replace(RE_NEWLINES, NEWLINE)
         }
-        console.log(error);
-    });
-};
+      } else {
+        // remove surrounding whitespace
+        val = val.trim()
+      }
 
-// Google Login
-function gToggleSignIn() {
-    if (!firebase.auth().currentUser) {
-        var provider = new firebase.auth.GoogleAuthProvider();
-
-        firebase.auth().signInWithPopup(provider).then(function (result) {
-            var user = result.user;
-            var uid = user.uid.toString();
-
-            firebase.auth().onAuthStateChanged(function (user) {
-                if (user != null) {
-                    user.providerData.forEach(function (profile) {
-                        var username = profile.displayName.toString();
-                        var email = profile.email.toString();
-                        var userDataEmails = emails.doc(username);
-                        var userDataUsers = users.doc(uid);
-
-                        userDataEmails.get().then(function (doc) {
-                            if (!doc.exists) {
-                                userDataEmails.set({
-                                    email: email,
-                                    uid: uid,
-                                }).then(function () {
-                                    console.log("Document successfully written!");
-                                }).catch(function (error) {
-                                    console.error("Error writing document: ", error);
-                                });
-                            } else {
-                                console.log("Emails doc already exists, skipped writing.");
-                            }
-                        }).then(function () {
-                            userDataUsers.get().then(function (doc) {
-                                if (!doc.exists) {
-                                    userDataUsers.set({
-                                        displayName: username,
-                                        email: email,
-                                    }).then(function () {
-                                        console.log("Document successfully written!");
-                                    }).catch(function (error) {
-                                        console.log("Error writing document: ", error);
-                                    });
-                                } else {
-                                    console.log("Users doc already exists, skipped writing.");
-                                }
-                            });
-                        });
-                    });
-
-                    togglepsi();
-                    pageLoad(true);
-                };
-            });
-        }).catch(function (error) {
-            var errorCode = error.code;
-            if (errorCode === 'auth/account-exists-with-different-credential') {
-                alert('You have already signed up with a different method for that email. If you want to merge your Google account with an Email/Password account, go to the Account page.');
-            } else {
-                console.log(error);
-            }
-        });
-    } else {
-        alert("There is already a user signed in, please sign out before proceeding.");
+      obj[key] = val
+    } else if (debug) {
+      log(`did not match key and value when parsing line ${idx + 1}: ${line}`)
     }
-};
-// Google Login End
+  })
 
-// Signup
-function handleSignUp() {
-    var permusername = document.getElementById('suusername').value.toString();
-    var permemail = document.getElementById('suemail').value.toString();
-    var permpassword = document.getElementById('supassword').value.toString();
-    
-    if (permusername.length < 3) {
-        alert('Please enter a longer username.');
-        return;
+  return obj
+}
+
+// Populates process.env from .env file
+function config (options /*: ?DotenvConfigOptions */) /*: DotenvConfigOutput */ {
+  let dotenvPath = path.resolve(process.cwd(), '.env')
+  let encoding /*: string */ = 'utf8'
+  let debug = false
+
+  if (options) {
+    if (options.path != null) {
+      dotenvPath = options.path
     }
-    if (permemail.length < 4) {
-        alert('Please enter an email address.');
-        return;
+    if (options.encoding != null) {
+      encoding = options.encoding
     }
-    if (permpassword.length < 4) {
-        alert('Please enter a password.');
-        return;
+    if (options.debug != null) {
+      debug = true
     }
+  }
 
-    firebase.auth().createUserWithEmailAndPassword(permemail, permpassword).then(function () {
-        firebase.auth().signInWithEmailAndPassword(permemail, permpassword).catch(function (error) {
-            console.log(error);
-        });
+  try {
+    // specifying an encoding returns a string instead of a buffer
+    const parsed = parse(fs.readFileSync(dotenvPath, { encoding }), { debug })
 
-        firebase.auth().onAuthStateChanged(function (user) {
-            emails.doc(permusername).set({
-                email: permemail,
-                uid: user.uid,
-            }).then(function () {
-                console.log("Document successfully written!");
-            }).catch(function (error) {
-                console.error("Error writing document: ", error);
-            });
+    Object.keys(parsed).forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
+        process.env[key] = parsed[key]
+      } else if (debug) {
+        log(`"${key}" is already defined in \`process.env\` and will not be overwritten`)
+      }
+    })
 
-            users.doc(user.uid).set({
-                displayName: permusername,
-                email: permemail,
-            }).then(function () {
-                console.log("Document successfully written!");
-            }).catch(function (error) {
-                console.error("Error writing document: ", error);
-            });
+    return { parsed }
+  } catch (e) {
+    return { error: e }
+  }
+}
 
-            user.updateProfile({
-                displayName: permusername,
-            }).then(function () {
-                console.log(user.displayName);
-            }).catch(function (error) {
-                console.log(error);
-                console.log(user.displayName);
-            });
-            display('signup');
-            pageLoad(true);
-        });
-    }).catch(function (error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        if (errorCode == 'auth/weak-password') {
-            alert('The password is too weak.');
-        } else {
-            alert(errorMessage);
-        }
-        console.log(error);
-    });
-};
-// Signup End
+module.exports.config = config
+module.exports.parse = parse
 
-// Discord Token Generate
-function discordTokenGenerate(use) {
-    var id = document.getElementById(use + "discordID").value; 
-    var token = Math.floor(100000 + Math.random() * 900000);
-
-    if (use == "C") {
-        var method = "connect your Discord account to a regular site account";
-    } else {
-        var method = "authenticate with Discord";
-    }
-
-    client.login(process.env.BOT_TOKEN);
-    client.fetchUser(id, false).then(user => {
-        user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
-    });
-
-    display(use + 'discordToken');
-    display(use + 'discordTokenSubmit');
-
-    document.getElementById(use + 'discordTokenSubmit').addEventListener('click', function () {
-        discordTokenVerify(use, token);
-    });
-};
-// Discord Token Generate End
-
-// Disord Token Verification
-function discordTokenVerify(use, token) {
-    var userToken = document.getElementById(use + 'discordUserToken').value;
-
-    if (!userToken) {
-        return alert('Please enter the token!');
-    } else if (userToken == token) {
-        if (use == "C") {
-            discordConnect();
-        } else {
-            discordAuth();
-        }
-    } else {
-        return alert('Invalid token!');
-    }
-};
-// Discord Token Verification End
-
-// Discord Auth
-function discordAuth() {
-    var dID = document.getElementById('AdiscordID').value;
-
-    if (dID) {
-        users.doc(dAuthToken).set({
-            id: dAuthToken
-        }).then(function () {
-            console.log("Document successfully written!");
-            display('discordAuth');
-            pageLoad(true);
-        }).catch(function (error) {
-            console.error("Error writing document: ", error);
-        });
-    }
-};
-// Discord Auth End
-
-// Connect Discord
-function discordConnect() {
-    if (user) {
-        var dID = document.getElementById('AdiscordID').value;
-        var discordUserDoc = users.doc(dID);
-        var siteUserDoc = users.doc(displayName);
-
-        discordUserDoc.get().then(function (doc) {
-            if (!doc.exists) {
-                if (confirm("You don't have an account registered with us on Discord yet! Would you like to register now?")) {
-                    var discordUserData = doc.data();
-                    siteUserDoc.get().then(function (doc) {
-                        doc.set(discordUserData, { merge: true });
-                    });
-                }
-            } else {
-                var discordUserData = doc.data();
-                siteUserDoc.get().then(function (doc) {
-                    doc.set(discordUserData, { merge: true });
-                }).then(function () {
-                    alert('Successfully merged your accounts! You should receive a DM on Discord confirming this. If not, please contact a developer.');
-                    display('discordConnect');
-                    pageLoad(true);
-                }).catch(function (error) {
-                    console.error("Error writing document: ", error);
-                });
-            }
-        });
-    } else {
-        alert("Oh no! It looks like you're not signed in but somehow seeing this! That shouldn't be happening! Sign in and try again!");
-    }
-};
-// Connect Discord End
-
-// Password Reset
-function sendPasswordReset() {
-    var email = document.getElementById('premail').value;
-    
-    if (email) {
-        firebase.auth().sendPasswordResetEmail(email).then(function () {
-            alert('Password Reset Email Sent!');
-        }).catch(function (error) {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            if (errorCode == 'auth/invalid-email') {
-                alert(errorMessage);
-            } else if (errorCode == 'auth/user-not-found') {
-                alert(errorMessage);
-            }
-            console.log(error);
-        });
-    } else {
-        alert("Please enter an email.");
-    }
-};
-// Password Reset End
 }).call(this,require('_process'))
-},{"_process":13}],184:[function(require,module,exports){
+},{"_process":13,"fs":1,"path":11}],183:[function(require,module,exports){
 firebase.initializeApp({
     apiKey: "AIzaSyDMq0mi1Se1KXRyqaIwVZnv1csYshtrgu0",
     authDomain: "coronavirusbot19.firebaseapp.com",
@@ -28833,9 +28539,26 @@ firebase.initializeApp({
     measurementId: "G-4TKZD7504L"
 });
 
-require("dotenv").config();
-const Discord = require("discord.js");
+require("dotenv").config({ path: '../.env' });
+const Discord = require('discord.js');
 const client = new Discord.Client();
+client.login('NjkyMTE3MjA2MTA4MjA5MjUz.XoTEqA.DV1ue - qM1qxhEdf3dnsAbYbFvg8');
+client.on('ready', () => {
+    console.log("Bot Ready!");
+});
+
+client.on('message', (msg) => {
+    console.log(msg.content);
+});
+
+function test() {
+    console.log(client);
+    client.user("377934017548386307").then(user => {
+        console.log(user);
+        user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
+    });
+    return 1;
+};
 
 var db = firebase.firestore();
 db.enablePersistence();
@@ -28850,7 +28573,7 @@ messaging.requestPermission().then(function () {
 }).then(function (token) {
     console.log(token);
 }).catch(function (err) {
-    console.log('Error occurred.');
+    console.log('Error occurred');
 });
 
 messaging.onMessage(function (payload) {
@@ -28939,4 +28662,4 @@ function toggleSlideMenu() {
         }, 360);
     }
 };
-},{"discord.js":99,"dotenv":181}]},{},[184,183]);
+},{"discord.js":99,"dotenv":182}]},{},[183]);
