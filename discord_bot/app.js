@@ -71,7 +71,7 @@ let db = admin.firestore();
 // Firebase End
 
 // Discord
-client.login('NjkyMTE3MjA2MTA4MjA5MjUz.XoVAmw.HyomXm_V7iqYda-MVs8XEmO0o_o').catch(err => {
+client.login(process.env.BOT_TOKEN).catch(err => {
     console.log("err3 ", err);
 });
 
@@ -183,7 +183,7 @@ client.on("message", msg => {
                     break;
             }
             break;
-        case "cases":
+/*        case "cases":
             if (!args.length) {
                 return msg.reply("To use the cases command, please follow the paradigm:\n" +
                     "```!cases <level (county, state, country)> <chart (optional)>```Note: At this moment, only the US is supported.");
@@ -219,7 +219,7 @@ client.on("message", msg => {
                 msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + county + ' as of ' + update);
             })
             break;
-        case "help":
+*/        case "help":
             const help = new Discord.MessageEmbed()
                 .setColor('#C70039')
                 .setTitle('Command List')
