@@ -3,9 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -21,6 +24,7 @@ var (
 	commandPrefix string
 	discordToken  string
 	apiURL        string
+	stateMap      map[string]string
 )
 
 func main() {
@@ -31,6 +35,11 @@ func main() {
 	discordToken = os.Getenv("BOT_TOKEN")
 	commandPrefix = os.Getenv("BOT_PREFIX")
 	apiURL = os.Getenv("API_URL")
+
+	jsonData, err := ioutil.ReadFile("./stateConversions.json")
+	errCheck("JSON ERROR: ", err)
+
+	json.Unmarshal(jsonData, &stateMap)
 
 	discord, err := discordgo.New("Bot " + discordToken)
 	errCheck("error creating discord session", err)
@@ -88,10 +97,21 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		county := strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
 		country := "US" // change this if we support more than just good ol' 'murica
 
+		isAbbreviated, err := regexp.MatchString(".{2}", state)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+		if isAbbreviated {
+			state = stateMap[strings.ToUpper(state)]
+		}
+
 		queryURL := apiURL + "/currentinfo/" + country + "/" + state + "/" + county
 
+		location := county
 		if county == "" {
 			queryURL = queryURL[:len(queryURL)-1]
+			location = state
 		}
 
 		log.Tracef("QueryURL: %v", queryURL)
@@ -120,10 +140,12 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		err = proto.Unmarshal(protoIn, newAreaInfo)
 		if err != nil {
 			log.Errorln(err)
+			return
 		}
 
 		msgStr := fmt.Sprintf("The %v of %v has %v cases, %v deaths, has given %v tests, and has %v recoveries!",
-			newAreaInfo.Type, "foo", newAreaInfo.ConfirmedCases, newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
+			strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
+			newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
 		discord.ChannelMessageSend(message.ChannelID, msgStr)
 
 	}

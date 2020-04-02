@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"fmt"
 	"net"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"encoding/base64"
 
 	"github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/goconf"
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
@@ -288,7 +288,8 @@ func currentStateInfo(country, state string) (pb.AreaInfo, error) {
 		cInfo.Recoveries += info.Recoveries
 		cInfo.ConfirmedCases += info.ConfirmedCases
 		cInfo.TestsGiven += info.TestsGiven
-		cInfo.ConfirmedCases += info.ConfirmedCases
+
+		//log.Tracef("%v, %v", info.ConfirmedCases, cInfo.ConfirmedCases)
 	}
 
 	return cInfo, nil
@@ -328,7 +329,6 @@ func currentCountryInfo(country string) (pb.AreaInfo, error) {
 		cInfo.Recoveries += info.Recoveries
 		cInfo.ConfirmedCases += info.ConfirmedCases
 		cInfo.TestsGiven += info.TestsGiven
-		cInfo.ConfirmedCases += info.ConfirmedCases
 	}
 
 	return cInfo, nil
@@ -368,7 +368,6 @@ func currentCountyInfo(country, state, county string) (pb.AreaInfo, error) {
 		cInfo.Recoveries += info.Recoveries
 		cInfo.ConfirmedCases += info.ConfirmedCases
 		cInfo.TestsGiven += info.TestsGiven
-		cInfo.ConfirmedCases += info.ConfirmedCases
 	}
 
 	return cInfo, nil
