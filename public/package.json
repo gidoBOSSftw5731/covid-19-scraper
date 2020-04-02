@@ -9,7 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "firebase": "^7.12.0"
+    "commonjs": "0.0.1",
+    "dotenv": "^8.2.0",
+    "firebase": "^7.12.0",
+    "require": "^2.4.20"
   },
   "devDependencies": {},
   "description": ""

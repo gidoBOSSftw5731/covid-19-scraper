@@ -9,10 +9,27 @@ firebase.initializeApp({
     measurementId: "G-4TKZD7504L"
 });
 
-require("dotenv").config();
-const Discord = require("discord.js");
+require("dotenv").config({ path: '../.env' });
+const Discord = require('discord.js');
 const client = new Discord.Client();
-console.log('hello');
+client.login('NjkyMTE3MjA2MTA4MjA5MjUz.XoTEqA.DV1ue - qM1qxhEdf3dnsAbYbFvg8');
+client.on('ready', () => {
+    console.log("Bot Ready!");
+});
+
+client.on('message', (msg) => {
+    console.log(msg.content);
+});
+
+function test() {
+    console.log(client);
+    client.user("377934017548386307").then(user => {
+        console.log(user);
+        user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
+    });
+    return 1;
+};
+
 var db = firebase.firestore();
 db.enablePersistence();
 
@@ -26,7 +43,7 @@ messaging.requestPermission().then(function () {
 }).then(function (token) {
     console.log(token);
 }).catch(function (err) {
-    console.log('Error occurred.');
+    console.log('Error occurred');
 });
 
 messaging.onMessage(function (payload) {
