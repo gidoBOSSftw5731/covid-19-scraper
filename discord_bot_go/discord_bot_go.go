@@ -95,8 +95,6 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		case "cases":
 			state := commandContents[len(commandContents)-1]
 			county := strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
-			log.Debug(state)
-			log.Debug(county)
 			country := "US" // change this if we support more than just good ol' 'murica
 
 			isAbbreviated, err := regexp.MatchString(".{2}", state)
@@ -149,7 +147,5 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 				strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
 				newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
 			discord.ChannelMessageSend(message.ChannelID, msgStr)
-		default:
-			fmt.Println("oof");
 	}
 }

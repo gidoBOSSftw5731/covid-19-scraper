@@ -119,9 +119,6 @@ client.on("message", msg => {
             if (!args.length) {
                 return msg.reply("To use the location command, please follow the paradigm:\n" +
                     "```!location <state (abbreviation)> <county (optional)>```Note: At this moment, only the US is supported.");
-            } else if (!states.includes(args[0])) {
-                return msg.reply('Looks like you may have entered the parameters wrong!\n Please follow the paradigm:\n' +
-                    "```!location <state> <county (optional)>```\n Note: At this moment, only the US is supported.");
             } else {
                 var o = "";
                 for (i = 0; i < args.length; i++) {
@@ -143,23 +140,23 @@ client.on("message", msg => {
             }
             switch (args[0]) {
                 case "county":
-                    db.collection('subscriptions').doc('county').update({
-                        users: firebase.firestore.FieldValue.arrayUnion(id)
-                    }).then(function () {
+                    db.collection('users').doc(id).set({
+                        countySubscription: true
+                    }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all county-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe county```');
                     });
                     break;
                 case "state":
-                    db.collection('subscriptions').doc('state').update({
-                        users: firebase.firestore.FieldValue.arrayUnion(id)
-                    }).then(function () {
+                    db.collection('users').doc(id).set({
+                        stateSubscription: true
+                    }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all state-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe state```');
                     });
                     break;
                 case "country":
-                    db.collection('subscriptions').doc('country').update({
-                        users: firebase.firestore.FieldValue.arrayUnion(id)
-                    }).then(function () {
+                    db.collection('users').doc(id).set({
+                        countrySubscription: true
+                    }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all country-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe country```');
                     });
                     break;
@@ -172,23 +169,23 @@ client.on("message", msg => {
             }
             switch (args[0]) {
                 case "county":
-                    db.collection('subscriptions').doc('county').update({
-                        users: firebase.firestore.FieldValue.arrayRemove(id)
-                    }).then(function () {
+                    db.collection('users').doc(id).set({
+                        countySubscription: false
+                    }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all county-level updates.\n Subscribe at any time using the command ```!subscribe county```');
                     });
                     break;
                 case "state":
-                    db.collection('subscriptions').doc('state').update({
-                        users: firebase.firestore.FieldValue.arrayRemove(id)
-                    }).then(function () {
+                    db.collection('users').doc(id).set({
+                        stateSubscription: false
+                    }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all state-level updates.\n Subscribe at any time using the command ```!subscribe state```');
                     });
                     break;
                 case "country":
-                    db.collection('subscriptions').doc('country').update({
-                        users: firebase.firestore.FieldValue.arrayRemove(id)
-                    }).then(function () {
+                    db.collection('users').doc(id).set({
+                        countrySubscription: false
+                    }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all country-level updates.\n Subscribe at any time using the command ```!subscribe country```');
                     });
                     break;
