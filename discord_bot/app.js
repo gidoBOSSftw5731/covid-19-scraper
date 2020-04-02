@@ -1,6 +1,6 @@
-require("dotenv").config();
+require("dotenv").config({ path: '../.env' });
 const Discord = require("discord.js");
-const client = new Discord.Client();
+const client = new Discord.Client({ disableEveryone: true });
 var fs = require('fs');
 const request = require('request');
 
@@ -79,7 +79,7 @@ client.login(process.env.BOT_TOKEN).catch(err => {
 
 client.on("ready", () => {
     console.log(`Client user tag: ${client.user.tag}!`);
-    client.user.setActivity("Washing Hands", { type: "Playing" });
+    client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
 })
 
 // client.users.fetch('377934017548386307');
@@ -101,10 +101,19 @@ client.on("message", msg => {
 
     switch (command) {
         case "signup":
-            db.collection('users').doc(id).set({
-                id: id
-            }, { merge: true });
-            msg.reply('User created with id: ' + id)
+            db.collection('users').doc(id).get().then(function (doc) {
+                if (!doc.exists) {
+                    db.collection('users').doc(id).set({
+                        id: id
+                    });
+                    msg.reply('User created with id: ' + id);
+                    client.users.get(id).send('Welcome to the CovidBot19 Community! Use the command `!help` to see a list of commands that you can run!\n' +
+                    "This bot is still a WIP, so expect bugs and new features all at the same time!\nAnd don't forget, stay home and wash your hands for 20 seconds!");
+                } else {
+                    console.log("Users doc already exists, skipped writing.");
+                    msg.reply("You're already signed up!");
+                }
+            });
             break;
         case "location":
             if (!args.length) {
@@ -185,90 +194,21 @@ client.on("message", msg => {
                     break;
             }
             break;
-/*        case "cases":
-            if (!args.length) {
-                return msg.reply("To use the cases command, please follow the paradigm:\n" +
-                    "```!cases <level (county, state, country)> <chart (optional)>```Note: At this moment, only the US is supported.");
-            }
-
-            var county = args[0];
-            var state = args[args.length-1];
-            var country = "US" // someone will fix this later // better not be me
-            
-            if (state_convert[state.toUpperCase()] != null) {
-                state = state_convert[state.toUpperCase()];
-            }
-
-            if (county == "") {
-                ext = "/"+country + "/" + state
-            } else {
-                ext = "/currentinfo/"+country + "/" + state + "/" + county
-            }
-            
-            doRequestWrap(httpAPI + ext).then(function (text){
-                console.log("text: ", text.toString());
-                
-                buf = [];
-                for (var i = 0; i < Buffer.from(text.toString(), 'base64').length; i++) {
-                    buf.push(Buffer.from(text.toString(), 'base64')[i]);
-                }
-                console.log(buf);
-
-                let Message = proto.load('../apiListener/proto/api.proto', (err, builder) => {
-                    if (err) throw err;
-
-                    var Message = builder.build('AreaInfo');
-                    console.log(Message);
-                })
-
-                var builder = proto.load("../apiListener/proto/api.proto", function (err, root) {
-                    if (err) throw err;
-
-                    
-
-                    // console.log("lookup ", root.lookup('apiproto.AreaInfo'));
-                    // console.log("get", root.get('apiproto'));
-                });
-                // const AreaInfo = builder.roots.default.apiproto.AreaInfo;
-
-                var result = AreaInfo.decode(buf);
-                var confirmed = result.ConfirmedCases;
-                var deaths = result.Deaths;
-                var update = new Date(result.UnixTimeOfRequest).toISOString();
-                msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + county + ' as of ' + update);
-            })
-            break;
-*/        case "help":
-            const help = new Discord.MessageEmbed()
+        case "help":
+            const embed = new Discord.RichEmbed()
+                .setTitle("Command List")
                 .setColor('#C70039')
-                .setTitle('Command List')
-                .setURL('https://covidbot19.web.app/')
-                .setThumbnail('https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg')
-                .addFields({
-                    name: 'Commands',
-                    value: "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
+                .setThumbnail("https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg")
+                .setURL("https://covidbot19.web.app")
+                .addField("Commands",
+                        "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
                         "!location <state (abbreviation)> <county (optional)> - saves your location in case you want to see local data later.\n\n" +
                         "!subscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
                         "!unsubscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: does not delete your\n\n" +
                         "!cases <level (county, state, country)> <chart (optional)> - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n\n"
-                })
-                .setTimestamp()
-                .setFooter('Data Source: Arcgis')
-            msg.reply(help);
-            break;
-        case "test":
-            const AGFileURL = "https://opendata.arcgis.com/datasets/628578697fb24d8ea4c32fa0c5ae1843_0.geojson";
-            var sendNotification = firebase.functions().httpsCallable('arcgisgetter');
-            sendNotification(AGFileURL).then(function (result) {
-                msg.reply(result);
-            }).catch(function (error) {
-                var code = error.code;
-                var message = error.message;
-                var details = error.details;
-                console.error('There was an error when calling the Cloud Function', error);
-                console.log('There was an error when calling the Cloud Function:\n\nError Code: '
-                    + code + '\nError Message:' + message + '\nError Details:' + details);
-            });
+                )
+                .setFooter('Data Source: Arcgis');
+            msg.channel.send({ embed });
             break;
         case "":
             msg.reply('You must add a command for me to know what to do! Use !help to see a list of commands');

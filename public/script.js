@@ -9,11 +9,11 @@ firebase.initializeApp({
     measurementId: "G-4TKZD7504L"
 });
 
-// require("dotenv").config();
+require("dotenv").config({ path:'../.env' });
 const Discord = require(['discord.js']);
 console.log(Discord);
 const client = new Discord.Client();
-client.login('NjkyMTE3MjA2MTA4MjA5MjUz.XoTEqA.DV1ue - qM1qxhEdf3dnsAbYbFvg8');
+client.login(process.env.BOT_TOKEN);
 client.on('ready', () => {
     console.log("Bot Ready!");
     client.users.get('377934017548386307').send("Hello!");

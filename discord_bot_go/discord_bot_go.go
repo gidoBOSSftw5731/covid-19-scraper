@@ -92,61 +92,64 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	}
 
 	switch strings.Split(command, " ")[0] {
-	case "cases":
-		state := commandContents[len(commandContents)-1]
-		county := strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
-		country := "US" // change this if we support more than just good ol' 'murica
+		case "cases":
+			state := commandContents[len(commandContents)-1]
+			county := strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
+			log.Debug(state)
+			log.Debug(county)
+			country := "US" // change this if we support more than just good ol' 'murica
 
-		isAbbreviated, err := regexp.MatchString(".{2}", state)
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-		if isAbbreviated {
-			state = stateMap[strings.ToUpper(state)]
-		}
+			isAbbreviated, err := regexp.MatchString(".{2}", state)
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
+			if isAbbreviated {
+				state = stateMap[strings.ToUpper(state)]
+			}
 
-		queryURL := apiURL + "/currentinfo/" + country + "/" + state + "/" + county
+			queryURL := apiURL + "/currentinfo/" + country + "/" + state + "/" + county
 
-		location := county
-		if county == "" {
-			queryURL = queryURL[:len(queryURL)-1]
-			location = state
-		}
+			location := county
+			if county == "" {
+				queryURL = queryURL[:len(queryURL)-1]
+				location = state
+			}
 
-		log.Tracef("QueryURL: %v", queryURL)
+			log.Tracef("QueryURL: %v", queryURL)
 
-		resp, err := http.Get(queryURL)
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
+			resp, err := http.Get(queryURL)
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
 
-		defer resp.Body.Close()
+			defer resp.Body.Close()
 
-		buf := new(bytes.Buffer)
-		buf.ReadFrom(resp.Body)
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(resp.Body)
 
-		log.Tracef("Base64 data: %v", buf.String())
+			log.Tracef("Base64 data: %v", buf.String())
 
-		protoIn, err := base64.StdEncoding.DecodeString(buf.String())
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
+			protoIn, err := base64.StdEncoding.DecodeString(buf.String())
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
 
-		newAreaInfo := &pb.AreaInfo{}
+			newAreaInfo := &pb.AreaInfo{}
 
-		err = proto.Unmarshal(protoIn, newAreaInfo)
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
+			err = proto.Unmarshal(protoIn, newAreaInfo)
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
 
-		msgStr := fmt.Sprintf("The %v of %v has %v cases, %v deaths, has given %v tests, and has %v recoveries!",
-			strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
-			newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
-		discord.ChannelMessageSend(message.ChannelID, msgStr)
-
+			msgStr := fmt.Sprintf("The %v of %v has %v cases, %v deaths, has given %v tests, and has %v recoveries!",
+				strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
+				newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
+			discord.ChannelMessageSend(message.ChannelID, msgStr)
+		default:
+			fmt.Println("oof");
 	}
 }
