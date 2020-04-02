@@ -10,7 +10,7 @@ fs.readFile(apiproto, (err, data) => {
     var data = data.toString();
     console.log("err1 ", err);
 });
-
+// i hate github
 const httpAPI = "https://buttstuff.ops-netman.net"
 var state_convert = JSON.parse(fs.readFileSync('stateConversions.json', 'utf8'));
 const states = [
