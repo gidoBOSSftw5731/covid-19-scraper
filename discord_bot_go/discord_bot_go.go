@@ -49,7 +49,7 @@ func main() {
 	botID = user.ID
 	discord.AddHandler(commandHandler)
 	discord.AddHandler(func(discord *discordgo.Session, ready *discordgo.Ready) {
-		err = discord.UpdateStatus(2, "Go Away!")
+		err = discord.UpdateStatus(2, "alone, not by choice, but by law")
 		if err != nil {
 			log.Errorln("Error attempting to set my status")
 		}
