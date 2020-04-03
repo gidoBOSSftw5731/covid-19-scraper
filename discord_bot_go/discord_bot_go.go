@@ -13,6 +13,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
+	"github.com/gidoBOSSftw5731/covid-19-scraper/tools"
 	"github.com/gidoBOSSftw5731/log"
 	"google.golang.org/protobuf/proto"
 
@@ -25,6 +26,10 @@ var (
 	discordToken  string
 	apiURL        string
 	stateMap      map[string]string
+)
+
+const (
+	testing = false // please make this false on prod
 )
 
 func main() {
@@ -47,7 +52,12 @@ func main() {
 	errCheck("error retrieving account", err)
 
 	botID = user.ID
-	discord.AddHandler(commandHandler)
+	switch testing {
+	case false:
+		discord.AddHandler(commandHandler)
+	case true:
+		discord.AddHandler(testcommandHandler)
+	}
 	discord.AddHandler(func(discord *discordgo.Session, ready *discordgo.Ready) {
 		err = discord.UpdateStatus(2, "alone, not by choice, but by law")
 		if err != nil {
@@ -70,6 +80,30 @@ func errCheck(msg string, err error) {
 		log.Fatalf("%s: %+v", msg, err)
 	}
 
+}
+
+func testcommandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
+	user := message.Author
+	if user.ID == botID || user.Bot {
+		//Do nothing because the bot is talking
+		return
+	}
+
+	if !(message.Content[:len(commandPrefix)] == commandPrefix) {
+		return
+	}
+
+	command := strings.Split(message.Content, commandPrefix)[1]
+	commandContents := strings.Split(message.Content, " ") // 0 = !command, 1 = first arg, etc
+	if len(commandContents) < 2 {
+		log.Errorln("didnt supply enough args")
+		//discord.ChannelMessageSend(message.ChannelID, "Error in formatting!")
+		return
+	}
+
+	switch strings.Split(command, " ")[0] {
+
+	}
 }
 
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
@@ -147,6 +181,66 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 			strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
 			newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
 		discord.ChannelMessageSend(message.ChannelID, msgStr)
+	case "graph":
+		state := commandContents[len(commandContents)-1]
+		county := strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
+		country := "US" // change this if we support more than just good ol' 'murica
 
+		isAbbreviated, err := regexp.MatchString(".{2}", state)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+		if isAbbreviated {
+			state = stateMap[strings.ToUpper(state)]
+		}
+
+		queryURL := apiURL + "/stateinfo/" + country + "/" + state + "/" + county
+
+		location := county
+		if county == "" {
+			queryURL = queryURL[:len(queryURL)-1]
+			location = state
+		}
+
+		log.Tracef("QueryURL: %v", queryURL)
+
+		resp, err := http.Get(queryURL)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		defer resp.Body.Close()
+
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+
+		//log.Tracef("Base64 data: %v", buf.String())
+
+		protoIn, err := base64.StdEncoding.DecodeString(buf.String())
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		newHInfo := &pb.HistoricalInfo{}
+		err = proto.Unmarshal(protoIn, newHInfo)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		f, err := tools.ChartCases(newHInfo)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		_, err = discord.ChannelFileSend(message.ChannelID, location+".png", f)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
 	}
 }
