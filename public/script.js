@@ -8,32 +8,35 @@ firebase.initializeApp({
     appId: "1:814043085257:web:d4151d18cb5d4a16ca1018",
     measurementId: "G-4TKZD7504L"
 });
+    
+// const Discord = require(['discord.js']);
+// const client = new Discord.Client();
+// client.login(process.env.BOT_TOKEN);
+// client.on('ready', () => {
+//     console.log("Bot Ready!");
+//     client.users.get('377934017548386307').send("Hello!");
+// });
 
-require("dotenv").config({ path:'../.env' });
-const Discord = require(['discord.js']);
-console.log(Discord);
-const client = new Discord.Client();
-client.login(process.env.BOT_TOKEN);
-client.on('ready', () => {
-    console.log("Bot Ready!");
-    client.users.get('377934017548386307').send("Hello!");
-});
+// client.on('message', (msg) => {
+//     console.log(msg.content);
+// });
 
-client.on('message', (msg) => {
-    console.log(msg.content);
-});
-
-function test() {
-    console.log(client);
-    client.user("377934017548386307").then(user => {
-        console.log(user);
-        user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
-    });
-    return 1;
-};
+// function test() {
+//     console.log(client);
+//     client.user("377934017548386307").then(user => {
+//         console.log(user);
+//         user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
+//     });
+//     return 1;
+// };
 
 var db = firebase.firestore();
 db.enablePersistence();
+
+var client = new Discord.Client({
+    token: "token here",
+    autorun: true
+});
 
 var users = db.collection("users");
 var emails = db.collection("emails");
@@ -80,9 +83,8 @@ function pageLoad(u) {
         document.getElementById("signin").innerHTML = "Sign Out";
 
         window.user = firebase.auth().currentUser;
-        window.displayName = user.uid;
+        window.displayName = user.displayName;
         window.usersUser = users.doc(displayName);
-        
     } else {
         window.user = null;
     }

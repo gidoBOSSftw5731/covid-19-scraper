@@ -115,19 +115,32 @@ client.on("message", msg => {
                 }
             });
             break;
+        case "id":
+            msg.reply(id);
+            break;
         case "location":
             if (!args.length) {
                 return msg.reply("To use the location command, please follow the paradigm:\n" +
                     "```!location <state (abbreviation)> <county (optional)>```Note: At this moment, only the US is supported.");
             } else {
                 var o = "";
+                const len = args.length;
+                if (len == 3) {
+                    var state = args[2];
+                    var countyParts = args.slice(0, 2).toString();
+                    var county = countyParts.replace(",", " ");
+                } else {
+                    var state = args[1];
+                    var county = args[0];
+                }
+                
                 for (i = 0; i < args.length; i++) {
                     if (i == 0) {
-                        let updateState = db.collection('users').doc(msg.author.id).update({ state: args[0] });
-                        o += "State: " + args[0];
+                        let updateState = db.collection('users').doc(msg.author.id).update({ state: state });
+                        o += "State: " + state;
                     } else if (i == 1) {
-                        let updateCounty = db.collection('users').doc(msg.author.id).update({ county: args[1] });
-                        o += ", County: " + args[1];
+                        let updateCounty = db.collection('users').doc(msg.author.id).update({ county: county });
+                        o += ", County: " + county;
                     }
                 }
                 msg.reply(`Location added!\n${o}`);
@@ -198,10 +211,12 @@ client.on("message", msg => {
                 .setThumbnail("https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg")
                 .setURL("https://covidbot19.web.app")
                 .addField("Commands",
-                        "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
-                        "!location <state (abbreviation)> <county (optional)> - saves your location in case you want to see local data later.\n\n" +
+                    "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
+                        "!id (No args) - retrieves your Discord ID unique to your account; useful on our website to connect/sign in to a Discord account.\n\n" +
+                        "!location <county> <state (abbreviation)> - saves your location in case you want to see local data later.\n\n" +
                         "!subscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
-                        "!unsubscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: does not delete your\n\n" +
+                        "!unsubscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: this command is not for" +
+                        "specific data, it only subscribes to the level of data regardless of location. For specific location updates, use !location\n\n" +
                         "!cases <level (county, state, country)> <chart (optional)> - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n\n"
                 )
                 .setFooter('Data Source: Arcgis');

@@ -183,13 +183,20 @@ function discordTokenGenerate(use) {
         var method = "authenticate with Discord";
     }
 
-    client.login(process.env.BOT_TOKEN);
-    client.fetchUser(id, false).then(user => {
-        user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
+    client.sendMessage({
+        to: id,
+        message: "Use this token: " + token + " to " + method + " on https://covidbot19.web.app !"
     });
+
+    display(use + 'discordID');
+    display(use + 'discordTokenGenerate');
 
     display(use + 'discordToken');
     display(use + 'discordTokenSubmit');
+
+    display('auth1');
+    display('auth2');
+
 
     document.getElementById(use + 'discordTokenSubmit').addEventListener('click', function () {
         discordTokenVerify(use, token);
@@ -199,7 +206,7 @@ function discordTokenGenerate(use) {
 
 // Disord Token Verification
 function discordTokenVerify(use, token) {
-    var userToken = document.getElementById(use + 'discordUserToken').value;
+    var userToken = document.getElementById(use + 'discordToken').value;
 
     if (!userToken) {
         return alert('Please enter the token!');
@@ -207,10 +214,17 @@ function discordTokenVerify(use, token) {
         if (use == "C") {
             discordConnect();
         } else {
-            discordAuth();
+            display(use + 'discordToken');
+            display(use + 'discordTokenSubmit');
+
+            display('Aemail');
+            display('AemailSubmit');
+
+            display('auth2');
+            display('auth3');
         }
     } else {
-        return alert('Invalid token!');
+        return alert('Invalid token! Please note that tokens reset each time you enter your Discord ID!');
     }
 };
 // Discord Token Verification End
@@ -218,17 +232,61 @@ function discordTokenVerify(use, token) {
 // Discord Auth
 function discordAuth() {
     var dID = document.getElementById('AdiscordID').value;
+    var email = document.getElementById('Aemail').value;
 
-    if (dID) {
-        users.doc(dAuthToken).set({
-            id: dAuthToken
-        }).then(function () {
-            console.log("Document successfully written!");
+    if (dID && email) {
+        users.doc(dID).get().then(function (doc) {
+            if (doc.exists && doc.data().email == email) {
+                firebase.auth().signInWithEmailAndPassword(email, dID).then(function () {
+                    console.log("Success!");
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            } else {
+                firebase.auth().createUserWithEmailAndPassword(email, dID).then(function () {
+                    firebase.auth().signInWithEmailAndPassword(email, dID).catch(function (error) {
+                        console.log("Error occurred signing in: ", error);
+                    });
+
+                    firebase.auth().onAuthStateChanged(function (user) {
+                        users.doc(dID).set({
+                            email: email,
+                            id: dID
+                        }, { merge: true }).then(function () {
+                            console.log("Document successfully written!");
+                        }).catch(function (error) {
+                            console.error("Error writing document: ", error);
+                        });
+
+                        user.updateProfile({
+                            displayName: dID
+                        }).then(function () {
+                            console.log(user.displayName);
+                        }).catch(function (error) {
+                            console.log(error);
+                            console.log(user.displayName);
+                        });
+                    });
+                }).catch(function (err) {
+                    console.log("Error occurred creating user: ", err);
+                });
+            }
             display('discordAuth');
             pageLoad(true);
-        }).catch(function (error) {
-            console.error("Error writing document: ", error);
+        }).catch(function (err) {
+            console.log("Error occurred getting user doc: ", err);
         });
+    } else {
+        if (email) {
+            alert("Error occurred, please retry the authentication process.");
+            console.log("Error occurred, ID somehow disappeared?");
+        } else if (dID) {
+            alert("Please enter an email!");
+            console.log("Error occurred, no email entered.");
+        } else {
+            alert("Impossible error. If you are seeing this, go email the NSA to apply for a job.");
+            console.log("Impossible error.");
+        }
     }
 };
 // Discord Auth End
@@ -236,22 +294,29 @@ function discordAuth() {
 // Connect Discord
 function discordConnect() {
     if (user) {
-        var dID = document.getElementById('AdiscordID').value;
+        var dID = document.getElementById('CdiscordID').value;
         var discordUserDoc = users.doc(dID);
         var siteUserDoc = users.doc(displayName);
 
         discordUserDoc.get().then(function (doc) {
             if (!doc.exists) {
                 if (confirm("You don't have an account registered with us on Discord yet! Would you like to register now?")) {
-                    var discordUserData = doc.data();
                     siteUserDoc.get().then(function (doc) {
-                        doc.set(discordUserData, { merge: true });
+                        doc.set({
+                            id: dID
+                        }, { merge: true });
                     });
+                } else {
+                    alert("Please create an account on Discord using !signup and then come back to retry the connect process!");
                 }
             } else {
                 var discordUserData = doc.data();
+                if (discordUserData.email != user.email && discordUserData.email) {
+
+                }
                 siteUserDoc.get().then(function (doc) {
                     doc.set(discordUserData, { merge: true });
+                    discordUserDoc.delete();
                 }).then(function () {
                     alert('Successfully merged your accounts! You should receive a DM on Discord confirming this. If not, please contact a developer.');
                     display('discordConnect');
