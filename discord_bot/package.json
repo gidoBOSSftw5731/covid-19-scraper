@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "bufferutil": "^4.0.1",
+    "discord.io": "^2.5.3",
     "discord.js": "^11.5.1",
     "dotenv": "^8.2.0",
     "firebase": "^7.13.1",

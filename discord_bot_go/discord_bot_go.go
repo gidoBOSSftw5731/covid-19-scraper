@@ -126,6 +126,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	}
 
 	switch strings.Split(command, " ")[0] {
+<<<<<<< HEAD
 	case "cases":
 		state := commandContents[len(commandContents)-1]
 		county := strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
@@ -242,5 +243,62 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 			log.Errorln(err)
 			return
 		}
+=======
+		case "cases":
+			state := commandContents[len(commandContents)-1]
+			county := strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
+			country := "US" // change this if we support more than just good ol' 'murica
+
+			isAbbreviated, err := regexp.MatchString(".{2}", state)
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
+			if isAbbreviated {
+				state = stateMap[strings.ToUpper(state)]
+			}
+
+			queryURL := apiURL + "/currentinfo/" + country + "/" + state + "/" + county
+
+			location := county
+			if county == "" {
+				queryURL = queryURL[:len(queryURL)-1]
+				location = state
+			}
+
+			log.Tracef("QueryURL: %v", queryURL)
+
+			resp, err := http.Get(queryURL)
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
+
+			defer resp.Body.Close()
+
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(resp.Body)
+
+			log.Tracef("Base64 data: %v", buf.String())
+
+			protoIn, err := base64.StdEncoding.DecodeString(buf.String())
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
+
+			newAreaInfo := &pb.AreaInfo{}
+
+			err = proto.Unmarshal(protoIn, newAreaInfo)
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
+
+			msgStr := fmt.Sprintf("The %v of %v has %v cases, %v deaths, has given %v tests, and has %v recoveries!",
+				strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
+				newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
+			discord.ChannelMessageSend(message.ChannelID, msgStr)
+>>>>>>> 70a768045fbd881137b78ec9f985ff9627debdeb
 	}
 }

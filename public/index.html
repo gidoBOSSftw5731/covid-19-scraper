@@ -15,9 +15,8 @@
 
     <script src="https://www.gstatic.com/firebasejs/7.13.1/firebase.js"></script>
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-    <!-- <script src="https://greasyfork.org/scripts/29088-discord-js-for-browser/code/Discordjs%20for%20Browser.js?version=208579"></script> -->
     <script type="text/javascript" src="discord.11.5.1.min.js"></script>
-    <!-- <script src="bundle.js"></script> -->
+    <script src="discord.io.js"></script>
     <script src="script.js"></script>
     <script src="auth.js"></script>
   </head>
@@ -215,17 +214,24 @@
             class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
             <div class="mdl-card__supporting-text mdl-color-text--grey-600">
     
-              <p>Enter your Discord ID here (can be found by running the command !signup to the bot).
-                Once submitted, you should receive a DM with a unique token to verify that the account is yours.</p>
+              <p id="auth1">Enter your Discord ID here (can be found by running the command !id on the bot).</p>
+              <p id="auth2" style="display: none;">Now, you should receive a DM with a unique token to verify that the account is yours.</p>
+              <p id="auth3" style="display: none;">Looks like it's your first time using Discord Auth on our site! Welcome! Please enter an email to use. 
+              This email must be different from ones you use in Email Auth and Google Auth. If you'd like to merge an email 
+              from one of those methods to a Discord Auth, please sign in to those accounts and head over to the Account>Connect Accounts page! (WIP)
+              </p>
     
               <input class="mdl-textfield__input" style="display:block;" type="text" id="AdiscordID" name="AdiscordID"
                 placeholder="Discord ID" />
               <input class="mdl-textfield__input" style="display:none;" type="text" id="AdiscordToken" name="AdiscordToken"
                 placeholder="Discord Token" />
+                <input class="mdl-textfield__input" style="display:none;" type="text" id="Aemail" name="Aemail"
+                  placeholder="Email" />
               <br /> <br />
               &nbsp;&nbsp;&nbsp;
-              <button class="mdl-button mdl-js-button mdl-button--raised" name="dAuthSubmit"
-                onclick="discordTokenGenerate('A')">Submit</button>
+              <button class="mdl-button mdl-js-button mdl-button--raised" id="AdiscordTokenGenerate" name="dAuthIDSubmit" onclick="discordTokenGenerate('A')">Submit</button>
+              <button class="mdl-button mdl-js-button mdl-button--raised" style="display: none;" id="AdiscordTokenSubmit" name="dAuthTokenSubmit">Submit</button>
+              <button class="mdl-button mdl-js-button mdl-button--raised" style="display: none;" id="AemailSubmit" name="dAuthEmailSubmit" onclick="discordAuth()">Submit</button>
               &nbsp;&nbsp;&nbsp;
               <button class="mdl-button mdl-js-button mdl-button--raised" name="dAuthSignIn" onclick="display('discordAuth'); signIn()">Return
                 to Sign In</button>
