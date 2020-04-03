@@ -8,33 +8,18 @@ firebase.initializeApp({
     appId: "1:814043085257:web:d4151d18cb5d4a16ca1018",
     measurementId: "G-4TKZD7504L"
 });
-    
-// const Discord = require(['discord.js']);
-// const client = new Discord.Client();
-// client.login(process.env.BOT_TOKEN);
-// client.on('ready', () => {
-//     console.log("Bot Ready!");
-//     client.users.get('377934017548386307').send("Hello!");
-// });
-
-// client.on('message', (msg) => {
-//     console.log(msg.content);
-// });
-
-// function test() {
-//     console.log(client);
-//     client.user("377934017548386307").then(user => {
-//         console.log(user);
-//         user.send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
-//     });
-//     return 1;
-// };
 
 var db = firebase.firestore();
 db.enablePersistence();
 
+var botToken = function () {
+    db.collection('env').doc('env').get().then(function (doc) {
+        return doc.data().token;
+    })
+}
+
 var client = new Discord.Client({
-    token: "token here",
+    token: botToken(),
     autorun: true
 });
 
