@@ -15,8 +15,8 @@ import (
 	"github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/goconf"
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
 	"github.com/gidoBOSSftw5731/log"
-	"github.com/golang/protobuf/proto"
 	"github.com/jinzhu/configor"
+	"google.golang.org/protobuf/proto"
 )
 
 type newFCGI struct{}
@@ -83,7 +83,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			//log.Traceln(data)
+			log.Traceln(data)
 			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
 		} else if len(urlSplit) == 5 {
 			data, err := countyData(urlSplit[2], urlSplit[3], urlSplit[4])
@@ -230,14 +230,17 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 		unique := true
 		for i, j := range infoMap {
-			if inTimeSpan(i.Add(30*time.Second), i.Add(-30*time.Second), insertTime) {
+			if i == insertTime {
 				unique = false
+				//foo := j
 				j.Deaths += info.Deaths
 				j.Recoveries += info.Recoveries
 				j.ConfirmedCases += info.ConfirmedCases
 				j.TestsGiven += info.TestsGiven
 				j.ConfirmedCases += info.ConfirmedCases
 				// once incident rate is defined in ARCGIS, I'll figure out how to handle it
+				//log.Traceln(info.ConfirmedCases)
+				//fmt.Printf("Old %v\n New %v\n", foo, j)
 				break
 			}
 		}
@@ -246,10 +249,15 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 		}
 	}
 
+	log.Tracef("%v elements", len(infoMap))
+
 	for _, i := range infoMap {
 		i.Type = pb.AreaInfo_STATE
 		hInfo.Info = append(hInfo.Info, &i)
+		log.Traceln(i.ConfirmedCases)
 	}
+
+	log.Traceln(infoMap)
 	return hInfo, nil
 
 }
@@ -379,10 +387,6 @@ func ErrorHandler(resp http.ResponseWriter, req *http.Request, status int, alert
 	log.Errorf("HTTP error: %v, witty message: %v", status, alert)
 	fmt.Fprintf(resp, "You have found an error! This error is of type %v. Built in alert: \n'%v',\n Would you like a <a href='https://http.cat/%v'>cat</a> or a <a href='https://httpstatusdogs.com/%v'>dog?</a>",
 		status, alert, status, status)
-}
-
-func inTimeSpan(start, end, check time.Time) bool {
-	return check.After(start) && check.Before(end)
 }
 
 func listStates(country string) (pb.ListOfStates, error) {
