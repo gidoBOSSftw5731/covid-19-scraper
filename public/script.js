@@ -18,7 +18,7 @@ db.collection('env').doc('env').get().then(function (doc) {
     client.on('ready', function () {
         console.log('Discord Bot is ready for use!');
         client.channels.get('695838084687986738').send("!cases VA");
-    });    }).then(function (token) {
+    });
 }).catch(function (err) {
     console.log(err);
 });
