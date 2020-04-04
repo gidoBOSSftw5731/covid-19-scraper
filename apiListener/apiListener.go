@@ -237,7 +237,6 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 				j.Recoveries += info.Recoveries
 				j.ConfirmedCases += info.ConfirmedCases
 				j.TestsGiven += info.TestsGiven
-				j.ConfirmedCases += info.ConfirmedCases
 				// once incident rate is defined in ARCGIS, I'll figure out how to handle it
 				//log.Traceln(info.ConfirmedCases)
 				//fmt.Printf("Old %v\n New %v\n", foo, j)

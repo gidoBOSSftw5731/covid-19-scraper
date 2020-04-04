@@ -146,6 +146,10 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 			queryURL = queryURL[:len(queryURL)-1]
 			location = state
 		}
+		if state == "" {
+			queryURL = queryURL[:len(queryURL)-1]
+			location = country
+		}
 
 		log.Tracef("QueryURL: %v", queryURL)
 
@@ -200,6 +204,10 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		if county == "" {
 			queryURL = queryURL[:len(queryURL)-1]
 			location = state
+		}
+		if state == "" {
+			queryURL = queryURL[:len(queryURL)-1]
+			location = country
 		}
 
 		log.Tracef("QueryURL: %v", queryURL)
