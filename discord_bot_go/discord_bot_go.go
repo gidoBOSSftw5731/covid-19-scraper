@@ -107,7 +107,7 @@ func testcommandHandler(discord *discordgo.Session, message *discordgo.MessageCr
 
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	user := message.Author
-	if user.ID == botID || user.Bot {
+	if user.ID == botID {
 		//Do nothing because the bot is talking
 		return
 	}
