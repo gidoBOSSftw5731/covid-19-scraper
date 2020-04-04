@@ -26,19 +26,18 @@ let db = admin.firestore();
 // Firebase End
 
 // Discord
-client.login(process.env.BOT_TOKEN).catch(err => {
+client.login("NjkyMTE3MjA2MTA4MjA5MjUz.Xof0yA.4mDsbB0hhGBhHeRHYKdpjoyWiIE").catch(err => {
     console.log("err3 ", err);
 });
 
 client.on("ready", () => {
-    console.log(`Client user tag: ${client.user.tag}!`);
+    console.log(`Client user tag: ${client.user.id}!`);
     client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
 })
 
 // client.users.fetch('377934017548386307');
 
 client.on("message", msg => {
-    //easter eggs
     if (msg.content == "so how was your day") {
         msg.reply("eh, not bad, u?");
     }
@@ -46,7 +45,7 @@ client.on("message", msg => {
         msg.reply('nothing much, just beating up some bitches');
     }
     
-    if (!msg.content.startsWith("!") || msg.author.bot) return;
+    if (!msg.content.startsWith("!")) return;
 
     const args = msg.content.slice(1).split(' ');
     const command = args.shift().toLowerCase();
