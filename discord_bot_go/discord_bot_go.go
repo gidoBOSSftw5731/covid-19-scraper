@@ -131,7 +131,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		var state string
 		var county string
 
-		if len(commandContents) > 2 {
+		if len(commandContents) >= 2 {
 			state = commandContents[len(commandContents)-1]
 			county = strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
 
@@ -196,7 +196,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		var state string
 		var county string
 
-		if len(commandContents) > 2 {
+		if len(commandContents) >= 2 {
 			state = commandContents[len(commandContents)-1]
 			county = strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
 
