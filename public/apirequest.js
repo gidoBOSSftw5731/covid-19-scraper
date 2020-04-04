@@ -1,53 +1,58 @@
-const protobuf = require(["protobuf"]);
-const request = require(['request']);
-const fs = require(['fs'], function (fs) {
-    fs.readFile(apiproto, (err, data) => {
-        var data = data.toString();
-        console.log(data);
-        console.log("err1 ", err);
-    });
-});
+// const protobuf = require(["https://github.com/protobufjs/protobuf.js/blob/master/dist/minimal/protobuf.min.js"]);
+// var urllib = require(['https://github.com/node-modules/urllib/blob/master/lib/urllib.js'], function (urllib) {
+    // console.log(urllib);
+// });
+// const request = require(['https://github.com/request/request/blob/master/request.js']);
 
-var county = "Forsyth";
-var state = "GA";
-var country = "US" // someone will fix this later
+// var fs = require(['fs']);
+// fs.writeFile('/test.txt', 'Cool, I can do this in the browser!', function (err) {
+//     fs.readFile('/test.txt', function (err, contents) {
+//         console.log(contents.toString());
+//     });
+// });
 
-const httpAPI = "https://buttstuff.ops-netman.net";
-const apiproto = 'https://github.com/gidoBOSSftw5731/covid-19-scraper/blob/master/apiListener/proto/api.proto';
 
-async function doRequestWrap(url) {
-    return await doRequest(url);
-}
+// const apiproto = 'https://github.com/gidoBOSSftw5731/covid-19-scraper/blob/master/apiListener/proto/api.proto';
+// const httpAPI = "https://buttstuff.ops-netman.net";
+// const url = "https://buttstuff.ops-netman.net/stateinfo/US/Virginia/Fairfax";
 
-function doRequest(url) {
-    return new Promise(function (resolve, reject) {
-        request(url, function (error, res, body) {
-            if (!error && res.statusCode == 200) {
-                resolve(body);
-            } else {
-                reject(error);
-            }
-        });
-    });
-};
+// var county = "Forsyth";
+// var state = "GA";
+// var country = "US" // someone will fix this later
 
-if (county == "") {
-    ext = "/" + country + "/" + state;
-} else {
-    ext = "/currentinfo/" + country + "/" + state + "/" + county;
-}
+// async function doRequestWrap(url) {
+//     return await doRequest(url);
+// }
 
-doRequestWrap(httpAPI + ext).then(function (text) {
-    console.log(text);
+// function doRequest(url) {
+//     return new Promise(function (resolve, reject) {
+//         urllib.request(url, function (error, body, res) {
+//             if (!error && res.statusCode == 200) {
+//                 resolve(body);
+//             } else {
+//                 reject(error);
+//             }
+//         });
+//     });
+// };
 
-    buf = [];
-    for (var i = 0; i < Buffer.from(text.toString(), 'base64').length; i++) {
-        buf.push(Buffer.from(text.toString(), 'base64')[i]);
-    }
+// if (county == "") {
+//     ext = "/" + country + "/" + state;
+// } else {
+//     ext = "/currentinfo/" + country + "/" + state + "/" + county;
+// }
 
-    result = AreaInfo.decode(buf);
-    var confirmed = result.ConfirmedCases;
-    var deaths = result.Deaths;
-    var update = new Date(result.UnixTimeOfRequest).toISOString();
-    msg.reply('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + county + ' as of ' + update);
-})
+// doRequestWrap(httpAPI + ext).then(function (text) {
+//     console.log(text);
+
+//     buf = [];
+//     for (var i = 0; i < Buffer.from(text.toString(), 'base64').length; i++) {
+//         buf.push(Buffer.from(text.toString(), 'base64')[i]);
+//     }
+
+//     result = AreaInfo.decode(buf);
+//     var confirmed = result.ConfirmedCases;
+//     var deaths = result.Deaths;
+//     var update = new Date(result.UnixTimeOfRequest).toISOString();
+//     console.log('Confirmed: ' + confirmed + ', Deaths: ' + deaths + ' in ' + county + ' as of ' + update);
+// })

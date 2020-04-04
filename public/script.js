@@ -26,19 +26,19 @@ var client = new Discord.Client({
 var users = db.collection("users");
 var emails = db.collection("emails");
 
-var messaging = firebase.messaging();
-messaging.requestPermission().then(function () {
-    console.log('Permission granted');
-    return messaging.getToken();
-}).then(function (token) {
-    console.log(token);
-}).catch(function (err) {
-    console.log('Error occurred');
-});
+// var messaging = firebase.messaging();
+// messaging.requestPermission().then(function () {
+//     console.log('Permission granted');
+//     return messaging.getToken();
+// }).then(function (token) {
+//     console.log(token);
+// }).catch(function (err) {
+//     console.log('Error occurred');
+// });
 
-messaging.onMessage(function (payload) {
-    console.log('onMessage: ', payload);
-});
+// messaging.onMessage(function (payload) {
+//     console.log('onMessage: ', payload);
+// });
 
 document.addEventListener('keydown', function (event) {
     const key = event.key;
