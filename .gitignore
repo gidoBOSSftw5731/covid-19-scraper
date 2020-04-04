@@ -11,3 +11,4 @@ apiListener/apiListener
 functions/.eslintrc.json
 firebase-debug.log
 /functions/compilerjs.txt
+discord_bot_go.exe

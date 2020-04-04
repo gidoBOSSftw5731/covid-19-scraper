@@ -12,13 +12,15 @@ firebase.initializeApp({
 var db = firebase.firestore();
 db.enablePersistence();
 
-// var client = new Discord.Client();
-// client.login('Njk1ODMwMTI0NDAyMzExMTgw.Xof-dg.xhjQzy09u8w7Vv-4z9AvZBzS8YU');
-// client.on('ready', function () {
-//     console.log('Discord Bot is ready for use!');
-//     console.log(client.users);
-//     client.channels.get('695838084687986738').send("!cases VA");
-// });
+db.collection('env').doc('env').get().then(function (doc) {
+    window.client = new Discord.Client();
+    client.login(doc.data().token);
+    client.on('ready', function () {
+        console.log('Discord Bot is ready for use!');
+    });
+}).catch(function (err) {
+    console.log(err);
+});
 
 var users = db.collection("users");
 var emails = db.collection("emails");
