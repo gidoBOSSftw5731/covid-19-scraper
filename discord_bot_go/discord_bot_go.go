@@ -192,17 +192,23 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 			newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
 		discord.ChannelMessageSend(message.ChannelID, msgStr)
 	case "graph":
-		state := commandContents[len(commandContents)-1]
-		county := strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
 		country := "US" // change this if we support more than just good ol' 'murica
+		var state string
+		var county string
 
-		isAbbreviated, err := regexp.MatchString(".{2}", state)
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-		if isAbbreviated {
-			state = stateMap[strings.ToUpper(state)]
+		if len(commandContents) > 2 {
+			state = commandContents[len(commandContents)-1]
+			county = strings.Title(strings.Join(commandContents[1:len(commandContents)-1], " "))
+
+			isAbbreviated, err := regexp.MatchString(".{2}", state)
+			if err != nil {
+				log.Errorln(err)
+				return
+			}
+
+			if isAbbreviated {
+				state = stateMap[strings.ToUpper(state)]
+			}
 		}
 
 		queryURL := apiURL + "/stateinfo/" + country + "/" + state + "/" + county
