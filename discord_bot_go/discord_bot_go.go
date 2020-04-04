@@ -118,11 +118,12 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 
 	command := strings.Split(message.Content, commandPrefix)[1]
 	commandContents := strings.Split(message.Content, " ") // 0 = !command, 1 = first arg, etc
+	/* remember to check for this later
 	if len(commandContents) < 2 {
 		log.Errorln("didnt supply enough args")
 		//discord.ChannelMessageSend(message.ChannelID, "Error in formatting!")
 		return
-	}
+	}*/
 
 	switch strings.Split(command, " ")[0] {
 	case "cases":
