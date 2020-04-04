@@ -35,7 +35,6 @@ client.on("ready", () => {
     client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
 })
 
-// client.users.fetch('377934017548386307');
 
 client.on("message", msg => {
     if (msg.content == "so how was your day") {
@@ -45,7 +44,7 @@ client.on("message", msg => {
         msg.reply('nothing much, just beating up some bitches');
     }
     
-    if (!msg.content.startsWith("!")) return;
+    if (!msg.content.startsWith("!") || msg.author.id == client.user.id) return;
 
     const args = msg.content.slice(1).split(' ');
     const command = args.shift().toLowerCase();
