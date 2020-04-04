@@ -13,16 +13,14 @@ var db = firebase.firestore();
 db.enablePersistence();
 
 db.collection('env').doc('env').get().then(function (doc) {
-    var client = new Discord.Client();
+    window.client = new Discord.Client();
     client.login(doc.data().token);
     client.on('ready', function () {
         console.log('Discord Bot is ready for use!');
-        client.channels.get('695838084687986738').send("!cases VA");
     });
 }).catch(function (err) {
     console.log(err);
 });
-
 
 var users = db.collection("users");
 var emails = db.collection("emails");
