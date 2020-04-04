@@ -26,7 +26,7 @@ let db = admin.firestore();
 // Firebase End
 
 // Discord
-client.login("NjkyMTE3MjA2MTA4MjA5MjUz.Xof0yA.4mDsbB0hhGBhHeRHYKdpjoyWiIE").catch(err => {
+client.login(process.env.BOT_TOKEN).catch(err => {
     console.log("err3 ", err);
 });
 
