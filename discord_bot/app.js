@@ -1,53 +1,6 @@
 require("dotenv").config({ path: '../.env' });
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
-var fs = require('fs');
-const request = require('request');
-
-var proto = require("protobufjs");
-
-// API Proto
-var apiproto = '../apiListener/proto/api.proto';
-fs.readFile(apiproto, (err, data) => {
-    var data = data.toString();
-    console.log("err1 ", err);
-});
-// i hate github
-const httpAPI = "https://buttstuff.ops-netman.net"
-var state_convert = JSON.parse(fs.readFileSync('stateConversions.json', 'utf8'));
-const states = [
-    'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
-    'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
-    'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
-    'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
-    'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
-];
-
-const get_data = async url => {
-    let res = request(url, { json: true })
-    console.log("Body: " + res.body)
-
-    // callback(res)
-
-    return res.body
-};
-
-async function doRequestWrap(url) {
-    return await doRequest(url)
-}
-
-function doRequest(url) {
-    return new Promise(function (resolve, reject) {
-        request(url, function (error, res, body) {
-            if (!error && res.statusCode == 200) {
-                resolve(body);
-            } else {
-                reject(error);
-            }
-        });
-    });
-};
-// API Proto End
 
 // Firebase
 var firebase = require("firebase");

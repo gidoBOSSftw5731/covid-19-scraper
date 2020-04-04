@@ -2,7 +2,7 @@
   "name": "covid-19-scraper",
   "version": "1.0.0",
   "description": "covid-19 arcgis in golang",
-  "main": "index.js",
+  "main": "./discord_bot/app.js",
   "dependencies": {
     "chart.js": "^2.9.3",
     "discord.js": "^12.1.1",
@@ -20,7 +20,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./discord_bot/app.js"
   },
   "repository": {
     "type": "git",
