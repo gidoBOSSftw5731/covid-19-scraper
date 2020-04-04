@@ -12,12 +12,18 @@ firebase.initializeApp({
 var db = firebase.firestore();
 db.enablePersistence();
 
+function tokenRetrieve() {
+    db.collection('env').doc('env').get().then(function (doc) {
+        return doc.data().token;
+    })
+};
+
 var client = new Discord.Client();
-client.login('Njk1ODMwMTI0NDAyMzExMTgw.XoiaWA.AMDH0-EVM7AO-E4z8UBaw-kNK_M');
+client.login(tokenRetrieve());
 client.on('ready', function () {
     console.log('Discord Bot is ready for use!');
     console.log(client.users);
-    client.channels.get('695838084687986738').send("!cases VA");
+    client.channels.get('695838084687986738').send("!id");
 });
 
 var users = db.collection("users");
