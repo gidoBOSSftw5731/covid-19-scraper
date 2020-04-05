@@ -5,4 +5,5 @@ async function setCache({ state = null, county = null, data = null } = {}) {
     } else if (state && data) {
         localStorage.setItem(state, data);
     }
+    return console.log("data saved to cache for later retrieval");
 }

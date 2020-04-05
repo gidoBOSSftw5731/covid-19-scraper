@@ -25,6 +25,8 @@ db.collection('env').doc('env').get().then(function (doc) {
                 console.log(matches);
                 var cases = matches[0];
                 var deaths = matches[1];
+
+                localStorage.setItem("US", matches);
                 document.getElementById('USCases').innerHTML = "Cases: " + cases;
                 document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
                 return;

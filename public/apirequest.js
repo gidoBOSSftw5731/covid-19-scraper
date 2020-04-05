@@ -58,8 +58,9 @@ function cases() {
             var cases = matches[0];
             var deaths = matches[1];
 
-            setCache({ state: inputState, county: inputCounty, data: matches });
-          
+            localStorage.setItem(location, matches);
+            console.log("data saved to cache for later retrieval");
+
             // var data = msg.content.replace(token + " ", "");
             document.getElementById('location').innerHTML = location;
             document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
