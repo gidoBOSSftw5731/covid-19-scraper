@@ -268,9 +268,18 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		var state string
 		var county string
 
-		if len(commandContents) >= 2 {
-			state = commandContents[len(commandContents)-2]
-			county = strings.Title(strings.Join(commandContents[1:len(commandContents)-2], " "))
+		sre := regexp.MustCompile(`:{5}[\w(\w )]+:{5}`)
+		cre := regexp.MustCompile(`;{5}[\w(\w )]+;{5}`)
+		if len(commandContents) > 1 {
+			state = sre.FindString(command)
+			county = strings.Title(cre.FindString(command))
+
+			state = state[5 : len(state)-5]
+			if county != "" {
+				county = county[5 : len(county)-5]
+			}
+
+			log.Traceln(state, county)
 
 			isAbbreviated, err := regexp.MatchString(".{2}", state)
 			if err != nil {
@@ -286,16 +295,17 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		id := commandContents[len(commandContents)-1]
 
 		queryURL := apiURL + "/currentinfo/" + country + "/" + state + "/" + county
+		log.Traceln(state)
 
 		location := county
 		if county == "" {
 			queryURL = queryURL[:len(queryURL)-1]
 			location = state
 		}
-		if state == "" {
-			queryURL = queryURL[:len(queryURL)-1]
-			location = country
-		}
+		//if state == "" {
+		//	queryURL = queryURL[:len(queryURL)-1]
+		//	location = country
+		//}
 
 		log.Tracef("QueryURL: %v", queryURL)
 

@@ -25,6 +25,23 @@ db.collection('env').doc('env').get().then(function (doc) {
 var users = db.collection("users");
 var emails = db.collection("emails");
 
+window.onload = function () {
+    var date = new Date();
+    var hours = date.getHours() - 12;
+    var minutes = date.getMinutes();
+    document.getElementById("popupTime").innerHTML = hours.toString() + ":" + minutes.toString();
+    $('.toast').toast('show');
+
+    setInterval(function () {
+        var date = new Date();
+        var hours = date.getHours() - 12;
+        var minutes = date.getMinutes();
+        document.getElementById("popupTime").innerHTML = hours + ":" + minutes;
+        $('.toast').toast('show');
+    }, 50000);
+};
+
+
 // var messaging = firebase.messaging();
 // messaging.requestPermission().then(function () {
 //     console.log('Permission granted');

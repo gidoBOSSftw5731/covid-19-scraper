@@ -14,22 +14,24 @@ function cases() {
     var county = countyInput.value;
 
     if (!requestAllowed && window.state == state && window.county == countyInput.value) {
-        console.log("no, ", );
+        console.log("no");
         return;
     }
 
+    var token = Math.floor(100000 + Math.random() * 999999);
     if (county != "") {
-        client.channels.get('695838084687986738').send("!cases " + county + " " + state);
+        client.channels.get('695838084687986738').send("!botcases ;;;;;" + county + ";;;;; :::::" + state + "::::: " + token);
     } else {
-        client.channels.get('695838084687986738').send("!cases " + state);
+        client.channels.get('695838084687986738').send("!botcases :::::" + state + "::::: " + token);
     }
 
     client.on('message', function (msg) {
-        if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738") {
+        if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738" && msg.content.includes(token)) {
             var matches = msg.content.match(/\d+/g);
+            var data = msg.content.replace(token + " ", "");
             blockRequest(state, county);
             setTimeout(allowRequest, 6000);
-            document.getElementById('dataResult').innerHTML = msg.content;
+            document.getElementById('dataResult').innerHTML = data;
             return;
         }
     })
