@@ -28,14 +28,13 @@ function loadInStates() {
 async function doRequestWrap(url) {
     return await doRequest(url)
 }
+
 function doRequest(url) {
-    return new Promise(function (resolve, reject) {
-        request(url, function (error, res, body) {
-            if (!error && res.statusCode == 200) {
-                resolve(body);
-            } else {
-                reject(error);
-            }
-        });
+    return new Request(url, function (error, res, body) {
+        if (!error && res.statusCode == 200) {
+            resolve(body);
+        } else {
+            reject(error);
+        }
     });
 };
