@@ -71,33 +71,48 @@ function cases() {
 };
 
 function countryCases() {
-    if (!canCountry) {
-        console.log('country request blocked (timeout)');
-        var savedData = localStorage.getItem('US');
-        console.log("localStorage");
+    var savedData = localStorage.getItem('US');
+
+    if (savedData) {
+        var date = new Date();
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var timestampNow = hours + (minutes / 100);
 
         var matches = savedData.match(/\d+/g);
-        var cases = matches[0];
-        var deaths = matches[1];
-        document.getElementById('USCases').innerHTML = "Cases: " + cases;
-        document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
-        return;
+        var age = matches[4] - timestampNow;
+        if (age < 0.10) {
+            console.log("country localStorage");
+
+            var cases = matches[0];
+            var deaths = matches[1];
+            document.getElementById('USCases').innerHTML = "Cases: " + cases;
+            document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
+            return;
+        } else {
+            console.log('country localStorage found but too old, ', age);
+        }
     }
 
     client.channels.get('695838084687986738').send("!cases");
 
     client.on('message', function (msg) {
         if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738" && msg.content.includes('The country of US')) {
-            window.canCountry = false;
-            setTimeout(function () {
-                window.canCountry = true;
-            }, 600000);
+            console.log("country bot");
 
             var matches = msg.content.match(/\d+/g);
             var cases = matches[0];
             var deaths = matches[1];
 
+            var date = new Date();
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var timestamp = hours + (minutes/100);
+            matches.push(timestamp);
+
             localStorage.setItem("US", matches);
+            console.log("country data saved to cache for later retrieval");
+
             document.getElementById('USCases').innerHTML = "Cases: " + cases;
             document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
             return;
