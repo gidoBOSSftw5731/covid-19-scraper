@@ -24,7 +24,7 @@ function cases() {
 
     var token = Math.floor(100000 + Math.random() * 999999);
     if (county != "") {
-        client.channels.get('695838084687986738').send("!cases " + county + ";;;;; :::::" + state);// + "::::: " + token);
+        client.channels.get('695838084687986738').send("!cases " + county + " " + state);// + "::::: " + token);
     } else {
         client.channels.get('695838084687986738').send("!cases " + state);// + "::::: ") + token);
     }
@@ -35,7 +35,8 @@ function cases() {
         if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738") {// && msg.content.includes(token)) {
             var matches = msg.content.match(/\d+/g);
             console.log(matches);
-            var data = msg.content.replace(token + " ", "");
+            // var data = msg.content.replace(token + " ", "");
+            var data = msg.content;
             blockRequest(state, county);
             setTimeout(allowRequest, 6000);
             document.getElementById('dataResult').innerHTML = data;

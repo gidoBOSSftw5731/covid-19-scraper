@@ -17,6 +17,20 @@ db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token);
     client.on('ready', function () {
         console.log('Discord Bot is ready for use!');
+
+        client.channels.get('695838084687986738').send("!cases");
+
+        client.on('message', function (msg) {
+            if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738") {
+                var matches = msg.content.match(/\d+/g);
+                console.log(matches);
+                var cases = matches[0];
+                var deaths = matches[1];
+                document.getElementById('USCases').innerHTML += cases;
+                document.getElementById('USDeaths').innerHTML += deaths;
+                return;
+            }
+        })
     });
 }).catch(function (err) {
     console.log(err);
