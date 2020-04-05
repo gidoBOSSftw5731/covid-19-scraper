@@ -29,7 +29,7 @@ var emails = db.collection("emails");
 window.onload = function () {
     $('#stopTime').toast('hide');
     var date = new Date();
-    var hours = (date.getHours() <= 12) ? date.getHours() : date.getHours - 12;
+    var hours = (date.getHours() <= 12) ? date.getHours() : (date.getHours() - 12);
     var minutes = (date.getMinutes() < 10) ? "0" + date.getMinutes() : date.getMinutes();
     document.getElementById("popupTime").innerHTML = hours.toString() + ":" + minutes.toString();
     $('#toast').toast('show');
