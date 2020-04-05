@@ -70,6 +70,41 @@ function cases() {
     });
 };
 
+function countryCases() {
+    if (!canCountry) {
+        console.log('country request blocked (timeout)');
+        var savedData = localStorage.getItem('US');
+        console.log("localStorage");
+
+        var matches = savedData.match(/\d+/g);
+        var cases = matches[0];
+        var deaths = matches[1];
+        document.getElementById('USCases').innerHTML = "Cases: " + cases;
+        document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
+        return;
+    }
+
+    client.channels.get('695838084687986738').send("!cases");
+
+    client.on('message', function (msg) {
+        if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738" && msg.content.includes('The country of US')) {
+            window.canCountry = false;
+            setTimeout(function () {
+                window.canCountry = true;
+            }, 600000);
+
+            var matches = msg.content.match(/\d+/g);
+            var cases = matches[0];
+            var deaths = matches[1];
+
+            localStorage.setItem("US", matches);
+            document.getElementById('USCases').innerHTML = "Cases: " + cases;
+            document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
+            return;
+        }
+    });
+}
+
 function blockRequest(state, county) {
     window.requestAllowed = false;
     window.state = state;

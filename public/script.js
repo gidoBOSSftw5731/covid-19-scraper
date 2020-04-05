@@ -17,21 +17,7 @@ db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token);
     client.on('ready', function () {
         console.log('Discord Bot is ready for use!');
-
-        client.channels.get('695838084687986738').send("!cases");
-        client.on('message', function (msg) {
-            if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738" && msg.content.includes('The country of US')) {
-                var matches = msg.content.match(/\d+/g);
-                console.log(matches);
-                var cases = matches[0];
-                var deaths = matches[1];
-
-                localStorage.setItem("US", matches);
-                document.getElementById('USCases').innerHTML = "Cases: " + cases;
-                document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
-                return;
-            }
-        });
+        countryCases();
     });
 }).catch(function (err) {
     console.log(err);
