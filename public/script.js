@@ -26,21 +26,13 @@ var users = db.collection("users");
 var emails = db.collection("emails");
 
 window.onload = function () {
+    $('#stopTime').toast('hide');
     var date = new Date();
-    var hours = date.getHours() - 12;
+    var hours = ((date.getHours() <= 12) ? date.getHours() : date.getHours - 12);
     var minutes = date.getMinutes();
     document.getElementById("popupTime").innerHTML = hours.toString() + ":" + minutes.toString();
-    $('.toast').toast('show');
-
-    setInterval(function () {
-        var date = new Date();
-        var hours = date.getHours() - 12;
-        var minutes = date.getMinutes();
-        document.getElementById("popupTime").innerHTML = hours + ":" + minutes;
-        $('.toast').toast('show');
-    }, 50000);
+    $('#toast').toast('show');
 };
-
 
 // var messaging = firebase.messaging();
 // messaging.requestPermission().then(function () {
@@ -68,8 +60,20 @@ document.addEventListener('keydown', function (event) {
         } else if (document.getElementById('pwreset').style.display != "none") {
             sendPasswordReset();
         }
+        // ADD ENTER KEYPRESS LISTENER FOR DISCORD SIGNIN
     }
 });
+
+function search() {
+    var search = document.getElementById("search");
+
+    if (search.value != "") {
+        var text = search.value.toString().toLowerCase();
+        window.location = "states.html?query=" + text;
+    } else {
+        display('search');
+    }
+};
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
