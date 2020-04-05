@@ -1,7 +1,7 @@
 function loadInStates() {
     console.log("wheeeeee");
     var elem = document.getElementById("state");
-    country = "US";
+    var country = "US";
     var re = /[\w(\w )]+/;
     var fragment = document.createDocumentFragment();
 
@@ -31,10 +31,13 @@ async function doRequestWrap(url) {
 
 function doRequest(url) {
     return new Promise(function (resolve, reject) {
-        request(url, function (error, res, body) {
+        var request = new Request(url, function (error, res, body) {
+            console.log(body);
             if (!error && res.statusCode == 200) {
+                console.log(body);
                 resolve(body);
             } else {
+                console.log(error);
                 reject(error);
             }
         });

@@ -29,9 +29,9 @@ window.onload = function () {
     var date = new Date();
     var hours = date.getHours() - 12;
     var minutes = date.getMinutes();
-    document.getElementById("popupTime").innerHTML = hours + ":" + minutes;
+    document.getElementById("popupTime").innerHTML = hours.toString() + ":" + minutes.toString();
     $('.toast').toast('show');
-    
+
     setInterval(function () {
         var date = new Date();
         var hours = date.getHours() - 12;
