@@ -21,6 +21,14 @@
       "key": "Access-Control-Allow-Origin",
       "value": "*"
     } ]
+  }, {
+    "source": "**/*.css",
+    "headers": [
+      {
+        "key": "Cache-Control",
+        "value": "max-age: 900"
+      }
+    ]
   }]
 
   },

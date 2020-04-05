@@ -4,8 +4,8 @@ window.county = null;
 
 function cases() {
     var stateInput = document.getElementById('state');
-    var state = stateInput.options[stateInput.selectedIndex].value;
-    if (!state) {
+    var inputState = stateInput.options[stateInput.selectedIndex].value;
+    if (!inputState) {
         alert('Please select a state!');
         return;
     }
@@ -15,39 +15,58 @@ function cases() {
     }
 
     var countyInput = document.getElementById('county');
-    var county = countyInput.value;
+    var inputCounty = countyInput.value;
 
-    if (!requestAllowed && window.state == state && window.county == countyInput.value) {
-        alert("We have set a cooldown on the 'Get Data' button in order to prevent spam or attacks. Please wait a little more or change an input value!");
+    if (!requestAllowed && state == inputState && county == inputCounty) {
+        console.log('request blocked (timeout)');
+        if (inputCounty) {
+            var savedData = localStorage.getItem(state + "_" + county);
+            var location = county + ", " + state;
+        }
+        else {
+            var savedData = localStorage.getItem(state);
+            var location = state;
+        }
+
+        console.log("localStorage");
+
+        var matches = savedData.match(/\d+/g);
+        var cases = matches[0];
+        var deaths = matches[1];
+        document.getElementById('location').innerHTML = location;
+        document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
+        document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
         return;
     }
 
-    var token = Math.floor(100000 + Math.random() * 999999);
-    if (county != "") {
-        client.channels.get('695838084687986738').send("!cases " + county + " " + state);// + "::::: " + token);
-        var location = county + ", " + state;
+    // var token = Math.floor(100000 + Math.random() * 999999);
+    if (inputCounty != "") {
+        client.channels.get('695838084687986738').send("!cases " + inputCounty + " " + inputState);// + "::::: " + token);
+        var location = inputCounty + ", " + inputState;
     } else {
-        client.channels.get('695838084687986738').send("!cases " + state);// + "::::: ") + token);
-        var location = state;
+        client.channels.get('695838084687986738').send("!cases " + inputState);// + "::::: ") + token);
+        var location = inputState;
     }
-
-    client.once('message', function () { console.log('hii') });
 
     client.on('message', function (msg) {
         if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738") {// && msg.content.includes(token)) {
+            console.log("bot");
+            blockRequest(inputState, inputCounty);
+            setTimeout(allowRequest, 3600000);
+
             var matches = msg.content.match(/\d+/g);
-            console.log(matches);
-            // var data = msg.content.replace(token + " ", "");
-            blockRequest(state, county);
-            setTimeout(allowRequest, 6000);
             var cases = matches[0];
             var deaths = matches[1];
+
+            setCache({ state: inputState, county: inputCounty, data: matches });
+          
+            // var data = msg.content.replace(token + " ", "");
             document.getElementById('location').innerHTML = location;
             document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
             document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
             return;
         }
-    })
+    });
 };
 
 function blockRequest(state, county) {

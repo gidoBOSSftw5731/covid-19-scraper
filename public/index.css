@@ -1,15 +1,18 @@
 .state-county {
     width: 50%;
 }
-nav, a:not(#logo), .navelement {
+nav, a:not(#logo) {
     background-color: #a02727;
     border-top: 5px solid #a02727;
     border-bottom: 5px solid #a02727;
 }
-.navelement:hover {
-    background-color: #dd1919;
-    border-top: 5px solid #dd1919;
-    border-bottom: 5px solid #dd1919;
+a:not(#logo):hover, .navelement:hover {
+    background-color: #d42323;
+    border-top: 5px solid #a02727;
+    border-bottom: 5px solid #a02727;
+}
+img:hover {
+    cursor: pointer;
 }
 .search {
     /* border-radius: 100%; */
