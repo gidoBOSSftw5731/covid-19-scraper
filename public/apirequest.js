@@ -25,8 +25,10 @@ function cases() {
     var token = Math.floor(100000 + Math.random() * 999999);
     if (county != "") {
         client.channels.get('695838084687986738').send("!cases " + county + " " + state);// + "::::: " + token);
+        var location = county + ", " + state;
     } else {
         client.channels.get('695838084687986738').send("!cases " + state);// + "::::: ") + token);
+        var location = state;
     }
 
     client.once('message', function () { console.log('hii') });
@@ -36,10 +38,13 @@ function cases() {
             var matches = msg.content.match(/\d+/g);
             console.log(matches);
             // var data = msg.content.replace(token + " ", "");
-            var data = msg.content;
             blockRequest(state, county);
             setTimeout(allowRequest, 6000);
-            document.getElementById('dataResult').innerHTML = data;
+            var cases = matches[0];
+            var deaths = matches[1];
+            document.getElementById('location').innerHTML = location;
+            document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
+            document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
             return;
         }
     })
