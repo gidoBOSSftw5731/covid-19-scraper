@@ -42,7 +42,7 @@
     <header>
       <nav>
         <!--Beginning of Logo-->
-        <a onclick="redirect('index.html')"><img class="logo" src="favicon.ico"></a>
+        <a id="logo" onclick="redirect('index.html')"><img class="logo" src="favicon.ico"></a>
         <!--End of Logo-->&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         
         <!--Beginning of Home-->
@@ -302,15 +302,23 @@
     </div>
 
     <article>
-      <div style="margin-left: 10%; margin-top: 5%;">
+      <div style="width: 50%; margin-left: 10%; margin-top: 5%; padding: 1.5%; padding-left: 2%; background-color: #6E797E; border-radius: 25px; border: 2px solid rgb(106, 115, 119)">
 
         <div class="input-group mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text list-group-item list-group-item-primary" id="basic-addon1">United States</span>
           </div>
           <ul class="list-group list-group-horizontal">
-            <li id="USCases" class="list-group-item">Cases: </li>
-            <li id="USDeaths" class="list-group-item">Deaths: </li>
+            <li id="USCases" class="list-group-item">Cases: 
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </li>
+            <li id="USDeaths" class="list-group-item">Deaths: 
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </li>
           </ul>
         </div>
 
@@ -392,10 +400,10 @@
 
         </div>
 
-        <ul id="dataResults" class="list-group" style="width: 15%;">
-          <li id="location" class="list-group-item active"></li>
-          <li id="resultsCases" class="list-group-item">Case: </li>
-          <li id="resultsDeaths" class="list-group-item">Deaths: </li>
+        <ul id="dataResults" class="list-group" style="width: 30%;">
+          <li id="location" class="list-group-item active">Location</li>
+          <li id="resultsCases" class="list-group-item">Cases</li>
+          <li id="resultsDeaths" class="list-group-item">Deaths</li>
         </ul>
       </div>
     </article>
