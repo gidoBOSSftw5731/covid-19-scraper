@@ -98,7 +98,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			//log.Traceln(data)
+			log.Traceln(data)
 			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
 		} else {
 			ErrorHandler(resp, req, 400, "Too many arguments")
@@ -452,6 +452,8 @@ func countyData(country, state, county string) (pb.HistoricalInfo, error) {
 		return countyData, err
 	}
 
+	infoMap := make(map[time.Time]pb.AreaInfo)
+
 	for rows.Next() {
 		var countyinfo pb.AreaInfo
 		var insertTime time.Time
@@ -465,11 +467,34 @@ func countyData(country, state, county string) (pb.HistoricalInfo, error) {
 
 		countyinfo.Type = pb.AreaInfo_COUNTY
 
-		countyData.Info = append(countyData.Info, &countyinfo)
+		unique := true
+		for i, j := range infoMap {
+			if inTimeSpan(insertTime.Add(12*time.Hour), insertTime.Add(-12*time.Hour), i) {
+				if !(j.ConfirmedCases == countyinfo.ConfirmedCases && j.TestsGiven == countyinfo.TestsGiven &&
+					j.Deaths == countyinfo.Deaths && j.Recoveries == countyinfo.Recoveries) {
+					unique = false
+					break
+				}
+
+			}
+		}
+		if unique {
+			infoMap[insertTime] = countyinfo
+		}
+
+		//countyData.Info = append(countyData.Info, &countyinfo)
 
 	}
 
+	for _, i := range infoMap {
+		countyData.Info = append(countyData.Info, &i)
+	}
+
 	return countyData, nil
+}
+
+func inTimeSpan(start, end, check time.Time) bool {
+	return check.After(start) && check.Before(end)
 }
 
 /*
