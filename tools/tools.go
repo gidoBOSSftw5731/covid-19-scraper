@@ -13,15 +13,14 @@ import (
 )
 
 // ChartCases is a function that takes an AreaInfo as input and returns a picture as a graph
-func ChartCases(info *pb.HistoricalInfo) (io.Reader, error) {
-	caseMap := make(map[int64]uint32)
+func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader, error) {
+	caseMap := make(map[int64]*pb.AreaInfo)
 	var orderedKeys []int64
 	//log.Traceln(info.Info)
 
 	for _, i := range info.Info {
-		caseMap[i.UnixTimeOfRequest] = i.ConfirmedCases
+		caseMap[i.UnixTimeOfRequest] = i
 		orderedKeys = append(orderedKeys, i.UnixTimeOfRequest)
-
 	}
 
 	sort.Slice(orderedKeys, func(i, j int) bool {
@@ -29,10 +28,22 @@ func ChartCases(info *pb.HistoricalInfo) (io.Reader, error) {
 	})
 
 	var caseStatsSorted []float64
+	var deathStatsSorted []float64
 
 	for _, i := range orderedKeys {
-		caseStatsSorted = append(caseStatsSorted, float64(caseMap[int64(i)]))
+		if doConfirmed {
+			caseStatsSorted = append(caseStatsSorted, float64(caseMap[int64(i)].ConfirmedCases))
+		}
+		if doDeaths {
+			deathStatsSorted = append(deathStatsSorted, float64(caseMap[int64(i)].Deaths))
+		}
+	}
 
+	if len(caseStatsSorted) == 0 {
+		caseStatsSorted = append(caseStatsSorted, 0)
+	}
+	if len(deathStatsSorted) == 0 {
+		deathStatsSorted = append(deathStatsSorted, 0)
 	}
 
 	var timeKeys []time.Time
@@ -45,13 +56,12 @@ func ChartCases(info *pb.HistoricalInfo) (io.Reader, error) {
 	graph := chart.Chart{
 		Series: []chart.Series{
 			chart.TimeSeries{
-				Style: chart.Style{
-					StrokeColor: chart.GetDefaultColor(0).WithAlpha(64),
-					FillColor:   chart.GetDefaultColor(0).WithAlpha(64),
-					//Show:        true,
-				},
 				XValues: timeKeys,
 				YValues: caseStatsSorted,
+			},
+			chart.TimeSeries{
+				XValues: timeKeys,
+				YValues: deathStatsSorted,
 			},
 		},
 	}
