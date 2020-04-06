@@ -233,8 +233,12 @@ client.on("message", msg => {
                                         }
                                     }
 
-                                    msg.reply("Added " + location + " to your watchlist!");
-                                    return msg.reply("Your new watchlist: " + watchlistString);
+                                    userDoc.set({
+                                        watchlist: watchlist
+                                    }, { merge: true }).then(function () {
+                                        msg.reply("Added " + location + " to your watchlist!");
+                                        return msg.reply("Your new watchlist: " + watchlistString);
+                                    });
                                 }
                             }
                         }
