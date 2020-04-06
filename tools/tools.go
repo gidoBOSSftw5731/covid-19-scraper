@@ -68,6 +68,11 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 		},
 	}
 
+	//note we have to do this as a separate step because we need a reference to graph
+	graph.Elements = []chart.Renderable{
+		chart.Legend(&graph),
+	}
+
 	f, _ := os.Create("output.png")
 	//defer f.Close()
 	err := graph.Render(chart.PNG, f)
