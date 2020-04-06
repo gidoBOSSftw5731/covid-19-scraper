@@ -1,12 +1,12 @@
 .state-county {
     width: 50%;
 }
-nav, a:not(#logo) {
+nav, a:not(#logo, #notifClick) {
     background-color: #a02727;
     border-top: 5px solid #a02727;
     border-bottom: 5px solid #a02727;
 }
-a:not(#logo):hover, .navelement:hover {
+a:not(#logo, #notifClick):hover, .navelement:hover {
     background-color: #d42323;
     border-top: 5px solid #a02727;
     border-bottom: 5px solid #a02727;
@@ -17,4 +17,7 @@ img:hover {
 .search {
     /* border-radius: 100%; */
     height: 90%;
+}
+a:hover {
+    cursor: pointer;
 }

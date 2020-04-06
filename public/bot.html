@@ -46,6 +46,10 @@
             <!-- <a id="faq" class="navelement" onclick="redirect('faq.html')">FAQ</a> -->
             <!-- End of About&nbsp;&nbsp;&nbsp; -->
 
+            <!--Beginning of Home-->
+            <a id="home" class="navelement" onclick="redirect('bot.html')">Discord</a>
+            <!--End of Home-->&nbsp;&nbsp;&nbsp;
+
             <!--Beginning of Sign in button-->
             <a id="signin" class="navelement" onclick="signIn()">Sign In</a>
             <!--End of Sign in button-->&nbsp;&nbsp;&nbsp;
@@ -284,7 +288,8 @@
                             id="AemailSubmit" name="dAuthEmailSubmit" onclick="discordAuth()">Submit</button>
                         &nbsp;&nbsp;&nbsp;
                         <button class="mdl-button mdl-js-button mdl-button--raised" name="dAuthSignIn"
-                            onclick="display('discordAuth'); signIn()">Return to Sign In</button>
+                            onclick="display('discordAuth'); signIn()">Return
+                            to Sign In</button>
 
                         <p>
                             <li>
@@ -299,7 +304,7 @@
     </div>
     <!--Discord Auth End-->
 
-    <!-- <div id="toast" class="toast" style="position: absolute; z-index: 5; margin-top: 3%; right: 0;" data-delay="8000">
+    <div id="toast" class="toast" style="position: absolute; z-index: 5; margin-top: 3%; right: 0;" data-delay="8000">
         <div class="toast-header">
             <i class="fas fa-virus fa-3x"></i>
             <strong class="mr-auto">&nbsp;&nbsp;CovidBot19</strong>
@@ -311,24 +316,41 @@
         <div class="toast-body">
             Hey! Don't forget to wash your hands!&nbsp;&nbsp;<i class="fas fa-hands-wash fa-2x"></i>
         </div>
-    </div> -->
-
-    <div id="toast" class="toast" style="position: absolute; z-index: 5; margin-top: 3%; right: 0;" data-delay="8000">
-        <div class="toast-header">
-            <i class="fas fa-virus fa-3x"></i>
-            <strong class="mr-auto">&nbsp;&nbsp;CovidBot19</strong>
-            <small id="popupTime"></small>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="toast-body">
-            Hey! Want a Discord bot for Coronavirus?<br><a onclick="redirect('bot.html')">Click here!</a>
-        </div>
     </div>
 
     <article>
-        
+        <div class="card mb-3" style="max-width: 50%; margin-left: 23%; margin-top: 5%;">
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    <img src="favicon.ico" class="card-img" alt="...">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">Add our Discord Bot to your server!</h5>
+                        <p class="card-text">Use this bot to track cases right in the comfort of your server! With more features rolling out every day, there's no reason not to add it!</p>
+                        <br><br>
+                        <button class="btn btn-primary" style="background-color: tomato; border-color: tomato; margin-left: 1%;" src="https://discordapp.com/api/oauth2/authorize?client_id=692117206108209253&permissions=117760&redirect_uri=https%3A%2F%2Fcovid19bot.web.app&scope=bot">Add to your server</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-3" style="max-width: 50%; margin-left: 23%; margin-top: 4%;">
+            <div class="row no-gutters">
+                <div class="col-md-4">
+                    <img src="favicon.ico" class="card-img" alt="...">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">Join our Discord server!</h5>
+                        <p class="card-text">Are you a developer? Want to learn more about this site? Need help? Or do you just want to talk about coronavirus? Join our server!</p>
+                        <p class="card-text">Promotion: If you can get THREE friends to join the server, we'll promote your own stuff on multiple servers!</p>
+                        <br>
+                        <button class="btn btn-primary" style="background-color: tomato; border-color: tomato; margin-left: 1%;"
+                            src="https://discord.gg/Cg7E8ms">Join our Discord server</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </article>
 
 </body>

@@ -1,4 +1,3 @@
-require("dotenv").config({ path: '../.env' });
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
 
@@ -30,14 +29,18 @@ function isUpperCase(str) {
 }
 
 // Discord
-client.login(process.env.BOT_TOKEN).catch(err => {
-    error("err3 ", err);
-});
+db.collection('env').doc('env').get().then(function (doc) {
+    client.login(doc.data().token0).catch(err => {
+        console.log("err3 ", err);
+    });
 
-client.on("ready", () => {
-    console.log(`Client user tag: ${client.user.id}!`);
-    client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
-})
+    client.on("ready", () => {
+        console.log(`Client user tag: ${client.user.id}!`);
+        client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
+    })
+}).catch(function (err) {
+    console.log(err);
+});
 
 function error(err) {
     var date = new Date();
@@ -177,27 +180,41 @@ client.on("message", msg => {
                         } else {
                             var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
                             if (!watchlist) {
-                                return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args>");
+                                return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args> to add something now!");
                             }
                             var watchlistString = "";
                             for (i = 0; i < watchlist.length; i++) {
-                                if (i == (watchlist.length - 1)) {
+                                if ((i == (watchlist.length - 1)) && (watchlist.length > 1)) {
                                     watchlistString += "and " + watchlist[i];
-                                } else {
+                                } else if (watchlist.length > 2) {
                                     watchlistString += watchlist[i] + ", ";
+                                } else if (watchlist.length == 2) {
+                                    watchlistString += watchlist[i] + " ";
+                                } else if (watchlist.length == 1) {
+                                    watchlistString = watchlist[0];
+                                } else {
+                                    error("Error occurred, should be impossible????");
+                                    console.log(watchlist);
                                 }
                             }
-                            msg.reply("Your watchlist: " + watchlistString);
+                            if (watchlistString.length == 0) {
+                                return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args> to add something now!");
+                            } else {
+                                msg.reply("Your watchlist: " + watchlistString);
+                            }
                         }
                     }).catch(function (err) {
-                        error(err);
+                        console.log(err);
                         return msg.reply("Error getting watchlist data, seems like a problem on our end. Sorry!");
                     });
                     break;
                 case "add":
                     var location = args.slice(1, args.length).toString();
                     location = location.replace(",", " ");
-                    console.log(location);
+                    if (location.split(",").length == 2) {
+                        location = location.replace(",", " ");
+                    }
+
                     var lastArg = location[location.length - 1];
                     if (!isUpperCase(lastArg)) {
                         error("State isn't last/uppercase?");
@@ -211,67 +228,132 @@ client.on("message", msg => {
                         } else {
                             var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
                             if (!watchlist) {
-                                return error("Error occurred - watchlist undefined (shouldn't matter? will fix)");
+                                error("Error occurred - watchlist undefined (shouldn't matter, creating now)");
+
+                                if (location.length == 3) {
+                                    var watchlist = [location[0] + " " + location[1], location[2]];
+                                } else {
+                                    var watchlist = [location];
+                                }
+
+                                userDoc.set({
+                                    watchlist: watchlist
+                                }, { merge: true }).then(function () {
+                                    msg.reply("Added " + location + " to your watchlist!");
+                                    return msg.reply("Your new watchlist: " + location);
+                                });
                             } else {
                                 if (watchlist.includes(location)) {
-                                    msg.reply("in");
                                     msg.reply(location + " is already in your watchlist, skipped adding.");
                                     return;
                                 }  else {
-                                    msg.reply(location + "not in");
-
-                                    msg.reply("continuing");
-
                                     watchlist.push(location);
 
                                     var watchlistString = "";
                                     for (i = 0; i < watchlist.length; i++) {
-                                        if (i == (watchlist.length - 1)) {
+                                        if ((i == (watchlist.length - 1)) && (watchlist.length > 1)) {
                                             watchlistString += "and " + watchlist[i];
-                                        } else {
+                                        } else if (watchlist.length > 2) {
                                             watchlistString += watchlist[i] + ", ";
+                                        } else if (watchlist.length == 2) {
+                                            watchlistString += watchlist[i] + " ";
+                                        } else {
+                                            watchlistString = location;
                                         }
                                     }
 
-                                    userDoc.set({
+                                    userDoc.update({
                                         watchlist: watchlist
-                                    }, { merge: true }).then(function () {
+                                    }).then(function () {
                                         msg.reply("Added " + location + " to your watchlist!");
                                         return msg.reply("Your new watchlist: " + watchlistString);
                                     });
                                 }
                             }
                         }
-                    }).then(function () {
-                        msg.reply("yay!");
                     }).catch(function (err) {
                         error(err);
                         return msg.reply("Oh no! Watchlist add failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
                     });
                     break;
                 case "remove":
-                    var location = args.slice(1, args.length);
+                    var location = args.slice(1, args.length).toString();
+                    location = location.replace(",", " ");
+                    if (location.split(",").length == 2) {
+                        location = location.replace(",", " ");
+                    }
+
                     var lastArg = location[location.length - 1];
                     if (!isUpperCase(lastArg)) {
                         error("State isn't last/uppercase?");
                         return msg.reply("Looks like you may have typed the command in wrong! Check the full command " +
                             "(!help for how a list of command descriptions) to verify that there are no mistakes and then try again.");
                     }
-                    userDoc.update({
-                        watchlist: firebase.firestore.FieldValue.arrayRemove(location)
-                    }).then(function () {
-                        return msg.reply("Removed " + location + " from your watchlist!");
+
+                    userDoc.get().then(function (doc) {
+                        if (!doc.exists) {
+                            return msg.reply("Uh oh! Looks like you don't have an account! Create one using !signup and then retry this command.");
+                        } else {
+                            var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+                            if (!watchlist) {
+                                return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args> to add something now!");
+                            } else {
+                                if (watchlist.includes(location)) {
+                                    var removeIndex = watchlist.indexOf(location);
+                                    var newWatchlist = watchlist.splice(removeIndex, 1);
+
+                                    var watchlistString = "";
+                                    for (i = 0; i < watchlist.length; i++) {
+                                        if ((i == (watchlist.length - 1)) && (watchlist.length > 1)) {
+                                            watchlistString += "and " + watchlist[i];
+                                        } else if (watchlist.length > 2) {
+                                            watchlistString += watchlist[i] + ", ";
+                                        } else if (watchlist.length == 2) {
+                                            watchlistString += watchlist[i] + " ";
+                                        } else if (watchlist.length == 1) {
+                                            watchlistString = watchlist[0];
+                                        } else {
+                                            error("Error occurred, should be impossible????");
+                                            console.log(watchlist);
+                                        }
+                                    }
+
+                                    userDoc.update({
+                                        watchlist: watchlist
+                                    }).then(function () {
+                                        msg.reply("Removed " + location + " from your watchlist!");
+                                        if (watchlist.length >= 1) {
+                                            return msg.reply("Your new watchlist: " + watchlistString);
+                                        } else {
+                                            return msg.reply("Your watchlist is now empty!");
+                                       }
+                                     });
+                                } else {
+                                    return msg.reply("Hm, looks like you don't have " + location + " in your watchlist!");
+                                }
+                            }
+                        }
                     }).catch(function (err) {
                         error(err);
-                        return msg.reply("Oh no! Watchlist remove failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
+                        return msg.reply("Oh no! Watchlist add failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
                     });
                     break;
                 case "clear":
-                    var location = args.slice(1, args.length);
-                    userDoc.set({
-                        watchlist: firebase.firestore.FieldValue.delete()
-                    }, { merge: true }).then(function () {
-                        return msg.reply("Successfully cleared your watchlist!");
+                    userDoc.get().then(function (doc) {
+                        if (!doc.exists) {
+                            return msg.reply("Uh oh! Looks like you don't have an account! Create one using !signup.");
+                        } else {
+                            var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+                            if (watchlist != "") {
+                                userDoc.update({
+                                    watchlist: []
+                                }).then(function () {
+                                    return msg.reply("Successfully cleared your watchlist!");
+                                });
+                            } else {
+                                return msg.reply("Your watchlist is already empty!");
+                            }
+                        }
                     }).catch(function (err) {
                         error(err);
                         return msg.reply("Oh no! Watchlist clear failed! Check the command to make sure you didn't make any mistakes!");
@@ -288,13 +370,14 @@ client.on("message", msg => {
                 .setThumbnail("https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg")
                 .setURL("https://covidbot19.web.app")
                 .addField("Commands",
-                    "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
-                        "!id (No args) - retrieves your Discord ID unique to your account; useful on our website to connect/sign in to a Discord account.\n\n" +
-                        "!location <county (optional)> <state (abbreviation)> - saves your location in case you want to see local data later.\n\n" +
-                        "!subscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
-                        "!unsubscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: this command is not for" +
+                        "`!signup (no args)` - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
+                        "`!id (no args)` - retrieves your Discord ID unique to your account; useful on our website to connect/sign in to a Discord account.\n\n" +
+                        "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n\n" +
+                        "`!subscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
+                        "`!unsubscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: this command is not for" +
                         "specific data, it only subscribes to the level of data regardless of location. For specific location updates, use !location\n\n" +
-                        "!cases <level (county, state, country)> <chart (optional)> - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n\n"
+                        "`!watchlist <view (no args)/add/remove/clear (no args)> <county (optional)> <state (abbreviation)>` - adds a specific location to \n\n" + 
+                        "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n\n"
                 )
                 .setFooter('Data Source: Arcgis');
             msg.channel.send({ embed });
