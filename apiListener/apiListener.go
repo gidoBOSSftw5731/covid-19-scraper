@@ -217,7 +217,7 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 	}
 
-	infoMap := make(map[time.Time]pb.AreaInfo)
+	infoMap := make(map[time.Time]*pb.AreaInfo)
 
 	for rows.Next() {
 		var info pb.AreaInfo
@@ -230,7 +230,7 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 		unique := true
 		for i, j := range infoMap {
-			if i == insertTime {
+			if inTimeSpan(insertTime.Add(-12*time.Hour), insertTime.Add(12*time.Hour), i) {
 				unique = false
 				//foo := j
 				j.Deaths += info.Deaths
@@ -244,7 +244,7 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 			}
 		}
 		if unique {
-			infoMap[insertTime] = info
+			infoMap[insertTime] = &info
 		}
 	}
 
@@ -252,7 +252,7 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 	for _, i := range infoMap {
 		i.Type = pb.AreaInfo_STATE
-		hInfo.Info = append(hInfo.Info, &i)
+		hInfo.Info = append(hInfo.Info, i)
 		log.Traceln(i.ConfirmedCases)
 	}
 
@@ -452,12 +452,13 @@ func countyData(country, state, county string) (pb.HistoricalInfo, error) {
 		return countyData, err
 	}
 
-	infoMap := make(map[time.Time]pb.AreaInfo)
+	infoMap := make(map[time.Time]*pb.AreaInfo)
 
 	for rows.Next() {
 		var countyinfo pb.AreaInfo
 		var insertTime time.Time
-		err = rows.Scan(&countyinfo.Lat, &countyinfo.Long, &countyinfo.Deaths, &countyinfo.ConfirmedCases, &countyinfo.TestsGiven, &countyinfo.Recoveries, &countyinfo.Incidentrate, &insertTime)
+		err = rows.Scan(&countyinfo.Lat, &countyinfo.Long, &countyinfo.Deaths, &countyinfo.ConfirmedCases,
+			&countyinfo.TestsGiven, &countyinfo.Recoveries, &countyinfo.Incidentrate, &insertTime)
 		if err != nil {
 			log.Errorln(err)
 			continue
@@ -469,9 +470,11 @@ func countyData(country, state, county string) (pb.HistoricalInfo, error) {
 
 		unique := true
 		for i, j := range infoMap {
-			if inTimeSpan(insertTime.Add(12*time.Hour), insertTime.Add(-12*time.Hour), i) {
-				if !(j.ConfirmedCases == countyinfo.ConfirmedCases && j.TestsGiven == countyinfo.TestsGiven &&
-					j.Deaths == countyinfo.Deaths && j.Recoveries == countyinfo.Recoveries) {
+			if inTimeSpan(insertTime.Add(-12*time.Hour), insertTime.Add(12*time.Hour), i) {
+				if j.ConfirmedCases == countyinfo.ConfirmedCases &&
+					j.TestsGiven == countyinfo.TestsGiven &&
+					j.Deaths == countyinfo.Deaths &&
+					j.Recoveries == countyinfo.Recoveries {
 					unique = false
 					break
 				}
@@ -479,15 +482,14 @@ func countyData(country, state, county string) (pb.HistoricalInfo, error) {
 			}
 		}
 		if unique {
-			infoMap[insertTime] = countyinfo
+			infoMap[insertTime] = &countyinfo
+			countyData.Info = append(countyData.Info, &countyinfo)
 		}
+
+		log.Traceln(countyinfo.ConfirmedCases, unique, insertTime)
 
 		//countyData.Info = append(countyData.Info, &countyinfo)
 
-	}
-
-	for _, i := range infoMap {
-		countyData.Info = append(countyData.Info, &i)
 	}
 
 	return countyData, nil
