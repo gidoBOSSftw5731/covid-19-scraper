@@ -370,12 +370,13 @@ client.on("message", msg => {
                 .setThumbnail("https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg")
                 .setURL("https://covidbot19.web.app")
                 .addField("Commands",
-                    "`!signup` (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
-                        "`!id` (No args) - retrieves your Discord ID unique to your account; useful on our website to connect/sign in to a Discord account.\n\n" +
+                        "`!signup (no args)` - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
+                        "`!id (no args)` - retrieves your Discord ID unique to your account; useful on our website to connect/sign in to a Discord account.\n\n" +
                         "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n\n" +
                         "`!subscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
                         "`!unsubscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: this command is not for" +
                         "specific data, it only subscribes to the level of data regardless of location. For specific location updates, use !location\n\n" +
+                        "`!watchlist <view (no args)/add/remove/clear (no args)> <county (optional)> <state (abbreviation)>` - adds a specific location to \n\n" + 
                         "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n\n"
                 )
                 .setFooter('Data Source: Arcgis');
