@@ -10,10 +10,6 @@ function cases() {
         return;
     }
 
-    if (state == "DC") {
-        alert('DC is currently not working! Sorry! We are working to fix this!');
-    }
-
     var countyInput = document.getElementById('county');
     var inputCounty = countyInput.value;
 

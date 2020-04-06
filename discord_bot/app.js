@@ -25,6 +25,10 @@ admin.initializeApp({
 let db = admin.firestore();
 // Firebase End
 
+function isUpperCase(str) {
+    return str === str.toUpperCase();
+}
+
 // Discord
 client.login(process.env.BOT_TOKEN).catch(err => {
     console.log("err3 ", err);
@@ -72,7 +76,7 @@ client.on("message", msg => {
         case "location":
             if (!args.length) {
                 return msg.reply("To use the location command, please follow the paradigm:\n" +
-                    "```!location <state (abbreviation)> <county (optional)>```Note: At this moment, only the US is supported.");
+                    "```!location <county (optional)>  <state (abbreviation)> ```Note: At this moment, only the US is supported.");
             } else {
                 var o = "";
                 const len = args.length;
@@ -155,6 +159,73 @@ client.on("message", msg => {
                     break;
             }
             break;
+        case "watchlist":
+            if (!args.length) {
+                return msg.reply("To use the watchlist command, please follow the paradigm:\n" +
+                    "```!watchlist <command> <county (optional)> <state (abbreviation)>```Note: At this moment, only the US is supported.");
+            }
+            switch (args[0]) {
+                case "view":
+                    db.collection('users').doc(id).get().then(function (doc) {
+                        if (!doc.exists) {
+                            return msg.reply("Uh oh! Looks like you don't have an account! Create one using !signup and then retry this command.");
+                        } else {
+                            var watchlist = doc.data().watchlist;
+                            if (watchlist.length == 0) {
+                                return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args>")
+                            }
+                        }
+                    });
+                    break;
+                case "add":
+                    var location = args.slice(1, args.length);
+                    var lastArg = location[location.length - 1];
+                    if (!lastArg.isUpperCase()) {
+                        console.log("State isn't last/uppercase?");
+                        return msg.reply("Looks like you may have typed the command in wrong! Check the full command " +
+                            "(!help for how a list of command descriptions) to verify that there are no mistakes and then try again.");
+                    }
+                    db.collection('user').doc(id).update({
+                        watchlist: firebase.firestore.FieldValue.arrayUnion(location)
+                    }).then(function () {
+                        return msg.reply("Added " + location + " to your watchlist!");
+                    }).catch(function (err) {
+                        console.log("Error occurred.");
+                        return msg.reply("Oh no! Watchlist add failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
+                    });
+                    break;
+                case "remove":
+                    var location = args.slice(1, args.length);
+                    var lastArg = location[location.length - 1];
+                    if (!lastArg.isUpperCase()) {
+                        console.log("State isn't last/uppercase?");
+                        return msg.reply("Looks like you may have typed the command in wrong! Check the full command " +
+                            "(!help for how a list of command descriptions) to verify that there are no mistakes and then try again.");
+                    }
+                    db.collection('user').doc(id).update({
+                        watchlist: firebase.firestore.FieldValue.arrayRemove(location)
+                    }).then(function () {
+                        return msg.reply("Removed " + location + " from your watchlist!");
+                    }).catch(function (err) {
+                        console.log("Error occurred.");
+                        return msg.reply("Oh no! Watchlist remove failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
+                    });
+                    break;
+                case "clear":
+                    var location = args.slice(1, args.length);
+                    db.collection('user').doc(id).update({
+                        watchlist: firebase.firestore.FieldValue.delete()
+                    }).then(function () {
+                        return msg.reply("Successfully cleared your watchlist!");
+                    }).catch(function (err) {
+                        console.log("Error occurred.");
+                        return msg.reply("Oh no! Watchlist clear failed! Check the command to make sure you didn't make any mistakes!");
+                    });
+                    break;
+                default:
+                    return msg.reply("I couldn't recognize that command, make sure you typed it in correctly!");
+            }
+            break;
         case "help":
             const embed = new Discord.RichEmbed()
                 .setTitle("Command List")
@@ -164,7 +235,7 @@ client.on("message", msg => {
                 .addField("Commands",
                     "!signup (No args) - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
                         "!id (No args) - retrieves your Discord ID unique to your account; useful on our website to connect/sign in to a Discord account.\n\n" +
-                        "!location <county> <state (abbreviation)> - saves your location in case you want to see local data later.\n\n" +
+                        "!location <county (optional)> <state (abbreviation)> - saves your location in case you want to see local data later.\n\n" +
                         "!subscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
                         "!unsubscribe <level (county, state, country)> - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: this command is not for" +
                         "specific data, it only subscribes to the level of data regardless of location. For specific location updates, use !location\n\n" +

@@ -105,6 +105,55 @@ function gToggleSignIn() {
 };
 // Google Login End
 
+// Connect Email-Google
+function emailGoogle() {
+    var nameToKeep = ""; // "google" || "email"
+    var emailToKeep = ""; // "google" || "email"
+
+    var uName = displayName;
+    var uUID = user.uid;
+    var uEmail = user.email;
+
+    var googleProvider = new firebase.auth.GoogleAuthProvider();
+    auth.currentUser.linkWithPopup(googleProvider).then(function (result) {
+        var user = result.user;
+        var gName = user.displayName;
+        var gUID = user.uid;
+        var gEmail = user.email;
+
+        switch (nameToKeep) {
+            case "google":
+                console.log("Name as google");
+                break;
+            case "email":
+                user.updateProfile({
+                    displayName: uName,
+                }).then(function () {
+                    console.log("Name as email");
+                }).catch(function (error) {
+                    console.log("Error occurred: ", error);
+                });
+                break;
+        }
+        switch (emailToKeep) {
+            case "google":
+                console.log("Email as google");
+                break;
+            case "email":
+                user.updateEmail(uEmail).then(function () {
+                    console.log("Email as email");
+                }).catch(function (error) {
+                    console.log("Error occurred: ", error);
+                });
+                break;
+        }
+    }).catch(function (error) {
+        alert("Error occured linking Google and email account.");
+        console.log("Error occurred: ", error);
+    });
+}
+// Connect Email-Google End
+
 // Signup
 function handleSignUp() {
     var permusername = document.getElementById('suusername').value.toString();
