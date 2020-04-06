@@ -1,4 +1,4 @@
-require("dotenv").config({ path: './.env' });
+require("dotenv").config({ path: '../.env' });
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
 
@@ -31,7 +31,7 @@ function isUpperCase(str) {
 
 // Discord
 client.login(process.env.BOT_TOKEN).catch(err => {
-    console.log("err3 ", err);
+    error("err3 ", err);
 });
 
 client.on("ready", () => {
@@ -39,6 +39,10 @@ client.on("ready", () => {
     client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
 })
 
+function error(err) {
+    var date = new Date();
+    client.channels.get("696540781787217952").send(date + " Error: " + err);
+};
 
 client.on("message", msg => {
     if (msg.content == "so how was your day") {
@@ -53,6 +57,7 @@ client.on("message", msg => {
     const args = msg.content.slice(1).split(' ');
     const command = args.shift().toLowerCase();
     const id = msg.author.id;
+    const userDoc = db.collection('users').doc(id);
 
     switch (command) {
         case "signup":
@@ -166,59 +171,109 @@ client.on("message", msg => {
             }
             switch (args[0]) {
                 case "view":
-                    db.collection('users').doc(id).get().then(function (doc) {
+                    userDoc.get().then(function (doc) {
                         if (!doc.exists) {
                             return msg.reply("Uh oh! Looks like you don't have an account! Create one using !signup and then retry this command.");
                         } else {
-                            var watchlist = doc.data().watchlist;
-                            if (watchlist.length == 0) {
-                                return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args>")
+                            var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+                            if (!watchlist) {
+                                return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args>");
                             }
+                            var watchlistString = "";
+                            for (i = 0; i < watchlist.length; i++) {
+                                if (i == (watchlist.length - 1)) {
+                                    watchlistString += "and " + watchlist[i];
+                                } else {
+                                    watchlistString += watchlist[i] + ", ";
+                                }
+                            }
+                            msg.reply("Your watchlist: " + watchlistString);
                         }
+                    }).catch(function (err) {
+                        error(err);
+                        return msg.reply("Error getting watchlist data, seems like a problem on our end. Sorry!");
                     });
                     break;
                 case "add":
-                    var location = args.slice(1, args.length);
+                    var location = args.slice(1, args.length).toString();
+                    location = location.replace(",", " ");
+                    console.log(location);
                     var lastArg = location[location.length - 1];
-                    if (!lastArg.isUpperCase()) {
-                        console.log("State isn't last/uppercase?");
+                    if (!isUpperCase(lastArg)) {
+                        error("State isn't last/uppercase?");
                         return msg.reply("Looks like you may have typed the command in wrong! Check the full command " +
                             "(!help for how a list of command descriptions) to verify that there are no mistakes and then try again.");
                     }
-                    db.collection('user').doc(id).update({
-                        watchlist: firebase.firestore.FieldValue.arrayUnion(location)
+
+                    userDoc.get().then(function (doc) {
+                        if (!doc.exists) {
+                            return msg.reply("Uh oh! Looks like you don't have an account! Create one using !signup and then retry this command.");
+                        } else {
+                            var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+                            if (!watchlist) {
+                                return error("Error occurred - watchlist undefined (shouldn't matter? will fix)");
+                            } else {
+                                if (watchlist.includes(location)) {
+                                    msg.reply("in");
+                                    msg.reply(location + " is already in your watchlist, skipped adding.");
+                                    return;
+                                }  else {
+                                    msg.reply(location + "not in");
+
+                                    msg.reply("continuing");
+
+                                    watchlist.push(location);
+
+                                    var watchlistString = "";
+                                    for (i = 0; i < watchlist.length; i++) {
+                                        if (i == (watchlist.length - 1)) {
+                                            watchlistString += "and " + watchlist[i];
+                                        } else {
+                                            watchlistString += watchlist[i] + ", ";
+                                        }
+                                    }
+
+                                    userDoc.set({
+                                        watchlist: watchlist
+                                    }, { merge: true }).then(function () {
+                                        msg.reply("Added " + location + " to your watchlist!");
+                                        return msg.reply("Your new watchlist: " + watchlistString);
+                                    });
+                                }
+                            }
+                        }
                     }).then(function () {
-                        return msg.reply("Added " + location + " to your watchlist!");
+                        msg.reply("yay!");
                     }).catch(function (err) {
-                        console.log("Error occurred.");
+                        error(err);
                         return msg.reply("Oh no! Watchlist add failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
                     });
                     break;
                 case "remove":
                     var location = args.slice(1, args.length);
                     var lastArg = location[location.length - 1];
-                    if (!lastArg.isUpperCase()) {
-                        console.log("State isn't last/uppercase?");
+                    if (!isUpperCase(lastArg)) {
+                        error("State isn't last/uppercase?");
                         return msg.reply("Looks like you may have typed the command in wrong! Check the full command " +
                             "(!help for how a list of command descriptions) to verify that there are no mistakes and then try again.");
                     }
-                    db.collection('user').doc(id).update({
+                    userDoc.update({
                         watchlist: firebase.firestore.FieldValue.arrayRemove(location)
                     }).then(function () {
                         return msg.reply("Removed " + location + " from your watchlist!");
                     }).catch(function (err) {
-                        console.log("Error occurred.");
+                        error(err);
                         return msg.reply("Oh no! Watchlist remove failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
                     });
                     break;
                 case "clear":
                     var location = args.slice(1, args.length);
-                    db.collection('user').doc(id).update({
+                    userDoc.set({
                         watchlist: firebase.firestore.FieldValue.delete()
-                    }).then(function () {
+                    }, { merge: true }).then(function () {
                         return msg.reply("Successfully cleared your watchlist!");
                     }).catch(function (err) {
-                        console.log("Error occurred.");
+                        error(err);
                         return msg.reply("Oh no! Watchlist clear failed! Check the command to make sure you didn't make any mistakes!");
                     });
                     break;
