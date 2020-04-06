@@ -251,6 +251,8 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 			return
 		}
 
+		log.Traceln(newHInfo)
+
 		f, err := tools.ChartCases(newHInfo)
 		if err != nil {
 			log.Errorln(err)

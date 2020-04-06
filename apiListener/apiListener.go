@@ -244,6 +244,7 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 			}
 		}
 		if unique {
+			info.UnixTimeOfRequest = insertTime.Unix()
 			infoMap[insertTime] = &info
 		}
 	}
