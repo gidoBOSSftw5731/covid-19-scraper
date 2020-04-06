@@ -8,8 +8,8 @@ nav, a:not(#logo, #notifClick) {
 }
 a:not(#logo, #notifClick):hover, .navelement:hover {
     background-color: #d42323;
-    border-top: 5px solid #a02727;
-    border-bottom: 5px solid #a02727;
+    border-top: 5px solid #d42323;
+    border-bottom: 5px solid #d42323;
 }
 img:hover {
     cursor: pointer;

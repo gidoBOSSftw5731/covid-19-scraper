@@ -253,7 +253,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 
 		log.Traceln(newHInfo)
 
-		f, err := tools.ChartCases(newHInfo)
+		f, err := tools.ChartCases(newHInfo, true, true)
 		if err != nil {
 			log.Errorln(err)
 			return
