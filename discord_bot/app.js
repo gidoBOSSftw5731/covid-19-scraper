@@ -31,7 +31,7 @@ function isUpperCase(str) {
 
 // Discord
 client.login(process.env.BOT_TOKEN).catch(err => {
-    error("err3 ", err);
+    console.log("err3 ", err);
 });
 
 client.on("ready", () => {
