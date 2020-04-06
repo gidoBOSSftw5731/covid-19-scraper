@@ -1,4 +1,3 @@
-require("dotenv").config({ path: '../.env' });
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
 
@@ -30,14 +29,18 @@ function isUpperCase(str) {
 }
 
 // Discord
-client.login(process.env.BOT_TOKEN).catch(err => {
-    console.log("err3 ", err);
-});
+db.collection('env').doc('env').get().then(function (doc) {
+    client.login(doc.data().token).catch(err => {
+        console.log("err3 ", err);
+    });
 
-client.on("ready", () => {
-    console.log(`Client user tag: ${client.user.id}!`);
-    client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
-})
+    client.on("ready", () => {
+        console.log(`Client user tag: ${client.user.id}!`);
+        client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
+    })
+}).catch(function (err) {
+    console.log(err);
+});
 
 function error(err) {
     var date = new Date();
