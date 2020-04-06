@@ -230,7 +230,7 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 		unique := true
 		for i, j := range infoMap {
-			if inTimeSpan(insertTime.Add(-12*time.Hour), insertTime.Add(12*time.Hour), i) {
+			if inTimeSpan(insertTime.Add(10*time.Minute), insertTime.Add(10*time.Minute), i) {
 				unique = false
 				//foo := j
 				j.Deaths += info.Deaths
