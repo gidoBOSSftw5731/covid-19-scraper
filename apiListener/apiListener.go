@@ -238,9 +238,10 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 						break
 					}
 				}
-				if unique {
+				if !unique {
 					continue
 				}
+				unique = false
 				//foo := j
 				j.Deaths += info.Deaths
 				j.Recoveries += info.Recoveries
