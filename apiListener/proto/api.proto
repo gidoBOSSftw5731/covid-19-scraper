@@ -38,6 +38,7 @@ message AreaInfo {
    uint32 Recoveries = 7;
    float Incidentrate = 8;
    LocationType Type = 9;
+   string CombinedKey = 10;
    
    enum LocationType {
       COUNTY = 0;

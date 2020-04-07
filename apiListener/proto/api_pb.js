@@ -810,7 +810,8 @@ proto.apiproto.AreaInfo.toObject = function(includeInstance, msg) {
     testsgiven: jspb.Message.getFieldWithDefault(msg, 6, 0),
     recoveries: jspb.Message.getFieldWithDefault(msg, 7, 0),
     incidentrate: +jspb.Message.getFieldWithDefault(msg, 8, 0.0),
-    type: jspb.Message.getFieldWithDefault(msg, 9, 0)
+    type: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    combinedkey: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -882,6 +883,10 @@ proto.apiproto.AreaInfo.deserializeBinaryFromReader = function(msg, reader) {
     case 9:
       var value = /** @type {!proto.apiproto.AreaInfo.LocationType} */ (reader.readEnum());
       msg.setType(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCombinedkey(value);
       break;
     default:
       reader.skipField();
@@ -972,6 +977,13 @@ proto.apiproto.AreaInfo.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeEnum(
       9,
+      f
+    );
+  }
+  f = message.getCombinedkey();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
       f
     );
   }
@@ -1119,6 +1131,21 @@ proto.apiproto.AreaInfo.prototype.getType = function() {
 /** @param {!proto.apiproto.AreaInfo.LocationType} value */
 proto.apiproto.AreaInfo.prototype.setType = function(value) {
   jspb.Message.setProto3EnumField(this, 9, value);
+};
+
+
+/**
+ * optional string CombinedKey = 10;
+ * @return {string}
+ */
+proto.apiproto.AreaInfo.prototype.getCombinedkey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/** @param {string} value */
+proto.apiproto.AreaInfo.prototype.setCombinedkey = function(value) {
+  jspb.Message.setProto3StringField(this, 10, value);
 };
 
 

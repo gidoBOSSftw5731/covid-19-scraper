@@ -210,7 +210,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 func stateData(country, state string) (pb.HistoricalInfo, error) {
 	var hInfo pb.HistoricalInfo
-	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM records  WHERE country=$1 AND state=$2",
+	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime, combined FROM records  WHERE country=$1 AND state=$2",
 		country, state)
 	if err != nil {
 		return hInfo, err
@@ -218,11 +218,12 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 	}
 
 	infoMap := make(map[time.Time]*pb.AreaInfo)
+	combinedKeyMap := make(map[time.Time][]string)
 
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime, &info.CombinedKey)
 		if err != nil {
 			log.Errorln(err)
 			continue
@@ -230,22 +231,30 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 		unique := true
 		for i, j := range infoMap {
-			if inTimeSpan(insertTime.Add(10*time.Minute), insertTime.Add(10*time.Minute), i) {
-				unique = false
+			if inTimeSpan(insertTime.Add(-10*time.Minute), insertTime.Add(10*time.Minute), i) {
+				for _, i := range combinedKeyMap[insertTime] {
+					if i == info.CombinedKey {
+						unique = false
+						break
+					}
+				}
+				if unique {
+					continue
+				}
 				//foo := j
 				j.Deaths += info.Deaths
 				j.Recoveries += info.Recoveries
 				j.ConfirmedCases += info.ConfirmedCases
 				j.TestsGiven += info.TestsGiven
 				// once incident rate is defined in ARCGIS, I'll figure out how to handle it
-				//log.Traceln(info.ConfirmedCases)
-				//fmt.Printf("Old %v\n New %v\n", foo, j)
+				log.Traceln(info.ConfirmedCases, insertTime)
 				break
 			}
 		}
 		if unique {
 			info.UnixTimeOfRequest = insertTime.Unix()
 			infoMap[insertTime] = &info
+			combinedKeyMap[insertTime] = append(combinedKeyMap[insertTime], info.CombinedKey)
 		}
 	}
 
