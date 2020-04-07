@@ -32,14 +32,13 @@ function cases() {
         document.getElementById('location').innerHTML = location;
         document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
         document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
-        return;
+        return graph(location);
     }
 
     var channels = ["695838084687986738", "696893994247913492", "696894015324291194", "696894101232287785", "696894131972210708", "696894159314747392",
                     "696894185755902002", "696894213194776636", "696894242894774282", "696894279720894475", "696894305058422794", "696894326994632784"];
     var seed = Math.floor(Math.random() * 12);
     var channelID = channels[seed];
-    console.log(channelID);
 
     var token = Math.floor(100000 + Math.random() * 999999);
     if (inputCounty != "") {
@@ -58,7 +57,6 @@ function cases() {
 
             var data = msg.content.replace(token + " ", " ").toString();
             var matches = data.match(/\d+/g);
-            console.log(matches);
             var cases = matches[0];
             var deaths = matches[1];
 
@@ -68,7 +66,7 @@ function cases() {
             document.getElementById('location').innerHTML = location;
             document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
             document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
-            return;
+            return graph(location);
         }
     });
 };
@@ -77,15 +75,12 @@ function countryCases() {
     var savedData = localStorage.getItem('US');
 
     if (savedData) {
-        var date = new Date();
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        var timestampNow = hours + (minutes / 100);
+        var dateNow = new Date().valueOf();
 
         var matches = savedData.match(/\d+/g);
-        var age = matches[4] - timestampNow;
-        if (age < 0.10) {
-            console.log("country localStorage");
+        var age = (dateNow - matches[4]) / 1800000;
+        if (age < 1) {
+            console.log("country localStorage, ", age);
 
             var cases = matches[0];
             var deaths = matches[1];
@@ -108,10 +103,7 @@ function countryCases() {
             var deaths = matches[1];
 
             var date = new Date();
-            var hours = date.getHours();
-            var minutes = date.getMinutes();
-            var timestamp = hours + (minutes/100);
-            matches.push(timestamp);
+            matches.push(date.valueOf());
 
             localStorage.setItem("US", matches);
             console.log("country data saved to cache for later retrieval");
@@ -121,7 +113,55 @@ function countryCases() {
             return;
         }
     });
-}
+};
+
+function graph(location) {
+    var savedGraphData = localStorage.getItem(location + "image");
+
+    if (savedGraphData) {
+        var dateNow = new Date();
+
+        var age = (dateNow.valueOf() - savedGraphData[1]) / 3600000;
+        console.log(savedGraphData[1]);
+        if (age < 1 || Math.sign(age) == -1) {
+            console.log("graph localStorage, ", age);
+
+            var graph = document.getElementById("graph");
+            var graphUrl = savedGraphData[0];
+            graph.src = graphUrl;
+            return;
+        } else if (age > 1) {
+            console.log('graph localStorage found but too old, ', age);
+        } else {
+            console.log("Error checking age of cache data.");
+        }
+    }
+
+    var channels = ["695838084687986738", "696893994247913492", "696894015324291194", "696894101232287785", "696894131972210708", "696894159314747392",
+        "696894185755902002", "696894213194776636", "696894242894774282", "696894279720894475", "696894305058422794", "696894326994632784"];
+    var seed = Math.floor(Math.random() * 12);
+    var channelID = channels[seed];
+
+    client.channels.get(channelID).send("!graph " + location.replace(", ", " "));
+
+    client.on('message', function (msg) {
+        if (msg.author.id == "692117206108209253" && msg.channel.id == channelID) {
+            console.log("graph bot");
+
+            var graph = document.getElementById("graph");
+            var graphUrl = msg.attachments.first().url;
+            graph.src = graphUrl;
+
+            var date = new Date();
+            var dateValue = date.valueOf();
+            var imageKey = location + "image";
+            var value = [graphUrl, dateValue]
+            localStorage.setItem(imageKey, value);
+            console.log("image saved to cache for later retrieval");
+            return;
+        }
+    });
+};
 
 function blockRequest(state, county) {
     window.requestAllowed = false;
