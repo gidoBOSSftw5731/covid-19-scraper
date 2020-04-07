@@ -53,18 +53,27 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 		timeKeys = append(timeKeys, t)
 	}
 
+	cSeries := chart.TimeSeries{
+		Name:    "Confirmed Cases",
+		XValues: timeKeys,
+		YValues: caseStatsSorted,
+	}
+	dSeries := chart.TimeSeries{
+		Name:    "Deaths due to COVID-19",
+		XValues: timeKeys,
+		YValues: deathStatsSorted,
+	}
+
+	//linRegSeries := &chart.LinearRegressionSeries{
+	//	InnerSeries: cSeries,
+	//	Offset:      2,
+	//}
+
 	graph := chart.Chart{
 		Series: []chart.Series{
-			chart.TimeSeries{
-				Name:    "Confirmed Cases",
-				XValues: timeKeys,
-				YValues: caseStatsSorted,
-			},
-			chart.TimeSeries{
-				Name:    "Deaths due to COVID-19",
-				XValues: timeKeys,
-				YValues: deathStatsSorted,
-			},
+			cSeries,
+			dSeries,
+			//linRegSeries,
 		},
 	}
 
