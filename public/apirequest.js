@@ -163,6 +163,24 @@ function graph(location) {
     });
 };
 
+function email() {
+    db.collection("mailinglist").doc("GA").get().then(function (doc) {
+        // Later this will go through MULTIPLE documents for whatever locations have been created and email all users in those
+        // I might also make it into a map {email, time} or have multiple arrays by time like ninethirty[], ten[], eleven[] etc.
+        var emails = doc.data().georgia;
+
+        for (i = 0; i < emails.length; i++) {
+
+            auth.sendPasswordResetEmail(emails[i]).then(function () {
+                console.log("Email sent to user: ", emails[i]);
+            }).catch(function (error) {
+                console.log("Error occurred emailing users: ", error);
+            });
+        }
+    });
+
+};
+
 function blockRequest(state, county) {
     window.requestAllowed = false;
     window.state = state;

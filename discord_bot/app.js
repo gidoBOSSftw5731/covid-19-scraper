@@ -55,7 +55,10 @@ client.on("message", msg => {
         msg.reply('nothing much, just beating up some bitches');
     }
     
-    if (!msg.content.startsWith("!") || msg.author.id == client.user.id) return;
+    if (!msg.content.startsWith("!")) return;
+    if (msg.author.id == client.user.id) {
+        return msg.reply('hello self');
+    }
 
     const args = msg.content.slice(1).split(' ');
     const command = args.shift().toLowerCase();
