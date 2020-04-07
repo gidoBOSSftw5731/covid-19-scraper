@@ -35,29 +35,36 @@ function cases() {
         return;
     }
 
-    // var token = Math.floor(100000 + Math.random() * 999999);
+    var channels = ["695838084687986738", "696893994247913492", "696894015324291194", "696894101232287785", "696894131972210708", "696894159314747392",
+                    "696894185755902002", "696894213194776636", "696894242894774282", "696894279720894475", "696894305058422794", "696894326994632784"];
+    var seed = Math.floor(Math.random() * 12);
+    var channelID = channels[seed];
+    console.log(channelID);
+
+    var token = Math.floor(100000 + Math.random() * 999999);
     if (inputCounty != "") {
-        client.channels.get('695838084687986738').send("!cases " + inputCounty + " " + inputState);// + "::::: " + token);
+        client.channels.get(channelID).send("!botcases " + inputCounty + " " + inputState + " " + token);
         var location = inputCounty + ", " + inputState;
     } else {
-        client.channels.get('695838084687986738').send("!cases " + inputState);// + "::::: ") + token);
+        client.channels.get(channelID).send("!botcases " + inputState + " " + token);
         var location = inputState;
     }
 
     client.on('message', function (msg) {
-        if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738") {// && msg.content.includes(token)) {
+        if (msg.author.id == "692117206108209253" && msg.channel.id == channelID && msg.content.includes(token)) {
             console.log("bot");
             blockRequest(inputState, inputCounty);
             setTimeout(allowRequest, 3600000);
 
-            var matches = msg.content.match(/\d+/g);
+            var data = msg.content.replace(token + " ", " ").toString();
+            var matches = data.match(/\d+/g);
+            console.log(matches);
             var cases = matches[0];
             var deaths = matches[1];
 
             localStorage.setItem(location, matches);
             console.log("data saved to cache for later retrieval");
 
-            // var data = msg.content.replace(token + " ", "");
             document.getElementById('location').innerHTML = location;
             document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
             document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
