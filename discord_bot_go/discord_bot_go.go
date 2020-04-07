@@ -270,18 +270,11 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		var state string
 		var county string
 
-		sre := regexp.MustCompile(`:{5}[\w(\w )]+:{5}`)
-		cre := regexp.MustCompile(`;{5}[\w(\w )]+;{5}`)
-		if len(commandContents) > 1 {
-			state = sre.FindString(command)
-			county = strings.Title(cre.FindString(command))
-
-			state = state[5 : len(state)-5]
-			if county != "" {
-				county = county[5 : len(county)-5]
-			}
-
-			log.Traceln(state, county)
+		//sre := regexp.MustCompile(`:{5}[\w(\w )]+:{5}`)
+		//cre := regexp.MustCompile(`;{5}[\w(\w )]+;{5}`)
+		if len(commandContents) >= 2 {
+			state = commandContents[len(commandContents)-2]
+			county = strings.Title(strings.Join(commandContents[1:len(commandContents)-2], " "))
 
 			isAbbreviated, err := regexp.MatchString(".{2}", state)
 			if err != nil {
