@@ -27,6 +27,12 @@ var users = db.collection("users");
 var emails = db.collection("emails");
 
 window.onload = function () {
+    var version = localStorage.getItem("version");
+    if (version != "0.2") {
+        localStorage.clear();
+        localStorage.setItem("version", "0.2");
+    }
+        
     $('#stopTime').toast('hide');
     var date = new Date();
     var hours = (date.getHours() <= 12) ? date.getHours() : (date.getHours() - 12);

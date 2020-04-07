@@ -12,7 +12,7 @@ import (
 	"github.com/wcharczuk/go-chart"
 )
 
-// ChartCases is a function that takes an AreaInfo as input and returns a picture as a graph
+// ChartCases is a function that takes AreaInfo as input and returns a picture as a graph
 func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader, error) {
 	caseMap := make(map[int64]*pb.AreaInfo)
 	var orderedKeys []int64
