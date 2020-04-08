@@ -231,9 +231,9 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 		unique := true
 		for i, j := range infoMap {
-			if inTimeSpan(insertTime.Add(-10*time.Minute), insertTime.Add(10*time.Minute), i) {
-				for _, i := range combinedKeyMap[insertTime] {
-					if i == info.CombinedKey {
+			if insertTime.Day() == i.Day() {
+				for _, k := range combinedKeyMap[i] {
+					if k == info.CombinedKey {
 						unique = false
 						break
 					}
