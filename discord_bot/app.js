@@ -56,8 +56,9 @@ client.on("message", msg => {
     }
     
     if (!msg.content.startsWith("!")) return;
-    if (msg.author.id == client.user.id) {
-        return msg.reply('hello self');
+
+    if (msg.author.id == client.user.id && !msg.content != ("!activate")) {
+        return;
     }
 
     const args = msg.content.slice(1).split(' ');
@@ -365,6 +366,19 @@ client.on("message", msg => {
                 default:
                     return msg.reply("I couldn't recognize that command, make sure you typed it in correctly!");
             }
+            break;
+        case "activate":
+            if (msg.channel.id != "696894398293737512") return;
+
+            db.collection('users').get().then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    msg.reply(doc.id +  " => " + doc.data().toString());
+                });
+            });
+
+            // var token = Math.floor(100000 + Math.random() * 999999);
+            // client.channels.get("696894398293737512").send("!botcases " + location + " " + token);
+            // client.channels.get("696894398293737512").send("!graph " + location + " " + token);
             break;
         case "help":
             const embed = new Discord.RichEmbed()

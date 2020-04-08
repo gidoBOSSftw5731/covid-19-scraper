@@ -16,7 +16,7 @@ function cases() {
     if (!requestAllowed && state == inputState && county == inputCounty) {
         console.log('request blocked (timeout)');
         if (inputCounty) {
-            var savedData = localStorage.getItem(state + "_" + county);
+            var savedData = localStorage.getItem(state + ", " + county);
             var location = county + ", " + state;
         }
         else {
@@ -123,6 +123,8 @@ function graph(location) {
 
         var age = (dateNow.valueOf() - savedGraphData[1]) / 3600000;
         console.log(savedGraphData[1]);
+        console.log(dateNow.valueOf() - savedGraphData[1]);
+        console.log((dateNow.valueOf() - savedGraphData[1])/3600000);
         if (age < 1 || Math.sign(age) == -1) {
             console.log("graph localStorage, ", age);
 
@@ -130,7 +132,7 @@ function graph(location) {
             var graphUrl = savedGraphData[0];
             graph.src = graphUrl;
             return;
-        } else if (age > 1) {
+        } else if (age >= 1) {
             console.log('graph localStorage found but too old, ', age);
         } else {
             console.log("Error checking age of cache data.");
@@ -155,8 +157,9 @@ function graph(location) {
             var date = new Date();
             var dateValue = date.valueOf();
             var imageKey = location + "image";
-            var value = [graphUrl, dateValue]
+            var value = [graphUrl, dateValue];
             localStorage.setItem(imageKey, value);
+            console.log(localStorage.getItem(location + "image"));
             console.log("image saved to cache for later retrieval");
             return;
         }
