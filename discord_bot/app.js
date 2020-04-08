@@ -413,15 +413,27 @@ client.on("message", msg => {
                 .setColor('#C70039')
                 .setThumbnail("https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg")
                 .setURL("https://covidbot19.web.app")
-                .addField("Commands",
-                        "`!signup (no args)` - saves your Discord account so you can access even better features like the watchlist and subscriptions.\n\n" +
-                        "`!id (no args)` - retrieves your Discord ID; useful on our website to connect / sign in to a Discord account.\n\n" +
-                        "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n\n" +
-                        "`!subscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
-                        "`!unsubscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: this command is not for" +
-                        "specific data, it only subscribes to the level of data regardless of location.\n\n" +
-                        "`!watchlist <view (no args)/add/remove/clear (no args)> <county (optional)> <state (abbreviation)>` - adds a specific location to \n\n" + 
-                        "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n\n"
+                .addField("Signup",
+                    "`!signup (no args)` - saves your Discord account so you can access even better features like the watchlist and subscriptions.\n"
+                )
+                .addField("ID",
+                    "`!id (no args)` - retrieves your Discord ID; useful on our website to connect / sign in to a Discord account.\n"
+                )
+                .addField("Location",
+                    "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n"
+                )
+                .addField("Subscribe",
+                    "`!subscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases." +
+                    "Note: this command is not for specific data, it only subscribes to the level of data regardless of location.\n"
+                )
+                .addField("Unsubscribe",
+                    "`!unsubscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n"
+                )
+                .addField("Watchlist",
+                    "`!watchlist <view (no args)/add/remove/clear (no args)> <county (optional)> <state (abbreviation)>` - adds a specific location to your watchlist.\n"
+                )
+                .addField("Cases",
+                    "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"
                 )
                 .setFooter('Data Source: Arcgis');
             msg.channel.send({ embed });
