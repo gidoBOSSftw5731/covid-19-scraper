@@ -367,46 +367,28 @@ client.on("message", msg => {
                     return msg.reply("I couldn't recognize that command, make sure you typed it in correctly!");
             }
             break;
-        // case "activate":
-        //     if (msg.channel.id != "696894398293737512") return;
-        //     msg.reply("Activated. Now starting database query for update-enabled users.");
+        case "activate":
+            if (msg.channel.id != "696894398293737512") return;
+            msg.reply("Activated. Now starting database query for update-enabled users.");
 
-        //     db.collection('users').get().then(function (querySnapshot) {
-        //         querySnapshot.forEach(function (doc) {
-        //             var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
-        //             if (!watchlist) {
-        //                 return;
-        //             }
+            db.collection('users').get().then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+                    if (!watchlist) {
+                        return;
+                    }
 
-        //             var watchlistString = "";
-        //             for (i = 0; i < watchlist.length; i++) {
-        //                 if ((i == (watchlist.length - 1)) && (watchlist.length > 1)) {
-        //                     watchlistString += "and " + watchlist[i];
-        //                 } else if (watchlist.length > 2) {
-        //                     watchlistString += watchlist[i] + ", ";
-        //                 } else if (watchlist.length == 2) {
-        //                     watchlistString += watchlist[i] + " ";
-        //                 } else if (watchlist.length == 1) {
-        //                     watchlistString = watchlist[0];
-        //                 } else {
-        //                     error("Error occurred, should be impossible????");
-        //                     return console.log(watchlist);
-        //                 }
-        //                 msg.reply("!cases " + watchlist[i]);
-        //             }
-
-        //             if (watchlistString.length == 0) {
-        //                 return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args> to add something now!");
-        //             } else {
-        //                 msg.reply("Your watchlist: " + watchlistString);
-        //             }
-        //         });
-        //     });
+                    var watchlistString = "";
+                    for (i = 0; i < watchlist.length; i++) {
+                        msg.channel.send("!cases " + watchlist[i]);
+                    }
+                });
+            });
 
             // var token = Math.floor(100000 + Math.random() * 999999);
             // client.channels.get("696894398293737512").send("!botcases " + location + " " + token);
             // client.channels.get("696894398293737512").send("!graph " + location + " " + token);
-            // break;
+            break;
         case "help":
             const embed = new Discord.RichEmbed()
                 .setTitle("Command List")
