@@ -1,35 +1,43 @@
+// Package tools contains tools used in the covid19 bot operations.
 package tools
 
 import (
 	"bufio"
+	"bytes"
 	"io"
-	"os"
 	"sort"
 	"time"
 
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
 	"github.com/gidoBOSSftw5731/log"
-	"github.com/wcharczuk/go-chart"
 )
 
 // ChartCases is a function that takes AreaInfo as input and returns a picture as a graph
 func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader, error) {
 	caseMap := make(map[int64]*pb.AreaInfo)
 	var orderedKeys []int64
-	//log.Traceln(info.Info)
 
+	// Make a map of cases keyed by timestamp.
+	// Also, collect the timestamps in a slice.(to later sort)
 	for _, i := range info.Info {
 		caseMap[i.UnixTimeOfRequest] = i
 		orderedKeys = append(orderedKeys, i.UnixTimeOfRequest)
 	}
 
+	// Sort that timestamp slice now.
 	sort.Slice(orderedKeys, func(i, j int) bool {
 		return orderedKeys[i] < orderedKeys[j]
 	})
+	// Create a slice (ordered) of time.Time for x-axis use later.
+	var timeKeys []time.Time
+	for _, j := range orderedKeys {
+		timeKeys = append(timeKeys, time.Unix(j, 0))
+	}
 
 	var caseStatsSorted []float64
 	var deathStatsSorted []float64
 
+	// Extract from each case (in timestamp order) the opened/dead case numbers.
 	for _, i := range orderedKeys {
 		if doConfirmed {
 			caseStatsSorted = append(caseStatsSorted, float64(caseMap[int64(i)].ConfirmedCases))
@@ -39,6 +47,7 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 		}
 	}
 
+	// For safety sake later make sure there's at least one real number in the lists.
 	if len(caseStatsSorted) == 0 {
 		caseStatsSorted = append(caseStatsSorted, 0)
 	}
@@ -46,13 +55,7 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 		deathStatsSorted = append(deathStatsSorted, 0)
 	}
 
-	var timeKeys []time.Time
-	for _, j := range orderedKeys {
-		//log.Traceln(i, j)
-		t := time.Unix(j, 0)
-		timeKeys = append(timeKeys, t)
-	}
-
+	// Construct the timeSeries data sets for cases/deaths.
 	cSeries := chart.TimeSeries{
 		Name:    "Confirmed Cases",
 		XValues: timeKeys,
@@ -64,34 +67,25 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 		YValues: deathStatsSorted,
 	}
 
-	//linRegSeries := &chart.LinearRegressionSeries{
-	//	InnerSeries: cSeries,
-	//	Offset:      2,
-	//}
-
+	// Create the graph/Chart with the new series attached.
 	graph := chart.Chart{
 		Series: []chart.Series{
 			cSeries,
 			dSeries,
-			//linRegSeries,
 		},
 	}
 
-	//note we have to do this as a separate step because we need a reference to graph
+	// Note: we have to do this as a separate step because we need a reference to graph
 	graph.Elements = []chart.Renderable{
 		chart.Legend(&graph),
 	}
 
-	f, _ := os.Create("output.png")
-	//defer f.Close()
+	var f bytes.Buffer
 	err := graph.Render(chart.PNG, f)
 	if err != nil {
-		//log.Errorln(err)
 		return nil, err
 	}
 	log.Traceln("wrote to file")
-
-	f.Seek(0, 0)
 
 	return bufio.NewReader(f), nil
 }
