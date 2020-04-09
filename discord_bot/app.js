@@ -383,10 +383,10 @@ client.on("message", msg => {
                         const watchlistLoop = async _ => {
                             for (i = 0; i < watchlist.length; i++) {
                                 var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                await msg.channel.send("!botcases " + watchlist[i] + " " + doc.id);
+                                await msg.channel.send("!botcases " + watchlist[i] + " " + token);
 
                                 client.on('message', function (message) {
-                                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(id)) {
+                                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token)) {
                                         var data = message.content.replace(token + " ", " ").toString();
                                         var matches = data.match(/\d+/g);
                                         var cases = matches[0];
