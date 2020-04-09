@@ -26,13 +26,17 @@ function cases() {
 
         console.log("localStorage");
 
-        var matches = savedData.match(/\d+/g);
-        var cases = matches[0];
-        var deaths = matches[1];
-        document.getElementById('location').innerHTML = location;
-        document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
-        document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
-        return graph(location);
+        if (location) {
+            var matches = savedData.match(/\d+/g);
+            var cases = matches[0];
+            var deaths = matches[1];
+            document.getElementById('location').innerHTML = location;
+            document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
+            document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
+            return graph(location);
+        } else {
+            console.log("Error occurred, it is possibly due to caching failure or user intervention.");
+        }
     }
 
     var channels = ["695838084687986738", "696893994247913492", "696894015324291194", "696894101232287785", "696894131972210708", "696894159314747392",
@@ -60,13 +64,14 @@ function cases() {
             var cases = matches[0];
             var deaths = matches[1];
 
-            localStorage.setItem(location, matches);
+            var cacheLocation = location.replace(", ", " ");
+            localStorage.setItem(cacheLocation, matches);
             console.log("data saved to cache for later retrieval");
 
             document.getElementById('location').innerHTML = location;
             document.getElementById('resultsCases').innerHTML = "Cases: " + cases;
             document.getElementById('resultsDeaths').innerHTML = "Deaths: " + deaths;
-            return graph(location);
+            return graph(cacheLocation);
         }
     });
 };

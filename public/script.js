@@ -17,6 +17,7 @@ db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token);
     client.on('ready', function () {
         console.log('Discord Bot is ready for use!');
+        countryCases();
     });
 }).catch(function (err) {
     console.log(err);
@@ -26,8 +27,6 @@ var users = db.collection("users");
 var emails = db.collection("emails");
 
 window.onload = function () {
-    countryCases();
-
     var version = localStorage.getItem("version");
     if (version != "0.2") {
         localStorage.clear();
