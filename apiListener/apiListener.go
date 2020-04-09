@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/md5"
 	"database/sql"
 	"encoding/base64"
 	"fmt"
@@ -38,13 +39,14 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	//ping and fatal on error (sometimes catches bugs)
+
+	// If the database is not alive, exit now.
 	if db.Ping() != nil {
 		log.Fatalln(db.Ping())
 	}
 
 	log.Traceln("Listening")
-	//begin fcgi listener, we use fcgi so we can have a loadbalancer and a cache upstream
+	//  Start the fcgi listener, we use fcgi so we can have a loadbalancer and a cache upstream
 	listener, err := net.Listen("tcp", "127.0.0.1:9001")
 	if err != nil {
 		log.Fatalln(err)
@@ -110,7 +112,6 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			return
 		}
 		if len(urlSplit) == 3 {
-			//log.Traceln(urlSplit[2])
 			stateList, err := listStates(urlSplit[2])
 			if err != nil {
 				log.Errorln(err)
@@ -221,8 +222,10 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 
 	}
 
+	// infoMap is a map of per insertTime to data record at that time.
 	infoMap := make(map[time.Time]*pb.AreaInfo)
-	combinedKeyMap := make(map[time.Time][]string)
+	// existingRecords is used to remove duplicate inserttime records.
+	existingRecords := make(map[string]bool)
 
 	for rows.Next() {
 		var info pb.AreaInfo
@@ -233,24 +236,18 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 			log.Errorln(err)
 			continue
 		}
-
+		recHash := fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%d||%s", insertTime.UnixNano(), info.CombinedKey))))
+		// Loop through all infoMap collected so far, record the new row only if unique.
 		unique := true
 		for i, j := range infoMap {
 			if insertTime.Day() == i.Day() {
-				//log.Traceln(combinedKeyMap[i])
-				for _, k := range combinedKeyMap[i] {
-					if k == info.CombinedKey {
-						log.Traceln("already counted", info.CombinedKey, k)
-						unique = false
-						break
-					}
-				}
-
-				if !unique {
+				// If the existingRecords already exists mark this record as non-unique.
+				if _, ok := existingRecords[recHash]; ok {
+					log.Traceln("already counted", info.CombinedKey)
+					unique = false
 					break
 				}
-				unique = false
-				//foo := j
+
 				j.Deaths += info.Deaths
 				j.Recoveries += info.Recoveries
 				j.ConfirmedCases += info.ConfirmedCases
@@ -264,7 +261,7 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 			log.Tracef("%v is unique", info.CombinedKey)
 			info.UnixTimeOfRequest = insertTime.Unix()
 			infoMap[insertTime] = &info
-			combinedKeyMap[insertTime] = append(combinedKeyMap[insertTime], info.CombinedKey)
+			existingRecords[recHash] = true
 		}
 	}
 
@@ -273,7 +270,6 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	for _, i := range infoMap {
 		i.Type = pb.AreaInfo_STATE
 		hInfo.Info = append(hInfo.Info, i)
-		//log.Traceln(i.ConfirmedCases)
 	}
 
 	log.Traceln(infoMap)
