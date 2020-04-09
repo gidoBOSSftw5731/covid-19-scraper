@@ -77,7 +77,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				ErrorHandler(resp, req, 404, "Bad Data")
 			}
 
-			dataByte, err := proto.Marshal(&data)
+			dataByte, err := proto.Marshal(data)
 			if err != nil {
 				ErrorHandler(resp, req, 500, "Marshalling error")
 				return
@@ -92,7 +92,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				ErrorHandler(resp, req, 404, "Bad Data")
 			}
 
-			dataByte, err := proto.Marshal(&data)
+			dataByte, err := proto.Marshal(data)
 			if err != nil {
 				ErrorHandler(resp, req, 500, "Marshalling error")
 				return
@@ -118,7 +118,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			stateListByte, err := proto.Marshal(&stateList)
+			stateListByte, err := proto.Marshal(stateList)
 			if err != nil {
 				ErrorHandler(resp, req, 500, "Marshalling error")
 				return
@@ -133,7 +133,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				return
 			}
 
-			countyListByte, err := proto.Marshal(&countyList)
+			countyListByte, err := proto.Marshal(countyList)
 			if err != nil {
 				ErrorHandler(resp, req, 500, "Marshalling error")
 				return
@@ -156,7 +156,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				ErrorHandler(resp, req, 500, "Query error")
 			}
 
-			dataByte, err := proto.Marshal(&data)
+			dataByte, err := proto.Marshal(data)
 			if err != nil {
 				ErrorHandler(resp, req, 500, "Marshalling error")
 				return
@@ -170,7 +170,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				ErrorHandler(resp, req, 500, "Query error")
 			}
 
-			dataByte, err := proto.Marshal(&data)
+			dataByte, err := proto.Marshal(data)
 			if err != nil {
 				ErrorHandler(resp, req, 500, "Marshalling error")
 				return
@@ -184,7 +184,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 				ErrorHandler(resp, req, 500, "Query error")
 			}
 
-			dataByte, err := proto.Marshal(&data)
+			dataByte, err := proto.Marshal(data)
 			if err != nil {
 				ErrorHandler(resp, req, 500, "Marshalling error")
 				return
@@ -208,12 +208,16 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func stateData(country, state string) (pb.HistoricalInfo, error) {
-	var hInfo pb.HistoricalInfo
-	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime, combined FROM records  WHERE country=$1 AND state=$2",
-		country, state)
+func stateData(country, state string) (*pb.HistoricalInfo, error) {
+	hInfo := &pb.HistoricalInfo{}
+	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+	                              recovered, COALESCE(incidentrate,0), inserttime,
+																combined
+													 FROM records
+													WHERE country=$1
+													  AND state=$2`, country, state)
 	if err != nil {
-		return hInfo, err
+		return nil, err
 
 	}
 
@@ -223,7 +227,8 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime, &info.CombinedKey)
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven,
+			&info.Recoveries, &info.Incidentrate, &insertTime, &info.CombinedKey)
 		if err != nil {
 			log.Errorln(err)
 			continue
@@ -273,34 +278,37 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 
 	log.Traceln(infoMap)
 	return hInfo, nil
-
 }
 
-func currentStateInfo(country, state string) (pb.AreaInfo, error) {
-	var cInfo pb.AreaInfo
-	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM currentdata WHERE country=$1 AND state=$2",
-		country, state)
+func currentStateInfo(country, state string) (*pb.AreaInfo, error) {
+	cInfo := &pb.AreaInfo{}
+	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+	                              recovered, COALESCE(incidentrate,0), inserttime
+													 FROM currentdata
+													WHERE country=$1
+													  AND state=$2`, country, state)
 	if err != nil {
-		return cInfo, err
-
+		log.Errorln(err)
+		return nil, err
 	}
 
 	rows.Next()
 	var insertTime time.Time
-	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases, &cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
+	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases,
+		&cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
 	if err != nil {
 		log.Errorln(err)
-		return cInfo, err
+		return nil, err
 	}
 
 	cInfo.Type = pb.AreaInfo_STATE
-
 	cInfo.UnixTimeOfRequest = insertTime.Unix()
 
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases,
+			&info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
 		if err != nil {
 			log.Errorln(err)
 			continue
@@ -310,38 +318,39 @@ func currentStateInfo(country, state string) (pb.AreaInfo, error) {
 		cInfo.Recoveries += info.Recoveries
 		cInfo.ConfirmedCases += info.ConfirmedCases
 		cInfo.TestsGiven += info.TestsGiven
-
-		//log.Tracef("%v, %v", info.ConfirmedCases, cInfo.ConfirmedCases)
 	}
 
 	return cInfo, nil
 }
 
-func currentCountryInfo(country string) (pb.AreaInfo, error) {
-	var cInfo pb.AreaInfo
-	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM currentdata  WHERE country=$1",
-		country)
+func currentCountryInfo(country string) (*pb.AreaInfo, error) {
+	cInfo := &pb.AreaInfo{}
+	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+	                              recovered, COALESCE(incidentrate,0), inserttime
+													 FROM currentdata
+													WHERE country=$1`, country)
 	if err != nil {
-		return cInfo, err
-
+		log.Errorln(err)
+		return nil, err
 	}
 
 	rows.Next()
 	var insertTime time.Time
-	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases, &cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
+	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases,
+		&cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
 	if err != nil {
 		log.Errorln(err)
-		return cInfo, err
+		return nil, err
 	}
 
 	cInfo.Type = pb.AreaInfo_COUNTRY
-
 	cInfo.UnixTimeOfRequest = insertTime.Unix()
 
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases,
+			&info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
 		if err != nil {
 			log.Errorln(err)
 			continue
@@ -356,31 +365,36 @@ func currentCountryInfo(country string) (pb.AreaInfo, error) {
 	return cInfo, nil
 }
 
-func currentCountyInfo(country, state, county string) (pb.AreaInfo, error) {
-	var cInfo pb.AreaInfo
-	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM currentdata WHERE country=$1 AND state=$2 AND county=$3",
-		country, state, county)
+func currentCountyInfo(country, state, county string) (*pb.AreaInfo, error) {
+	cInfo := &pb.AreaInfo{}
+	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+	                              recovered, COALESCE(incidentrate,0), inserttime
+													 FROM currentdata
+													WHERE country=$1
+													  AND state=$2
+														AND county=$3`, country, state, county)
 	if err != nil {
-		return cInfo, err
-
+		log.Errorln(err)
+		return nil, err
 	}
 
 	rows.Next()
 	var insertTime time.Time
-	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases, &cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
+	err = rows.Scan(&cInfo.Lat, &cInfo.Long, &cInfo.Deaths, &cInfo.ConfirmedCases,
+		&cInfo.TestsGiven, &cInfo.Recoveries, &cInfo.Incidentrate, &insertTime)
 	if err != nil {
 		log.Errorln(err)
-		return cInfo, err
+		return nil, err
 	}
 
 	cInfo.Type = pb.AreaInfo_COUNTY
-
 	cInfo.UnixTimeOfRequest = insertTime.Unix()
 
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
+		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases,
+			&info.TestsGiven, &info.Recoveries, &info.Incidentrate, &insertTime)
 		if err != nil {
 			log.Errorln(err)
 			continue
@@ -403,12 +417,12 @@ func ErrorHandler(resp http.ResponseWriter, req *http.Request, status int, alert
 		status, alert, status, status)
 }
 
-func listStates(country string) (pb.ListOfStates, error) {
-	var stateList pb.ListOfStates
+func listStates(country string) (*pb.ListOfStates, error) {
+	stateList := &pb.ListOfStates{}
 
 	rows, err := db.Query("SELECT DISTINCT country, state FROM records WHERE country = $1", country)
 	if err != nil {
-		return stateList, err
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -426,18 +440,18 @@ func listStates(country string) (pb.ListOfStates, error) {
 		}
 
 		stateList.States = append(stateList.States, state)
-
 	}
+
 	return stateList, nil
 }
 
-func listCounties(country, state string) (pb.ListOfCounties, error) {
-	var countyList pb.ListOfCounties
+func listCounties(country, state string) (*pb.ListOfCounties, error) {
+	countyList := &pb.ListOfCounties{}
 
 	rows, err := db.Query("SELECT DISTINCT county FROM records WHERE country = $1 AND state = $2",
 		country, state)
 	if err != nil {
-		return countyList, err
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -453,18 +467,23 @@ func listCounties(country, state string) (pb.ListOfCounties, error) {
 		rows.Scan(&countyName)
 
 		countyList.Counties = append(countyList.Counties, countyName)
-
 	}
+
 	return countyList, nil
 }
 
-func countyData(country, state, county string) (pb.HistoricalInfo, error) {
-	var countyData pb.HistoricalInfo
+func countyData(country, state, county string) (*pb.HistoricalInfo, error) {
+	countyData := &pb.HistoricalInfo{}
 
-	rows, err := db.Query("SELECT lat, long, deaths, confirmed, COALESCE(tests,0), recovered, COALESCE(incidentrate,0), inserttime FROM records  WHERE country=$1 AND state=$2 AND county=$3",
-		country, state, county)
+	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+	                              recovered, COALESCE(incidentrate,0), inserttime
+													 FROM records
+													WHERE country=$1
+													  AND state=$2
+														AND county=$3`, country, state, county)
 	if err != nil {
-		return countyData, err
+		log.Errorln(err)
+		return nil, err
 	}
 
 	infoMap := make(map[time.Time]*pb.AreaInfo)
@@ -480,7 +499,6 @@ func countyData(country, state, county string) (pb.HistoricalInfo, error) {
 		}
 
 		countyinfo.UnixTimeOfRequest = insertTime.Unix()
-
 		countyinfo.Type = pb.AreaInfo_COUNTY
 
 		unique := true
@@ -493,7 +511,6 @@ func countyData(country, state, county string) (pb.HistoricalInfo, error) {
 					unique = false
 					break
 				}
-
 			}
 		}
 		if unique {
@@ -502,9 +519,6 @@ func countyData(country, state, county string) (pb.HistoricalInfo, error) {
 		}
 
 		log.Traceln(countyinfo.ConfirmedCases, unique, insertTime)
-
-		//countyData.Info = append(countyData.Info, &countyinfo)
-
 	}
 
 	return countyData, nil
