@@ -371,23 +371,37 @@ client.on("message", msg => {
             if (msg.channel.id != "696894398293737512") return;
             msg.reply("Activated. Now starting database query for update-enabled users.");
 
-            db.collection('users').get().then(function (querySnapshot) {
+            db.collection('users').get().then(async function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
-                    var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
-                    if (!watchlist) {
-                        return;
+                    var location = (doc.data().location) ? doc.data().watchlist : null;
+                    if (location) {
+                        await msg.channel.send("!botcases " + location + " " + doc.id);
                     }
 
-                    var watchlistString = "";
-                    for (i = 0; i < watchlist.length; i++) {
-                        msg.channel.send("!cases " + watchlist[i]);
+                    var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+                    if (watchlist) {
+                        const watchlistLoop = async _ => {
+                            for (i = 0; i < watchlist.length; i++) {
+                                var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                                await msg.channel.send("!botcases " + watchlist[i] + " " + doc.id);
+
+                                client.on('message', function (message) {
+                                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(id)) {
+                                        var data = message.content.replace(token + " ", " ").toString();
+                                        var matches = data.match(/\d+/g);
+                                        var cases = matches[0];
+                                        var deaths = matches[1];
+
+                                        return message.channel.send("Cases: " + cases + " Deaths: " + deaths);
+                                    }
+                                });
+                            }
+                        }
+                        watchlistLoop();
                     }
                 });
             });
 
-            // var token = Math.floor(100000 + Math.random() * 999999);
-            // client.channels.get("696894398293737512").send("!botcases " + location + " " + token);
-            // client.channels.get("696894398293737512").send("!graph " + location + " " + token);
             break;
         case "help":
             const embed = new Discord.RichEmbed()
