@@ -10,6 +10,7 @@ import (
 
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
 	"github.com/gidoBOSSftw5731/log"
+	chart "github.com/wcharczuk/go-chart"
 )
 
 // ChartCases is a function that takes AreaInfo as input and returns a picture as a graph
@@ -81,11 +82,11 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 	}
 
 	var f bytes.Buffer
-	err := graph.Render(chart.PNG, f)
+	err := graph.Render(chart.PNG, &f)
 	if err != nil {
 		return nil, err
 	}
 	log.Traceln("wrote to file")
 
-	return bufio.NewReader(f), nil
+	return bufio.NewReader(&f), nil
 }
