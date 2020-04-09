@@ -376,8 +376,9 @@ client.on("message", msg => {
                 if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("County Data:")) {
                     db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
                         querySnapshot.forEach(function (doc) {
-                            // DM Users with scraped numbers
-                            msg.reply(doc.id);
+                            return;
+
+                            client.users.get(doc.id).send(message.content);
                         });
                     }).catch(function (error) {
                         console.log("Error getting documents: ", error);
@@ -390,8 +391,9 @@ client.on("message", msg => {
                 if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("State Data:")) {
                     db.collection('users').where("stateSubscription", "==", true).get().then(function (querySnapshot) {
                         querySnapshot.forEach(function (doc) {
-                            // DM Users with scraped numbers
-                            msg.reply(doc.id);
+                            return;
+
+                            client.users.get(doc.id).send(message.content);
                         });
                     }).catch(function (error) {
                         console.log("Error getting documents: ", error);
@@ -399,13 +401,14 @@ client.on("message", msg => {
                 }
             });
 
-            msg.channel.send('!country');
+            msg.channel.send('!cases');
             client.on('message', function (message) {
                 if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("Country Data:")) {
                     db.collection('users').where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                         querySnapshot.forEach(function (doc) {
-                            // DM Users with scraped numbers
-                            msg.reply(doc.id);
+                            return;
+
+                            client.users.get(doc.id).send(message.content);
                         });
                     }).catch(function (error) {
                         console.log("Error getting documents: ", error);
