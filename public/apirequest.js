@@ -18,8 +18,7 @@ function cases() {
         if (inputCounty) {
             var savedData = localStorage.getItem(state + ", " + county);
             var location = county + ", " + state;
-        }
-        else {
+        } else {
             var savedData = localStorage.getItem(state);
             var location = state;
         }
@@ -186,7 +185,6 @@ function email() {
             });
         }
     });
-
 };
 
 function blockRequest(state, county) {

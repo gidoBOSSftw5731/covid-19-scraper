@@ -465,7 +465,7 @@ client.on("message", msg => {
                                     }
                                 });
                             }
-                        }
+                        };
                         watchlistLoop();
                     }
                 });
@@ -474,7 +474,22 @@ client.on("message", msg => {
                 users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
                 users.get('181965297249550336').send("Error occurred with activation location and watchlist retrieval.");
                 return;
-            });;
+            });
+
+            db.collection('mailinglist').get().then(function (querySnapshot) {
+                querySnapshot.forEach(async function (doc) {
+                    var emails = doc.data();
+
+                    for (i = 0; i < emails.length; i++) {
+
+                        auth.sendPasswordResetEmail(emails[i]).then(function () {
+                            console.log("Email sent to user: ", emails[i]);
+                        }).catch(function (error) {
+                            console.log("Error occurred emailing users: ", error);
+                        });
+                    }
+                });
+            });
             break;
         case "help":
             const embed = new Discord.RichEmbed()
