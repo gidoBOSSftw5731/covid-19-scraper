@@ -372,7 +372,7 @@ client.on("message", msg => {
             msg.reply("Activated. Now starting database query for update-enabled users.");
 
             db.collection('users').get().then(async function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
+                querySnapshot.forEach(async function (doc) {
                     var location = (doc.data().location) ? doc.data().watchlist : null;
                     if (location) {
                         await msg.channel.send("!botcases " + location + " " + doc.id);
