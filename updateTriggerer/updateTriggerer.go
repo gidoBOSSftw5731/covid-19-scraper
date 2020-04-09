@@ -41,7 +41,7 @@ func main() {
 	errCheck("Error opening connection to Discord", err)
 	defer discord.Close()
 
-	discord.ChannelMessageSend("695838084687986738", "!activate")
+	discord.ChannelMessageSend("696894398293737512", "!activate")
 }
 
 func errCheck(msg string, err error) {

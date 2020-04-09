@@ -232,14 +232,17 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 		unique := true
 		for i, j := range infoMap {
 			if insertTime.Day() == i.Day() {
+				//log.Traceln(combinedKeyMap[i])
 				for _, k := range combinedKeyMap[i] {
 					if k == info.CombinedKey {
+						log.Traceln("already counted", info.CombinedKey, k)
 						unique = false
 						break
 					}
 				}
+
 				if !unique {
-					continue
+					break
 				}
 				unique = false
 				//foo := j
@@ -248,11 +251,12 @@ func stateData(country, state string) (pb.HistoricalInfo, error) {
 				j.ConfirmedCases += info.ConfirmedCases
 				j.TestsGiven += info.TestsGiven
 				// once incident rate is defined in ARCGIS, I'll figure out how to handle it
-				log.Traceln(info.ConfirmedCases, insertTime)
+				log.Traceln(info.CombinedKey, insertTime.Day())
 				break
 			}
 		}
 		if unique {
+			log.Tracef("%v is unique", info.CombinedKey)
 			info.UnixTimeOfRequest = insertTime.Unix()
 			infoMap[insertTime] = &info
 			combinedKeyMap[insertTime] = append(combinedKeyMap[insertTime], info.CombinedKey)
