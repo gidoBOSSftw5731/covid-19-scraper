@@ -15,12 +15,12 @@ firebase.initializeApp({
 });
 
 var admin = require("firebase-admin");
-
 var serviceAccount = require("./coronavirusbot19-firebase-adminsdk-sckiv-6ca1e54162.json");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://coronavirusbot19.firebaseio.com"
 });
+
 let db = admin.firestore();
 // Firebase End
 
@@ -418,7 +418,19 @@ client.on("message", msg => {
 
             db.collection('users').get().then(async function (querySnapshot) {
                 querySnapshot.forEach(async function (doc) {
-                    var location = (doc.data().location) ? doc.data().watchlist : null;
+                    var state = (doc.data().state) ? doc.data().state : null;
+                    var county = (doc.data().county) ? doc.data().county : null;
+
+                    if (state && county) {
+                        var location = state + " " + county;
+                    } else if (state) {
+                        var location = state;
+                    } else if (county) {
+                        var location = county;
+                    } else {
+                        var location = null;
+                    }
+
                     if (location) {
                         var token = doc.id + Math.floor(100000 + Math.random() * 999999);
                         await msg.channel.send("!botcases " + location + " " + token);
@@ -463,7 +475,6 @@ client.on("message", msg => {
                 users.get('181965297249550336').send("Error occurred with activation location and watchlist retrieval.");
                 return;
             });;
-
             break;
         case "help":
             const embed = new Discord.RichEmbed()
