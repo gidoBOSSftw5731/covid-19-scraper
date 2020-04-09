@@ -367,34 +367,73 @@ client.on("message", msg => {
                     return msg.reply("I couldn't recognize that command, make sure you typed it in correctly!");
             }
             break;
-        case "activate":
-            if (msg.channel.id != "696894398293737512") return;
+        // case "activate":
+        //     if (msg.channel.id != "696894398293737512") return;
+        //     msg.reply("Activated. Now starting database query for update-enabled users.");
 
-            db.collection('users').get().then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    msg.reply(doc.id +  " => " + doc.data().toString());
-                });
-            });
+        //     db.collection('users').get().then(function (querySnapshot) {
+        //         querySnapshot.forEach(function (doc) {
+        //             var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+        //             if (!watchlist) {
+        //                 return;
+        //             }
+
+        //             var watchlistString = "";
+        //             for (i = 0; i < watchlist.length; i++) {
+        //                 if ((i == (watchlist.length - 1)) && (watchlist.length > 1)) {
+        //                     watchlistString += "and " + watchlist[i];
+        //                 } else if (watchlist.length > 2) {
+        //                     watchlistString += watchlist[i] + ", ";
+        //                 } else if (watchlist.length == 2) {
+        //                     watchlistString += watchlist[i] + " ";
+        //                 } else if (watchlist.length == 1) {
+        //                     watchlistString = watchlist[0];
+        //                 } else {
+        //                     error("Error occurred, should be impossible????");
+        //                     return console.log(watchlist);
+        //                 }
+        //                 msg.reply("!cases " + watchlist[i]);
+        //             }
+
+        //             if (watchlistString.length == 0) {
+        //                 return msg.reply("Hm, looks like you don't have any locations in your watchlist! Run the command !watchlist add <args> to add something now!");
+        //             } else {
+        //                 msg.reply("Your watchlist: " + watchlistString);
+        //             }
+        //         });
+        //     });
 
             // var token = Math.floor(100000 + Math.random() * 999999);
             // client.channels.get("696894398293737512").send("!botcases " + location + " " + token);
             // client.channels.get("696894398293737512").send("!graph " + location + " " + token);
-            break;
+            // break;
         case "help":
             const embed = new Discord.RichEmbed()
                 .setTitle("Command List")
                 .setColor('#C70039')
                 .setThumbnail("https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg")
                 .setURL("https://covidbot19.web.app")
-                .addField("Commands",
-                        "`!signup (no args)` - saves your Discord account so you can later save your location and opt-in for updates on cases in your area.\n\n" +
-                        "`!id (no args)` - retrieves your Discord ID unique to your account; useful on our website to connect/sign in to a Discord account.\n\n" +
-                        "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n\n" +
-                        "`!subscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n\n" +
-                        "`!unsubscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases. Note: this command is not for" +
-                        "specific data, it only subscribes to the level of data regardless of location. For specific location updates, use !location\n\n" +
-                        "`!watchlist <view (no args)/add/remove/clear (no args)> <county (optional)> <state (abbreviation)>` - adds a specific location to \n\n" + 
-                        "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n\n"
+                .addField("Signup",
+                    "`!signup (no args)` - saves your Discord account so you can access even better features like the watchlist and subscriptions.\n"
+                )
+                .addField("ID",
+                    "`!id (no args)` - retrieves your Discord ID; useful on our website to connect / sign in to a Discord account.\n"
+                )
+                .addField("Location",
+                    "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n"
+                )
+                .addField("Subscribe",
+                    "`!subscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases." +
+                    "Note: this command is not for specific data, it only subscribes to the level of data regardless of location.\n"
+                )
+                .addField("Unsubscribe",
+                    "`!unsubscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n"
+                )
+                .addField("Watchlist",
+                    "`!watchlist <view (no args)/add/remove/clear (no args)> <county (optional)> <state (abbreviation)>` - adds a specific location to your watchlist.\n"
+                )
+                .addField("Cases",
+                    "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"
                 )
                 .setFooter('Data Source: Arcgis');
             msg.channel.send({ embed });
