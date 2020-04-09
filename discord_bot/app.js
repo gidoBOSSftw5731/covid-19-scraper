@@ -422,7 +422,7 @@ client.on("message", msg => {
                     var county = (doc.data().county) ? doc.data().county : null;
 
                     if (state && county) {
-                        var location = state + " " + county;
+                        var location = county + " " + state;
                     } else if (state) {
                         var location = state;
                     } else if (county) {
