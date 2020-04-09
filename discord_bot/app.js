@@ -399,6 +399,20 @@ client.on("message", msg => {
                 }
             });
 
+            msg.channel.send('!country');
+            client.on('message', function (message) {
+                if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("Country Data:")) {
+                    db.collection('users').where("countrySubscription", "==", true).get().then(function (querySnapshot) {
+                        querySnapshot.forEach(function (doc) {
+                            // DM Users with scraped numbers
+                            msg.reply(doc.id);
+                        });
+                    }).catch(function (error) {
+                        console.log("Error getting documents: ", error);
+                    });
+                }
+            });
+
             db.collection('users').get().then(async function (querySnapshot) {
                 querySnapshot.forEach(async function (doc) {
                     var location = (doc.data().location) ? doc.data().watchlist : null;
