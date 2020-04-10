@@ -237,25 +237,14 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		if err := rows.Scan(insertTime, &info.Deaths, &info.ConfirmedCases,
+
+		if err := rows.Scan(&insertTime, &info.Deaths, &info.ConfirmedCases,
 			&info.TestsGiven, &info.Recoveries); err != nil {
 			log.Errorln(err)
 			continue
 		}
-		// Loop through all infoMap collected so far, record the new row only if unique.
-		for i, j := range infoMap {
-			if insertTime.Day() == i.Day() {
-				j.Deaths += info.Deaths
-				j.Recoveries += info.Recoveries
-				j.ConfirmedCases += info.ConfirmedCases
-				j.TestsGiven += info.TestsGiven
-				// once incident rate is defined in ARCGIS, I'll figure out how to handle it
-				log.Traceln(info.CombinedKey, insertTime.Day())
-				break
-			}
-			info.UnixTimeOfRequest = insertTime.Unix()
-			infoMap[insertTime] = &info
-		}
+		info.UnixTimeOfRequest = insertTime.Unix()
+		infoMap[insertTime] = &info
 	}
 
 	log.Tracef("%v elements", len(infoMap))
