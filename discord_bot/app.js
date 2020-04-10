@@ -386,20 +386,20 @@ client.on("message", msg => {
                 }
             });
 
-            msg.channel.send('!states');
-            client.on('message', function (message) {
-                if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("State Data:")) {
-                    db.collection('users').where("stateSubscription", "==", true).get().then(function (querySnapshot) {
-                        querySnapshot.forEach(function (doc) {
-                            return;
+            // msg.channel.send('!states');
+            // client.on('message', function (message) {
+            //     if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("State Data:")) {
+            //         db.collection('users').where("stateSubscription", "==", true).get().then(function (querySnapshot) {
+            //             querySnapshot.forEach(function (doc) {
+            //                 return;
 
-                            client.users.get(doc.id).send(message.content);
-                        });
-                    }).catch(function (error) {
-                        console.log("Error getting documents: ", error);
-                    });
-                }
-            });
+            //                 client.users.get(doc.id).send(message.content);
+            //             });
+            //         }).catch(function (error) {
+            //             console.log("Error getting documents: ", error);
+            //         });
+            //     }
+            // });
 
             msg.channel.send('!cases');
             client.on('message', function (message) {
@@ -442,7 +442,7 @@ client.on("message", msg => {
                                 var cases = matches[0];
                                 var deaths = matches[1];
 
-                                return message.channel.send(location + "-> Cases: " + cases + " Deaths: " + deaths);
+                                return message.channel.send(location + " -> Cases: " + cases + " Deaths: " + deaths);
                             }
                         });
                     }
@@ -461,7 +461,7 @@ client.on("message", msg => {
                                         var cases = matches[0];
                                         var deaths = matches[1];
 
-                                        return message.channel.send("Cases: " + cases + " Deaths: " + deaths);
+                                        return message.channel.send(watchlist[i] + " -> Cases: " + cases + " Deaths: " + deaths);
                                     }
                                 });
                             }

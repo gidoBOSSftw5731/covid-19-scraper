@@ -110,9 +110,10 @@ func testcommandHandler(discord *discordgo.Session, message *discordgo.MessageCr
 
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	user := message.Author
-	if user.ID == botID && message.ChannelID != "696894398293737512" {
+	if message.ChannelID == "696894398293737512" {
+		//Because I can't get an if NOT statement to work - Rasmit Devkota 2020
+	} else if user.ID == botID {
 		//Do nothing because the bot is talking outside of #updates
-		fmt.Println()
 		return
 	}
 
