@@ -213,7 +213,7 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	rows, err := db.Query(`SELECT inserttime, sum(deaths) as deaths,
 	                              sum(confirmed) as confirmed,
 																sum(tests) as tests,
-																sum(recovered) as recovered,
+																sum(recovered) as recovered
 												 	 FROM (SELECT date_trunc('hour', inserttime) as inserttime,
 													              sum(deaths) as deaths,
 																				sum(confirmed) as confirmed,
