@@ -210,7 +210,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	hInfo := &pb.HistoricalInfo{}
-	rows, err := db.Query(`SELECT inserttime, sum(deaths) as deaths,
+	rows, err := db.Query(`SELECT date_trunc('hour', inserttime) as inserttime, sum(deaths) as deaths,
 	                              sum(confirmed) as confirmed,
 																sum(tests) as tests,
 																sum(recovered) as recovered
