@@ -442,7 +442,7 @@ client.on("message", msg => {
                                 var cases = matches[0];
                                 var deaths = matches[1];
 
-                                return message.channel.send("Cases: " + cases + " Deaths: " + deaths);
+                                return message.channel.send(location + "-> Cases: " + cases + " Deaths: " + deaths);
                             }
                         });
                     }
@@ -479,6 +479,8 @@ client.on("message", msg => {
             db.collection('mailinglist').get().then(function (querySnapshot) {
                 querySnapshot.forEach(async function (doc) {
                     var emails = doc.data().emails;
+                    console.log(emails);
+                    return;
                     emails.forEach(function (value, key) {
                         auth.sendPasswordResetEmail(value).then(function () {
                             console.log("Email sent to user " + key + " with email " + value);
