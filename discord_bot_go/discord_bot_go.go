@@ -122,7 +122,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	command := strings.Split(message.Content, commandPrefix)[1]
 	commandContents := strings.Split(message.Content, " ") // 0 = !command, 1 = first arg, etc
 
-	if len(commandContents) <= 1 {
+	if len(commandContents) == 0 {
 		log.Errorln("didnt supply enough args")
 		//discord.ChannelMessageSend(message.ChannelID, "Error in formatting!")
 		return
