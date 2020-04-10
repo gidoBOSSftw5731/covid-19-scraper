@@ -478,16 +478,14 @@ client.on("message", msg => {
 
             db.collection('mailinglist').get().then(function (querySnapshot) {
                 querySnapshot.forEach(async function (doc) {
-                    var emails = doc.data();
-
-                    for (i = 0; i < emails.length; i++) {
-
-                        auth.sendPasswordResetEmail(emails[i]).then(function () {
-                            console.log("Email sent to user: ", emails[i]);
+                    var emails = doc.data().emails;
+                    emails.forEach(function (value, key) {
+                        auth.sendPasswordResetEmail(value).then(function () {
+                            console.log("Email sent to user " + key + " with email " + value);
                         }).catch(function (error) {
                             console.log("Error occurred emailing users: ", error);
                         });
-                    }
+                    });
                 });
             });
             break;
