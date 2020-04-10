@@ -109,7 +109,12 @@ var (
 						   FROM currentdata
 						  WHERE country=$1`,
 
-		"tenWorstQuery": ``,
+		"tenWorstQuery": `SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+		recovered, inserttime, combined
+						   FROM currentdata
+						  WHERE country=$1
+						  ORDER BY confirmed DESC
+						  limit 10`,
 
 		"listStatesQuery":   `SELECT DISTINCT country, state FROM records WHERE country = $1`,
 		"listCountiesQuery": `SELECT DISTINCT county FROM records WHERE country = $1 AND state = $2`,
@@ -264,7 +269,27 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			return
 		}
 	case "top10worst":
-		// do this
+		switch len(urlSplit) {
+		case 3:
+			worst, err := topTenWorstCounties(urlSplit[2])
+			if err != nil {
+				log.Errorln(err)
+				ErrorHandler(resp, req, 404, "Returned Nothing, country not available")
+				return
+			}
+
+			worstByte, err := proto.Marshal(worst)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			log.Traceln(worst)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(worstByte)))
+		default:
+			ErrorHandler(resp, req, 400, "Too many arguments")
+			return
+		}
 	case "currentinfo":
 		if len(urlSplit) < 3 {
 			ErrorHandler(resp, req, 400, "argument missing")
@@ -329,6 +354,24 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func topTenWorstCounties(country string) (*pb.HistoricalInfo, error) {
+	//hInfo := &pb.HistoricalInfo{}
+	rows, err := stmtMap["tenWorstQuery"].Query(country)
+	if err != nil {
+		return nil, err
+	}
+
+	hInfo := rowsToHistoricalInfo(rows, pb.AreaInfo_COUNTY, true)
+
+	// infoMap is a map of per insertTime to data record at that time.
+	//infoMap := make(map[time.Time]*pb.AreaInfo)
+
+	log.Tracef("%v elements", len(hInfo.Info))
+
+	//log.Traceln(infoMap)
+	return hInfo, nil
+}
+
 func countryData(country string) (*pb.HistoricalInfo, error) {
 	//hInfo := &pb.HistoricalInfo{}
 	rows, err := stmtMap["hCountryQuery"].Query(country)
@@ -336,7 +379,7 @@ func countryData(country string) (*pb.HistoricalInfo, error) {
 		return nil, err
 	}
 
-	hInfo := rowsToHistoricalInfo(rows, pb.AreaInfo_COUNTRY)
+	hInfo := rowsToHistoricalInfo(rows, pb.AreaInfo_COUNTRY, false)
 
 	// infoMap is a map of per insertTime to data record at that time.
 	//infoMap := make(map[time.Time]*pb.AreaInfo)
@@ -354,7 +397,7 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 		return nil, err
 	}
 
-	hInfo := rowsToHistoricalInfo(rows, pb.AreaInfo_STATE)
+	hInfo := rowsToHistoricalInfo(rows, pb.AreaInfo_STATE, false)
 
 	// infoMap is a map of per insertTime to data record at that time.
 	//infoMap := make(map[time.Time]*pb.AreaInfo)
@@ -365,21 +408,38 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	return hInfo, nil
 }
 
-func rowsToHistoricalInfo(rows *sql.Rows, areatype pb.AreaInfo_LocationType) *pb.HistoricalInfo {
+func rowsToHistoricalInfo(rows *sql.Rows, areatype pb.AreaInfo_LocationType, hasLocation bool) *pb.HistoricalInfo {
 	hInfo := &pb.HistoricalInfo{}
 
-	for rows.Next() {
-		var info pb.AreaInfo
-		var insertTime time.Time
+	switch hasLocation {
+	case false:
+		for rows.Next() {
+			var info pb.AreaInfo
+			var insertTime time.Time
 
-		if err := rows.Scan(&insertTime, &info.Deaths, &info.ConfirmedCases,
-			&info.TestsGiven, &info.Recoveries); err != nil {
-			log.Errorln(err)
-			continue
+			if err := rows.Scan(&insertTime, &info.Deaths, &info.ConfirmedCases,
+				&info.TestsGiven, &info.Recoveries, &insertTime); err != nil {
+				log.Errorln(err)
+				continue
+			}
+			info.UnixTimeOfRequest = insertTime.Unix()
+			info.Type = areatype
+			hInfo.Info = append(hInfo.Info, &info)
 		}
-		info.UnixTimeOfRequest = insertTime.Unix()
-		info.Type = areatype
-		hInfo.Info = append(hInfo.Info, &info)
+	case true:
+		for rows.Next() {
+			var info pb.AreaInfo
+			var insertTime time.Time
+
+			if err := rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases,
+				&info.TestsGiven, &info.Recoveries, &insertTime, &info.CombinedKey); err != nil {
+				log.Errorln(err)
+				continue
+			}
+			info.UnixTimeOfRequest = insertTime.Unix()
+			info.Type = areatype
+			hInfo.Info = append(hInfo.Info, &info)
+		}
 	}
 
 	return hInfo
@@ -573,7 +633,7 @@ func countyData(country, state, county string) (*pb.HistoricalInfo, error) {
 		return nil, err
 	}
 
-	countyData := rowsToHistoricalInfo(rows, pb.AreaInfo_COUNTY)
+	countyData := rowsToHistoricalInfo(rows, pb.AreaInfo_COUNTY, false)
 
 	return countyData, nil
 }
