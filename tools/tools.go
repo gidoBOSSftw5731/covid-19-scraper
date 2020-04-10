@@ -74,6 +74,7 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 			cSeries,
 			dSeries,
 		},
+		Log: chart.NewLogger(),
 	}
 
 	// Note: we have to do this as a separate step because we need a reference to graph

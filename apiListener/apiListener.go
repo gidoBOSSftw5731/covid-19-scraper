@@ -38,13 +38,14 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	//ping and fatal on error (sometimes catches bugs)
+
+	// If the database is not alive, exit now.
 	if db.Ping() != nil {
 		log.Fatalln(db.Ping())
 	}
 
 	log.Traceln("Listening")
-	//begin fcgi listener, we use fcgi so we can have a loadbalancer and a cache upstream
+	//  Start the fcgi listener, we use fcgi so we can have a loadbalancer and a cache upstream
 	listener, err := net.Listen("tcp", "127.0.0.1:9001")
 	if err != nil {
 		log.Fatalln(err)
@@ -110,7 +111,6 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			return
 		}
 		if len(urlSplit) == 3 {
-			//log.Traceln(urlSplit[2])
 			stateList, err := listStates(urlSplit[2])
 			if err != nil {
 				log.Errorln(err)
@@ -210,62 +210,43 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	hInfo := &pb.HistoricalInfo{}
-	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
-	                              recovered, COALESCE(incidentrate,0), inserttime,
-																combined
-													 FROM records
-													WHERE country=$1
-													  AND state=$2`, country, state)
+	rows, err := db.Query(`SELECT date_trunc('hour', inserttime) as inserttime, sum(deaths) as deaths,
+	                              sum(confirmed) as confirmed,
+																sum(tests) as tests,
+																sum(recovered) as recovered
+												 	 FROM (SELECT inserttime,
+													              sum(deaths) as deaths,
+																				sum(confirmed) as confirmed,
+																				sum(tests) as tests,
+													              sum(recovered) as recovered,
+																			  count(combined) as combined
+																	 FROM records
+																	WHERE country = $1
+																	  AND state = $2
+																	  AND inserttime > inserttime - interval '10 sec'
+																	  AND inserttime < inserttime + interval '10 sec'
+															    GROUP BY inserttime
+															    ORDER BY inserttime desc) records
+											    GROUP BY inserttime
+												  ORDER BY inserttime desc`, country, state)
 	if err != nil {
 		return nil, err
-
 	}
 
+	// infoMap is a map of per insertTime to data record at that time.
 	infoMap := make(map[time.Time]*pb.AreaInfo)
-	combinedKeyMap := make(map[time.Time][]string)
 
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven,
-			&info.Recoveries, &info.Incidentrate, &insertTime, &info.CombinedKey)
-		if err != nil {
+
+		if err := rows.Scan(&insertTime, &info.Deaths, &info.ConfirmedCases,
+			&info.TestsGiven, &info.Recoveries); err != nil {
 			log.Errorln(err)
 			continue
 		}
-
-		unique := true
-		for i, j := range infoMap {
-			if insertTime.Day() == i.Day() {
-				//log.Traceln(combinedKeyMap[i])
-				for _, k := range combinedKeyMap[i] {
-					if k == info.CombinedKey {
-						log.Traceln("already counted", info.CombinedKey, k)
-						unique = false
-						break
-					}
-				}
-
-				if !unique {
-					break
-				}
-				unique = false
-				//foo := j
-				j.Deaths += info.Deaths
-				j.Recoveries += info.Recoveries
-				j.ConfirmedCases += info.ConfirmedCases
-				j.TestsGiven += info.TestsGiven
-				// once incident rate is defined in ARCGIS, I'll figure out how to handle it
-				log.Traceln(info.CombinedKey, insertTime.Day())
-				break
-			}
-		}
-		if unique {
-			log.Tracef("%v is unique", info.CombinedKey)
-			info.UnixTimeOfRequest = insertTime.Unix()
-			infoMap[insertTime] = &info
-			combinedKeyMap[insertTime] = append(combinedKeyMap[insertTime], info.CombinedKey)
-		}
+		info.UnixTimeOfRequest = insertTime.Unix()
+		infoMap[insertTime] = &info
 	}
 
 	log.Tracef("%v elements", len(infoMap))
@@ -273,7 +254,6 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	for _, i := range infoMap {
 		i.Type = pb.AreaInfo_STATE
 		hInfo.Info = append(hInfo.Info, i)
-		//log.Traceln(i.ConfirmedCases)
 	}
 
 	log.Traceln(infoMap)
