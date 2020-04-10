@@ -4,6 +4,7 @@ package tools
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"sort"
 	"time"
@@ -11,6 +12,7 @@ import (
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
 	"github.com/gidoBOSSftw5731/log"
 	chart "github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 // ChartCases is a function that takes AreaInfo as input and returns a picture as a graph
@@ -61,15 +63,47 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 		Name:    "Confirmed Cases",
 		XValues: timeKeys,
 		YValues: caseStatsSorted,
+		Style: chart.Style{
+			StrokeColor: drawing.ColorGreen,               // will supercede defaults
+			FillColor:   drawing.ColorGreen.WithAlpha(64), // will supercede defaults
+		},
 	}
 	dSeries := chart.TimeSeries{
 		Name:    "Deaths due to COVID-19",
 		XValues: timeKeys,
 		YValues: deathStatsSorted,
+		Style: chart.Style{
+			StrokeColor: drawing.ColorRed,               // will supercede defaults
+			FillColor:   drawing.ColorRed.WithAlpha(64), // will supercede defaults
+		},
 	}
 
 	// Create the graph/Chart with the new series attached.
 	graph := chart.Chart{
+		YAxis: chart.YAxis{
+			ValueFormatter: func(v interface{}) string {
+				if vf, isFloat := v.(float64); isFloat {
+					return fmt.Sprintf("%0.0f", vf)
+				}
+				return ""
+			},
+			Style: chart.Style{
+				FontSize:  14,
+				FontColor: drawing.ColorWhite,
+			},
+		},
+		XAxis: chart.XAxis{
+			Style: chart.Style{
+				FontSize:  14,
+				FontColor: drawing.ColorWhite,
+			},
+		},
+		Background: chart.Style{
+			FillColor: drawing.ColorFromHex("808080"),
+		},
+		Canvas: chart.Style{
+			FillColor: drawing.ColorFromHex("d3d3d3"),
+		},
 		Series: []chart.Series{
 			cSeries,
 			dSeries,
@@ -79,7 +113,12 @@ func ChartCases(info *pb.HistoricalInfo, doConfirmed, doDeaths bool) (io.Reader,
 
 	// Note: we have to do this as a separate step because we need a reference to graph
 	graph.Elements = []chart.Renderable{
-		chart.Legend(&graph),
+		chart.Legend(
+			&graph,
+			chart.Style{
+				FontSize:  11,
+				FontColor: drawing.ColorBlack,
+			}),
 	}
 
 	var f bytes.Buffer
