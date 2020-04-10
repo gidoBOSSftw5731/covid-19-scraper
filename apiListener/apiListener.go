@@ -209,7 +209,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 }
 
 func stateData(country, state string) (*pb.HistoricalInfo, error) {
-	hInfo := &pb.HistoricalInfo{}
+	//hInfo := &pb.HistoricalInfo{}
 	rows, err := db.Query(`SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
 	                            sum(confirmed) as confirmed,
 								sum(tests) as tests,
@@ -234,8 +234,19 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 		return nil, err
 	}
 
+	hInfo := rowsToHistoricalInfo(rows)
+
 	// infoMap is a map of per insertTime to data record at that time.
-	infoMap := make(map[time.Time]*pb.AreaInfo)
+	//infoMap := make(map[time.Time]*pb.AreaInfo)
+
+	log.Tracef("%v elements", len(hInfo.Info))
+
+	//log.Traceln(infoMap)
+	return hInfo, nil
+}
+
+func rowsToHistoricalInfo(rows *sql.Rows) *pb.HistoricalInfo {
+	hInfo := &pb.HistoricalInfo{}
 
 	for rows.Next() {
 		var info pb.AreaInfo
@@ -247,18 +258,11 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 			continue
 		}
 		info.UnixTimeOfRequest = insertTime.Unix()
-		infoMap[insertTime] = &info
+		info.Type = pb.AreaInfo_STATE
+		hInfo.Info = append(hInfo.Info, &info)
 	}
 
-	log.Tracef("%v elements", len(infoMap))
-
-	for _, i := range infoMap {
-		i.Type = pb.AreaInfo_STATE
-		hInfo.Info = append(hInfo.Info, i)
-	}
-
-	log.Traceln(infoMap)
-	return hInfo, nil
+	return hInfo
 }
 
 func currentStateInfo(country, state string) (*pb.AreaInfo, error) {
@@ -454,59 +458,37 @@ func listCounties(country, state string) (*pb.ListOfCounties, error) {
 }
 
 func countyData(country, state, county string) (*pb.HistoricalInfo, error) {
-	countyData := &pb.HistoricalInfo{}
+	//countyData := &pb.HistoricalInfo{}
 
-	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
-	                              recovered, COALESCE(incidentrate,0), inserttime
-													 FROM records
-													WHERE country=$1
-													  AND state=$2
-														AND county=$3`, country, state, county)
+	rows, err := db.Query(`SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
+							sum(confirmed) as confirmed,
+							sum(tests) as tests,
+							sum(recovered) as recovered
+							FROM (
+								SELECT inserttime,
+								sum(deaths) as deaths,
+								sum(confirmed) as confirmed,
+								sum(tests) as tests,
+								sum(recovered) as recovered,
+								count(combined) as combined
+								FROM records
+								WHERE country = $1
+								AND state = $2
+								AND county = $3
+								AND inserttime > inserttime - interval '10 sec'
+								AND inserttime < inserttime + interval '10 sec'
+								GROUP BY inserttime
+								ORDER BY inserttime desc) records
+							GROUP BY inserttime
+							ORDER BY inserttime desc`, country, state, county)
 	if err != nil {
 		log.Errorln(err)
 		return nil, err
 	}
 
-	infoMap := make(map[time.Time]*pb.AreaInfo)
-
-	for rows.Next() {
-		var countyinfo pb.AreaInfo
-		var insertTime time.Time
-		err = rows.Scan(&countyinfo.Lat, &countyinfo.Long, &countyinfo.Deaths, &countyinfo.ConfirmedCases,
-			&countyinfo.TestsGiven, &countyinfo.Recoveries, &countyinfo.Incidentrate, &insertTime)
-		if err != nil {
-			log.Errorln(err)
-			continue
-		}
-
-		countyinfo.UnixTimeOfRequest = insertTime.Unix()
-		countyinfo.Type = pb.AreaInfo_COUNTY
-
-		unique := true
-		for i, j := range infoMap {
-			if inTimeSpan(insertTime.Add(-12*time.Hour), insertTime.Add(12*time.Hour), i) {
-				if j.ConfirmedCases == countyinfo.ConfirmedCases &&
-					j.TestsGiven == countyinfo.TestsGiven &&
-					j.Deaths == countyinfo.Deaths &&
-					j.Recoveries == countyinfo.Recoveries {
-					unique = false
-					break
-				}
-			}
-		}
-		if unique {
-			infoMap[insertTime] = &countyinfo
-			countyData.Info = append(countyData.Info, &countyinfo)
-		}
-
-		log.Traceln(countyinfo.ConfirmedCases, unique, insertTime)
-	}
+	countyData := rowsToHistoricalInfo(rows)
 
 	return countyData, nil
-}
-
-func inTimeSpan(start, end, check time.Time) bool {
-	return check.After(start) && check.Before(end)
 }
 
 /*
