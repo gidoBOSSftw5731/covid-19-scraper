@@ -112,6 +112,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	user := message.Author
 	if user.ID == botID && message.ChannelID != "696894398293737512" {
 		//Do nothing because the bot is talking outside of #updates
+		fmt.
 		return
 	}
 
