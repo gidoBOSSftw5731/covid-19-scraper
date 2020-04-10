@@ -237,7 +237,7 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		if err := rows.Scan(insertTime, &info.Deaths, &info.ConfirmedCases,
+		if err := rows.Scan(&insertTime, &info.Deaths, &info.ConfirmedCases,
 			&info.TestsGiven, &info.Recoveries); err != nil {
 			log.Errorln(err)
 			continue
