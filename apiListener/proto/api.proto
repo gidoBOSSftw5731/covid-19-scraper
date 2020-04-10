@@ -24,6 +24,8 @@ message ListOfCounties {
    repeated string Counties = 3;
 }
 
+//This is intended for use for information about a location over time
+//but is also used for some miscellanious purposes, like top 10 counties. 
 message HistoricalInfo {
    repeated AreaInfo Info = 1;
 }

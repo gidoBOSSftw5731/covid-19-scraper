@@ -25,6 +25,95 @@ var (
 	config goconf.Config
 	db     *sql.DB
 	wd, _  = os.Getwd()
+	// h prefix means historical, c prefix means current
+	stmtMap  = make(map[string]*sql.Stmt)
+	queryMap = map[string]string{
+		"hCountyQuery": `SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
+		sum(confirmed) as confirmed,
+		sum(tests) as tests,
+		sum(recovered) as recovered
+		FROM (
+			SELECT inserttime,
+			sum(deaths) as deaths,
+			sum(confirmed) as confirmed,
+			sum(tests) as tests,
+			sum(recovered) as recovered,
+			count(combined) as combined
+			FROM records
+			WHERE country = $1
+			AND state = $2
+			AND county = $3
+			AND inserttime > inserttime - interval '10 sec'
+			AND inserttime < inserttime + interval '10 sec'
+			GROUP BY inserttime
+			ORDER BY inserttime desc) records
+		GROUP BY inserttime
+		ORDER BY inserttime desc`,
+
+		"hStateQuery": `SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
+					sum(confirmed) as confirmed,
+					sum(tests) as tests,
+					sum(recovered) as recovered
+					FROM (
+						SELECT inserttime,
+						sum(deaths) as deaths,
+						sum(confirmed) as confirmed,
+						sum(tests) as tests,
+						sum(recovered) as recovered,
+						count(combined) as combined
+						FROM records
+						WHERE country = $1
+						AND state = $2
+						AND inserttime > inserttime - interval '10 sec'
+						AND inserttime < inserttime + interval '10 sec'
+						GROUP BY inserttime
+						ORDER BY inserttime desc) records
+					GROUP BY inserttime
+					ORDER BY inserttime desc`,
+
+		"hCountryQuery": `SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
+						sum(confirmed) as confirmed,
+						sum(tests) as tests,
+						sum(recovered) as recovered
+						FROM (
+							SELECT inserttime,
+							sum(deaths) as deaths,
+							sum(confirmed) as confirmed,
+							sum(tests) as tests,
+							sum(recovered) as recovered,
+							count(combined) as combined
+							FROM records
+							WHERE country = $1
+							AND inserttime > inserttime - interval '10 sec'
+							AND inserttime < inserttime + interval '10 sec'
+							GROUP BY inserttime
+							ORDER BY inserttime desc) records
+						GROUP BY inserttime
+						ORDER BY inserttime desc`,
+
+		"cCountyQuery": `SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+						recovered, COALESCE(incidentrate,0), inserttime
+						   FROM currentdata
+						  WHERE country=$1
+							AND state=$2
+							  AND county=$3`,
+
+		"cStateQuery": `SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+					recovered, COALESCE(incidentrate,0), inserttime
+					FROM currentdata
+					WHERE country=$1
+					AND state=$2`,
+
+		"cCountryQuery": `SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
+		recovered, COALESCE(incidentrate,0), inserttime
+						   FROM currentdata
+						  WHERE country=$1`,
+
+		"tenWorstQuery": ``,
+
+		"listStatesQuery":   `SELECT DISTINCT country, state FROM records WHERE country = $1`,
+		"listCountiesQuery": `SELECT DISTINCT county FROM records WHERE country = $1 AND state = $2`,
+	}
 )
 
 func main() {
@@ -44,6 +133,9 @@ func main() {
 		log.Fatalln(db.Ping())
 	}
 
+	// do this in a different goroutine to not hold up other processes
+	go defineSQLStatements()
+
 	log.Traceln("Listening")
 	//  Start the fcgi listener, we use fcgi so we can have a loadbalancer and a cache upstream
 	listener, err := net.Listen("tcp", "127.0.0.1:9001")
@@ -52,6 +144,17 @@ func main() {
 	}
 	var h newFCGI
 	fcgi.Serve(listener, h)
+}
+
+func defineSQLStatements() {
+
+	for i, j := range queryMap {
+		var err error
+		stmtMap[i], err = db.Prepare(j)
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
 }
 
 func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -160,6 +263,8 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 			ErrorHandler(resp, req, 400, "Too many arguments")
 			return
 		}
+	case "top10worst":
+		// do this
 	case "currentinfo":
 		if len(urlSplit) < 3 {
 			ErrorHandler(resp, req, 400, "argument missing")
@@ -226,25 +331,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 func countryData(country string) (*pb.HistoricalInfo, error) {
 	//hInfo := &pb.HistoricalInfo{}
-	rows, err := db.Query(`SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
-		sum(confirmed) as confirmed,
-		sum(tests) as tests,
-		sum(recovered) as recovered
-		FROM (
-			SELECT inserttime,
-			sum(deaths) as deaths,
-			sum(confirmed) as confirmed,
-			sum(tests) as tests,
-			sum(recovered) as recovered,
-			count(combined) as combined
-			FROM records
-			WHERE country = $1
-			AND inserttime > inserttime - interval '10 sec'
-			AND inserttime < inserttime + interval '10 sec'
-			GROUP BY inserttime
-			ORDER BY inserttime desc) records
-		GROUP BY inserttime
-		ORDER BY inserttime desc`, country)
+	rows, err := stmtMap["hCountryQuery"].Query(country)
 	if err != nil {
 		return nil, err
 	}
@@ -262,26 +349,7 @@ func countryData(country string) (*pb.HistoricalInfo, error) {
 
 func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	//hInfo := &pb.HistoricalInfo{}
-	rows, err := db.Query(`SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
-	                            sum(confirmed) as confirmed,
-								sum(tests) as tests,
-								sum(recovered) as recovered
-								FROM (
-									SELECT inserttime,
-									sum(deaths) as deaths,
-									sum(confirmed) as confirmed,
-									sum(tests) as tests,
-									sum(recovered) as recovered,
-									count(combined) as combined
-									FROM records
-									WHERE country = $1
-									AND state = $2
-									AND inserttime > inserttime - interval '10 sec'
-									AND inserttime < inserttime + interval '10 sec'
-									GROUP BY inserttime
-									ORDER BY inserttime desc) records
-								GROUP BY inserttime
-								ORDER BY inserttime desc`, country, state)
+	rows, err := stmtMap["hStateQuery"].Query(country, state)
 	if err != nil {
 		return nil, err
 	}
@@ -319,11 +387,7 @@ func rowsToHistoricalInfo(rows *sql.Rows, areatype pb.AreaInfo_LocationType) *pb
 
 func currentStateInfo(country, state string) (*pb.AreaInfo, error) {
 	cInfo := &pb.AreaInfo{}
-	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
-	                              recovered, COALESCE(incidentrate,0), inserttime
-													 FROM currentdata
-													WHERE country=$1
-													  AND state=$2`, country, state)
+	rows, err := stmtMap["cStateQuery"].Query(country, state)
 	if err != nil {
 		log.Errorln(err)
 		return nil, err
@@ -362,10 +426,7 @@ func currentStateInfo(country, state string) (*pb.AreaInfo, error) {
 
 func currentCountryInfo(country string) (*pb.AreaInfo, error) {
 	cInfo := &pb.AreaInfo{}
-	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
-	                              recovered, COALESCE(incidentrate,0), inserttime
-													 FROM currentdata
-													WHERE country=$1`, country)
+	rows, err := stmtMap["currentCountryInfo"].Query(country)
 	if err != nil {
 		log.Errorln(err)
 		return nil, err
@@ -404,12 +465,7 @@ func currentCountryInfo(country string) (*pb.AreaInfo, error) {
 
 func currentCountyInfo(country, state, county string) (*pb.AreaInfo, error) {
 	cInfo := &pb.AreaInfo{}
-	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
-	                              recovered, COALESCE(incidentrate,0), inserttime
-													 FROM currentdata
-													WHERE country=$1
-													  AND state=$2
-														AND county=$3`, country, state, county)
+	rows, err := stmtMap["cCountyQuery"].Query(country, state, county)
 	if err != nil {
 		log.Errorln(err)
 		return nil, err
@@ -457,14 +513,14 @@ func ErrorHandler(resp http.ResponseWriter, req *http.Request, status int, alert
 func listStates(country string) (*pb.ListOfStates, error) {
 	stateList := &pb.ListOfStates{}
 
-	rows, err := db.Query("SELECT DISTINCT country, state FROM records WHERE country = $1", country)
+	rows, err := stmtMap["listStatesQuery"].Query(country)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	if !rows.Next() {
-		return stateList, fmt.Errorf("Missing rows")
+		return stateList, fmt.Errorf("missing rows")
 	}
 
 	stateList.Country = country
@@ -485,15 +541,14 @@ func listStates(country string) (*pb.ListOfStates, error) {
 func listCounties(country, state string) (*pb.ListOfCounties, error) {
 	countyList := &pb.ListOfCounties{}
 
-	rows, err := db.Query("SELECT DISTINCT county FROM records WHERE country = $1 AND state = $2",
-		country, state)
+	rows, err := stmtMap["listCountiesQuery"].Query(country, state)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	if !rows.Next() {
-		return countyList, fmt.Errorf("Missing rows")
+		return countyList, fmt.Errorf("missing rows")
 	}
 
 	countyList.Country = country
@@ -512,27 +567,7 @@ func listCounties(country, state string) (*pb.ListOfCounties, error) {
 func countyData(country, state, county string) (*pb.HistoricalInfo, error) {
 	//countyData := &pb.HistoricalInfo{}
 
-	rows, err := db.Query(`SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
-							sum(confirmed) as confirmed,
-							sum(tests) as tests,
-							sum(recovered) as recovered
-							FROM (
-								SELECT inserttime,
-								sum(deaths) as deaths,
-								sum(confirmed) as confirmed,
-								sum(tests) as tests,
-								sum(recovered) as recovered,
-								count(combined) as combined
-								FROM records
-								WHERE country = $1
-								AND state = $2
-								AND county = $3
-								AND inserttime > inserttime - interval '10 sec'
-								AND inserttime < inserttime + interval '10 sec'
-								GROUP BY inserttime
-								ORDER BY inserttime desc) records
-							GROUP BY inserttime
-							ORDER BY inserttime desc`, country, state, county)
+	rows, err := stmtMap["hCountyQuery"].Query(country, state, county)
 	if err != nil {
 		log.Errorln(err)
 		return nil, err
