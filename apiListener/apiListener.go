@@ -211,14 +211,22 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	hInfo := &pb.HistoricalInfo{}
 	rows, err := db.Query(`SELECT inserttime, sum(deaths) as deaths,
-																sum(confirmed) as confirmed, sum(tests) as tests,
-																sum(recovered) as recovered, sum(incidentrate) as incidentrate,
-																count(combined)
-													 FROM records
-													WHERE country = $1
-														AND state = $2
-													GROUP BY inserttime
-													ORDER BY inserttime desc`, country, state)
+	                              sum(confirmed) as confirmed,
+																sum(tests) as tests,
+																sum(recovered) as recovered
+												 	 FROM (SELECT date_trunc('hour', inserttime) as inserttime,
+													              sum(deaths) as deaths,
+																				sum(confirmed) as confirmed,
+																				sum(tests) as tests,
+													              sum(recovered) as recovered,
+																			  count(combined)
+																	 FROM records
+																	WHERE country = $1
+																	  AND state = $2
+															    GROUP BY inserttime
+															    ORDER BY inserttime desc) records
+											    GROUP BY inserttime
+												  ORDER BY inserttime desc`, country, state)
 	if err != nil {
 		return nil, err
 	}
