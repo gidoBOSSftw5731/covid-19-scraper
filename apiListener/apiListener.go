@@ -223,6 +223,8 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 																	 FROM records
 																	WHERE country = $1
 																	  AND state = $2
+																		AND inserttime > inserttime - interval '10 sec'
+																		AND isnerttime < inserttime + interval '10 sec'
 															    GROUP BY inserttime
 															    ORDER BY inserttime desc) records
 											    GROUP BY inserttime
