@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/md5"
 	"database/sql"
 	"encoding/base64"
 	"fmt"
@@ -211,43 +210,33 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	hInfo := &pb.HistoricalInfo{}
-	rows, err := db.Query(`SELECT lat, long, deaths, confirmed, COALESCE(tests,0),
-	                              recovered, COALESCE(incidentrate,0), inserttime,
-																combined
+	rows, err := db.Query(`SELECT inserttime, sum(deaths) as deaths,
+																sum(confirmed) as confirmed, sum(tests) as tests,
+																sum(recovered) as recovered, sum(incidentrate) as incidentrate,
+																count(combined)
 													 FROM records
-													WHERE country=$1
-													  AND state=$2`, country, state)
+													WHERE country = $1
+														AND state = $2
+													GROUP BY inserttime
+													ORDER BY inserttime desc`, country, state)
 	if err != nil {
 		return nil, err
-
 	}
 
 	// infoMap is a map of per insertTime to data record at that time.
 	infoMap := make(map[time.Time]*pb.AreaInfo)
-	// existingRecords is used to remove duplicate inserttime records.
-	existingRecords := make(map[string]bool)
 
 	for rows.Next() {
 		var info pb.AreaInfo
 		var insertTime time.Time
-		err = rows.Scan(&info.Lat, &info.Long, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven,
-			&info.Recoveries, &info.Incidentrate, &insertTime, &info.CombinedKey)
-		if err != nil {
+		if err := rows.Scan(insertTime, &info.Deaths, &info.ConfirmedCases, &info.TestsGiven,
+			&info.Recoveries, &info.Incidentrate, &info.CombinedKey); err != nil {
 			log.Errorln(err)
 			continue
 		}
-		recHash := fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%d||%s", insertTime.UnixNano(), info.CombinedKey))))
 		// Loop through all infoMap collected so far, record the new row only if unique.
-		unique := true
 		for i, j := range infoMap {
 			if insertTime.Day() == i.Day() {
-				// If the existingRecords already exists mark this record as non-unique.
-				if _, ok := existingRecords[recHash]; ok {
-					log.Traceln("already counted", info.CombinedKey)
-					unique = false
-					break
-				}
-
 				j.Deaths += info.Deaths
 				j.Recoveries += info.Recoveries
 				j.ConfirmedCases += info.ConfirmedCases
@@ -256,12 +245,8 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 				log.Traceln(info.CombinedKey, insertTime.Day())
 				break
 			}
-		}
-		if unique {
-			log.Tracef("%v is unique", info.CombinedKey)
 			info.UnixTimeOfRequest = insertTime.Unix()
 			infoMap[insertTime] = &info
-			existingRecords[recHash] = true
 		}
 	}
 
