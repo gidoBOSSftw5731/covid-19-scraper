@@ -67,11 +67,12 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 	switch urlSplit[1] {
 	case "stateinfo":
-		if len(urlSplit) <= 3 {
+		if len(urlSplit) <= 2 {
 			ErrorHandler(resp, req, 400, "Specify a state or county there bud")
 			return
 		}
-		if len(urlSplit) == 4 {
+		switch len(urlSplit) {
+		case 4:
 			data, err := stateData(urlSplit[2], urlSplit[3])
 			if err != nil {
 				log.Errorln(err)
@@ -86,7 +87,7 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 			log.Traceln(data)
 			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
-		} else if len(urlSplit) == 5 {
+		case 5:
 			data, err := countyData(urlSplit[2], urlSplit[3], urlSplit[4])
 			if err != nil {
 				log.Errorln(err)
@@ -101,7 +102,22 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 			log.Traceln(data)
 			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
-		} else {
+		case 3:
+			data, err := countryData(urlSplit[2])
+			if err != nil {
+				log.Errorln(err)
+				ErrorHandler(resp, req, 404, "Bad Data")
+			}
+
+			dataByte, err := proto.Marshal(data)
+			if err != nil {
+				ErrorHandler(resp, req, 500, "Marshalling error")
+				return
+			}
+
+			log.Traceln(data)
+			resp.Write([]byte(base64.StdEncoding.EncodeToString(dataByte)))
+		default:
 			ErrorHandler(resp, req, 400, "Too many arguments")
 			return
 		}
@@ -208,6 +224,42 @@ func (h newFCGI) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func countryData(country string) (*pb.HistoricalInfo, error) {
+	//hInfo := &pb.HistoricalInfo{}
+	rows, err := db.Query(`SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
+		sum(confirmed) as confirmed,
+		sum(tests) as tests,
+		sum(recovered) as recovered
+		FROM (
+			SELECT inserttime,
+			sum(deaths) as deaths,
+			sum(confirmed) as confirmed,
+			sum(tests) as tests,
+			sum(recovered) as recovered,
+			count(combined) as combined
+			FROM records
+			WHERE country = $1
+			AND inserttime > inserttime - interval '10 sec'
+			AND inserttime < inserttime + interval '10 sec'
+			GROUP BY inserttime
+			ORDER BY inserttime desc) records
+		GROUP BY inserttime
+		ORDER BY inserttime desc`, country)
+	if err != nil {
+		return nil, err
+	}
+
+	hInfo := rowsToHistoricalInfo(rows, pb.AreaInfo_COUNTRY)
+
+	// infoMap is a map of per insertTime to data record at that time.
+	//infoMap := make(map[time.Time]*pb.AreaInfo)
+
+	log.Tracef("%v elements", len(hInfo.Info))
+
+	//log.Traceln(infoMap)
+	return hInfo, nil
+}
+
 func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	//hInfo := &pb.HistoricalInfo{}
 	rows, err := db.Query(`SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
@@ -234,7 +286,7 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 		return nil, err
 	}
 
-	hInfo := rowsToHistoricalInfo(rows)
+	hInfo := rowsToHistoricalInfo(rows, pb.AreaInfo_STATE)
 
 	// infoMap is a map of per insertTime to data record at that time.
 	//infoMap := make(map[time.Time]*pb.AreaInfo)
@@ -245,7 +297,7 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	return hInfo, nil
 }
 
-func rowsToHistoricalInfo(rows *sql.Rows) *pb.HistoricalInfo {
+func rowsToHistoricalInfo(rows *sql.Rows, areatype pb.AreaInfo_LocationType) *pb.HistoricalInfo {
 	hInfo := &pb.HistoricalInfo{}
 
 	for rows.Next() {
@@ -258,7 +310,7 @@ func rowsToHistoricalInfo(rows *sql.Rows) *pb.HistoricalInfo {
 			continue
 		}
 		info.UnixTimeOfRequest = insertTime.Unix()
-		info.Type = pb.AreaInfo_STATE
+		info.Type = areatype
 		hInfo.Info = append(hInfo.Info, &info)
 	}
 
@@ -486,7 +538,7 @@ func countyData(country, state, county string) (*pb.HistoricalInfo, error) {
 		return nil, err
 	}
 
-	countyData := rowsToHistoricalInfo(rows)
+	countyData := rowsToHistoricalInfo(rows, pb.AreaInfo_COUNTY)
 
 	return countyData, nil
 }
