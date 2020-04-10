@@ -84,7 +84,10 @@ func errCheck(msg string, err error) {
 
 func testcommandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	user := message.Author
-	if user.ID == botID {
+	log.Tracef("Bot ID: %v, User ID %v, Channel ID: %v", botID, user.ID, message.ChannelID)
+
+	if user.ID == botID && message.ChannelID != "696894398293737512" {
+		//Do nothing because the bot is talking outside of #updates
 		return
 	}
 
@@ -118,12 +121,12 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 
 	command := strings.Split(message.Content, commandPrefix)[1]
 	commandContents := strings.Split(message.Content, " ") // 0 = !command, 1 = first arg, etc
-	/* remember to check for this later
-	if len(commandContents) < 2 {
+
+	if len(commandContents) <= 1 {
 		log.Errorln("didnt supply enough args")
 		//discord.ChannelMessageSend(message.ChannelID, "Error in formatting!")
 		return
-	}*/
+	}
 
 	switch strings.Split(command, " ")[0] {
 	case "cases":
