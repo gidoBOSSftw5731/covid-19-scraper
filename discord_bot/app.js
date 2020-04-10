@@ -369,24 +369,31 @@ client.on("message", msg => {
             break;
         case "activate":
             if (msg.channel.id != "696894398293737512") return;
-            msg.reply("Activated. Now starting database query for update-enabled users.");
+            return msg.reply("Activated. Now starting database query for update-enabled users.");
 
             var locations = [];
 
-            msg.channel.send('!counties');
-            client.on('message', function (message) {
-                if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("County Data:")) {
-                    db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
-                        querySnapshot.forEach(function (doc) {
-                            return;
+            var counties = async function () {
+                const result = await new Promise(resolve => {
+                    msg.channel.send('!counties');
+                    resolve(true);
+                }).then((output) => {
+                    client.on('message', function (message) {
+                        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("County Data:")) {
+                            db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                                querySnapshot.forEach(function (doc) {
+                                    return;
 
-                            client.users.get(doc.id).send(message.content);
-                        });
-                    }).catch(function (error) {
-                        console.log("Error getting documents: ", error);
+                                    client.users.get(doc.id).send(message.content);
+                                });
+                            }).catch(function (error) {
+                                console.log("Error getting documents: ", error);
+                            });
+                        }
                     });
-                }
-            });
+                });
+            };
+            counties();
 
             // msg.channel.send('!states');
             // client.on('message', function (message) {
@@ -441,14 +448,16 @@ client.on("message", msg => {
                         client.on('message', function (message) {
                             if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token)) {
                                 var data = message.content.replace(token + " ", " ").toString();
+                                console.log(data);
                                 var matches = data.match(/\d+/g);
+                                console.log(matches);
                                 var cases = matches[0];
                                 var deaths = matches[1];
 
                                 return message.channel.send(location + " -> Cases: " + cases + " Deaths: " + deaths);
                             }
                         });
-                    } else if (location.includes(location)) {
+                    } else if (location && location.includes(location)) {
                         console.log("Location has already been queried.");
                     } else {
                         console.log("Error occurred, location undefined.");
@@ -483,8 +492,8 @@ client.on("message", msg => {
                 });
             }).catch(function (error) {
                 console.log("Error getting documents: ", error);
-                users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
-                users.get('181965297249550336').send("Error occurred with activation location and watchlist retrieval.");
+                client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
+                client.users.get('181965297249550336').send("Error occurred with activation location and watchlist retrieval.");
                 return;
             });
 
