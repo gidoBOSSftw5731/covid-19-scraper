@@ -57,7 +57,7 @@ client.on("message", msg => {
     
     if (!msg.content.startsWith("!")) return;
 
-    if (msg.author.id == client.user.id && !msg.content != ("!activate")) {
+    if (msg.author.id == client.user.id && msg.content != ("!activate") && msg.channel.id != "696894398293737512") {
         return;
     }
 
