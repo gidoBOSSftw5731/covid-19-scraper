@@ -57,7 +57,9 @@ client.on("message", msg => {
     
     if (!msg.content.startsWith("!")) return;
 
-    if (msg.author.id == client.user.id && msg.content != ("!activate") && msg.channel.id != "696894398293737512") {
+    if (msg.content == ("!activate") && msg.channel.id == "696894398293737512") {
+        console.log("Activation message received.");
+    } else if (msg.author.id == client.user.id) {
         return;
     }
 
@@ -439,13 +441,13 @@ client.on("message", msg => {
                                 client.on('message', function (message) {
                                     if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token)) {
                                         var data = message.content.replace(token + " ", " ").toString();
-                                        console.log(data);
+                                        console.log(location + " data: " + data);
                                         var matches = data.match(/\d+/g);
-                                        console.log(matches);
+                                        console.log(location + " matches: " + matches);
                                         var cases = matches[0];
                                         var deaths = matches[1];
 
-                                        return message.channel.send(location + " -> Cases: " + cases + " Deaths: " + deaths);
+                                        return message.channel.send(location + " in Location for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
                                     }
                                 });
                             } else if (location && location.includes(location)) {
@@ -473,7 +475,7 @@ client.on("message", msg => {
                                                 var cases = matches[0];
                                                 var deaths = matches[1];
 
-                                                return message.channel.send(location + " -> Cases: " + cases + " Deaths: " + deaths);
+                                                return message.channel.send(location + " in Watchlist for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
                                             }
                                         });
                                     }
