@@ -216,6 +216,23 @@ function graph(location) {
     });
 };
 
+function worstCounties() {
+    msg.channel.send('!worst');
+    client.on('message', function (message) {
+        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("County Data:")) {
+            db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    return console.log("countySubscription ", doc.data().id);
+
+                    client.users.get(doc.id).send(message.content);
+                });
+            }).catch(function (error) {
+                console.log("Error getting documents: ", error);
+            });
+        }
+    });
+}
+
 // email the user
 function email() {
     // get all the location documents

@@ -112,7 +112,6 @@ func testcommandHandler(discord *discordgo.Session, message *discordgo.MessageCr
 
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	user := message.Author
-	//fmt.Println("hello")
 	if message.ChannelID == "696894398293737512" {
 		// Continue with your day please
 	} else if user.ID == botID {
