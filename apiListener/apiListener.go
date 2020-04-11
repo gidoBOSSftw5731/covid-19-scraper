@@ -418,7 +418,7 @@ func rowsToHistoricalInfo(rows *sql.Rows, areatype pb.AreaInfo_LocationType, has
 			var insertTime time.Time
 
 			if err := rows.Scan(&insertTime, &info.Deaths, &info.ConfirmedCases,
-				&info.TestsGiven, &info.Recoveries, &insertTime); err != nil {
+				&info.TestsGiven, &info.Recoveries); err != nil {
 				log.Errorln(err)
 				continue
 			}
