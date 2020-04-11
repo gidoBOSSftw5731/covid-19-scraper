@@ -30,7 +30,7 @@ function isUpperCase(str) {
 
 // Discord
 db.collection('env').doc('env').get().then(function (doc) {
-    client.login(doc.data().token0).catch(err => {
+    client.login(doc.data().token).catch(err => {
         console.log("err3 ", err);
     });
 
@@ -369,8 +369,31 @@ client.on("message", msg => {
                     return msg.reply("I couldn't recognize that command, make sure you typed it in correctly!");
             }
             break;
+        case "test":
+            msg.channel.send('!worst');
+            client.on('message', function listentome(message) {
+                if (message.author.id == "692117206108209253") {
+                    console.log("helloo");
+                    client.removeListener('message', listentome);
+                }
+                if (message.author.id == "692117206108209253" && message.content.includes("The top 10 places in the US")) {
+                    db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                        querySnapshot.forEach(function (doc) {
+                            console.log("countySubscription ", doc.data().id);
+                            message.channel.send(message.content);
+                            var matches = message.content.match(/\d+/g);
+                            message.channel.send(matches);
+                        });
+                    }).then(function () {
+                        client.removeListener('message', listentome);
+                    }).catch(function (error) {
+                        console.log("Error getting documents: ", error);
+                    });
+                }
+            });
+            break;
         case "activate":
-            if (msg.channel.id != "696894398293737512") return;
+            if (msg.channel.id != "696894398293737512") return msg.reply("no u");
             msg.reply("Activated. Now starting database query for update-enabled users.");
 
             var locations = [];
@@ -379,12 +402,11 @@ client.on("message", msg => {
 
                 await msg.channel.send('!worst');
                 client.on('message', function (message) {
-                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("County Data:")) {
+                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("The top 10 places in the US")) {
                         db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                return console.log("countySubscription ", doc.data().id);
-
-                                client.users.get(doc.id).send(message.content);
+                                console.log("countySubscription ", doc.data().id);
+                                message.channel.send(message.content);
                             });
                         }).catch(function (error) {
                             console.log("Error getting documents: ", error);
@@ -392,7 +414,7 @@ client.on("message", msg => {
                     }
                 });
 
-                return true;
+               return true;
 
             }).then(async function (result) {
 
@@ -447,7 +469,7 @@ client.on("message", msg => {
                                         var cases = matches[0];
                                         var deaths = matches[1];
 
-                                        return message.channel.send(location + " in Location for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
+                                        return message.channel.send(location + " as Location for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
                                     }
                                 });
                             } else if (location && location.includes(location)) {

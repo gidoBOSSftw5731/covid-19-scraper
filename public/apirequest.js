@@ -217,9 +217,9 @@ function graph(location) {
 };
 
 function worstCounties() {
-    msg.channel.send('!worst');
+    client.channels.get("696894398293737512").send('!worst');
     client.on('message', function (message) {
-        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("County Data:")) {
+        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("The top 10 places in the US")) {
             db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
                     return console.log("countySubscription ", doc.data().id);
