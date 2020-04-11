@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	pb "github.com/gidoBOSSftw5731/covid-19-scraper/apiListener/proto"
@@ -110,7 +112,7 @@ func testcommandHandler(discord *discordgo.Session, message *discordgo.MessageCr
 
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	user := message.Author
-	fmt.Println("hello")
+	//fmt.Println("hello")
 	if message.ChannelID == "696894398293737512" {
 		//Because I can't get an if NOT statement to work - Rasmit Devkota 2020
 		discord.ChannelMessageSend(message.ChannelID, "hello")
@@ -199,6 +201,69 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 			strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
 			newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
 		discord.ChannelMessageSend(message.ChannelID, msgStr)
+
+	case "top10", "worst", "top10worst", "tenworst":
+		country := "US" // change this if we support more than just good ol' 'murica
+
+		queryURL := apiURL + "/top10worst/" + country
+
+		resp, err := http.Get(queryURL)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		defer resp.Body.Close()
+
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+
+		//log.Tracef("Base64 data: %v", buf.String())
+
+		protoIn, err := base64.StdEncoding.DecodeString(buf.String())
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		newHInfo := &pb.HistoricalInfo{}
+
+		err = proto.Unmarshal(protoIn, newHInfo)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		// now we make the embed
+		var fields []*discordgo.MessageEmbedField
+
+		for n, i := range newHInfo.Info {
+			//log.Traceln((float64(i.Deaths) / float64(i.ConfirmedCases)) * 100)
+			field := discordgo.MessageEmbedField{
+				Name: fmt.Sprintf("#%v, %v", n+1, i.CombinedKey),
+				//Inline: true,
+				Value: fmt.Sprintf("This County has %v cases, %v deaths, and a death rate of %v%%",
+					i.ConfirmedCases, i.Deaths, fmt.Sprintf("%.2f", (float64(i.Deaths)/float64(i.ConfirmedCases))*100)),
+			}
+			fields = append(fields, &field)
+		}
+
+		embed := &discordgo.MessageEmbed{
+			Title: fmt.Sprintf("The top %v places in the %v with the most confirmed cases as of %v",
+				len(newHInfo.Info), country, time.Now().Format(time.RFC822)),
+			Author:    &discordgo.MessageEmbedAuthor{},
+			Color:     rand.Intn(16777215),
+			Fields:    fields,
+			Timestamp: time.Now().Format(time.RFC3339), // Discord wants ISO8601; RFC3339 is an extension of ISO8601 and should be completely compatible.
+		}
+
+		res, err := discord.ChannelMessageSendEmbed(message.ChannelID, embed)
+		if err != nil {
+			log.Debugln(res, err)
+			discord.ChannelMessageSend(message.ChannelID, "Internal Error!")
+			return
+		}
+
 	case "graph":
 		country := "US" // change this if we support more than just good ol' 'murica
 		var state string
