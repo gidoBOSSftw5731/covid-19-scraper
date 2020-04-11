@@ -114,11 +114,9 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	user := message.Author
 	//fmt.Println("hello")
 	if message.ChannelID == "696894398293737512" {
-		//Because I can't get an if NOT statement to work - Rasmit Devkota 2020
-		discord.ChannelMessageSend(message.ChannelID, "hello")
-		return
+		// Continue with your day please
 	} else if user.ID == botID {
-		//Do nothing because the bot is talking outside of #updates
+		// Do nothing because the bot is talking outside of #updates
 		return
 	}
 

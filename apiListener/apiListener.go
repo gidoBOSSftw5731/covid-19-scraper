@@ -139,7 +139,7 @@ func main() {
 	}
 
 	// do this in a different goroutine to not hold up other processes
-	go defineSQLStatements()
+	defineSQLStatements()
 
 	log.Traceln("Listening")
 	//  Start the fcgi listener, we use fcgi so we can have a loadbalancer and a cache upstream
@@ -486,7 +486,7 @@ func currentStateInfo(country, state string) (*pb.AreaInfo, error) {
 
 func currentCountryInfo(country string) (*pb.AreaInfo, error) {
 	cInfo := &pb.AreaInfo{}
-	rows, err := stmtMap["currentCountryInfo"].Query(country)
+	rows, err := stmtMap["cCountryQuery"].Query(country)
 	if err != nil {
 		log.Errorln(err)
 		return nil, err
