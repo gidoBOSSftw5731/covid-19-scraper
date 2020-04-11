@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
 
-// Firebase
+// Firebasee
 var firebase = require("firebase");
 firebase.initializeApp({
     apiKey: "AIzaSyDMq0mi1Se1KXRyqaIwVZnv1csYshtrgu0",
