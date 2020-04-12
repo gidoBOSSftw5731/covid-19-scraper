@@ -491,7 +491,6 @@ client.on("message", msg => {
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
             msg.reply("Activated. Now starting database query for update-enabled users.");
 
-            /*
             var locations = [];
             var locationsMatches = [];
 
@@ -533,9 +532,25 @@ client.on("message", msg => {
 
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
+                                var times = doc.data().timesetCommands.subscription.toString().split(",");
+                                if (d.getHours() == 0) {
+                                    var hour = "12AM";
+                                } else if (d.getHours() == 12) {
+                                    var hour = "12PM";
+                                } else if (d.getHours() > 12) {
+                                    var hour = (d.getHours() - 12) + "PM";
+                                } else  {
+                                    var hour = d.getHours() + "AM";
+                                }
 
-                                eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                return console.log("countrySubscription ", doc.data().id);
+                                if (!times.includes(hour)) {
+                                    return console.log("User is not in this timeset for countrySubscription");
+                                } else {
+                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                    return console.log("countrySubscription ", doc.data().id);
+                                }
+
+                                // LATER SEND TO ALL USERS
                             });
                         }).catch(function (error) {
                             console.log("Error getting documents: ", error);
@@ -550,6 +565,20 @@ client.on("message", msg => {
                 if (result) {
                     users.get().then(function (querySnapshot) {
                         querySnapshot.forEach(function (doc) {
+                            var times = doc.data().timesetCommands.subscription.toString().split(",");
+                            if (d.getHours() == 0) {
+                                var hour = "12AM";
+                            } else if (d.getHours() == 12) {
+                                var hour = "12PM";
+                            } else if (d.getHours() > 12) {
+                                var hour = (d.getHours() - 12) + "PM";
+                            } else {
+                                var hour = d.getHours() + "AM";
+                            }
+
+                            if (!times.includes(hour)) {
+                                return console.log("User is not in this timeset for countrySubscription");
+                            }
                             // LOCATION v
                             var state = (doc.data().state) ? doc.data().state : null;
                             var county = (doc.data().county) ? doc.data().county : null;
@@ -647,25 +676,24 @@ client.on("message", msg => {
 
             }).then(async function (result) {
 
-                // if (result) {
-                //     db.collection('mailinglist').get().then(function (querySnapshot) {
-                //         querySnapshot.forEach(async function (doc) {
-                //             var emails = doc.data().emails;
-                //             console.log("Emails: ", emails);
-                //             return;
-                //             emails.forEach(function (value, key) {
-                //                 auth.sendPasswordResetEmail(value).then(function () {
-                //                     console.log("Email sent to user " + key + " with email " + value);
-                //                 }).catch(function (error) {
-                //                     console.log("Error occurred emailing users: ", error);
-                //                 });
-                //             });
-                //         });
-                //     });
-                // }
+                if (result) {
+                    db.collection('mailinglist').get().then(function (querySnapshot) {
+                        querySnapshot.forEach(async function (doc) {
+                            var emails = doc.data().emails;
+                            console.log("Emails: ", emails);
+                            return;
+                            emails.forEach(function (value, key) {
+                                auth.sendPasswordResetEmail(value).then(function () {
+                                    console.log("Email sent to user " + key + " with email " + value);
+                                }).catch(function (error) {
+                                    console.log("Error occurred emailing users: ", error);
+                                });
+                            });
+                        });
+                    });
+                }
 
             });
-            */
             
             break;
         case "help":
