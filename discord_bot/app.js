@@ -30,7 +30,7 @@ function isUpperCase(str) {
 
 // Discord
 db.collection('env').doc('env').get().then(function (doc) {
-    client.login(doc.data().token).catch(err => {
+    client.login(doc.data().token0).catch(err => {
         console.log("err3 ", err);
     });
 
@@ -371,32 +371,6 @@ client.on("message", msg => {
             }
             break;
         case "test":
-            // msg.channel.send('!worst');
-            // client.on('message', function listentome(message) {
-            //     if (message.author.id == "692117206108209253") {
-            //         if (message.embeds != []) {
-            //             users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
-            //                 querySnapshot.forEach(function (doc) {
-            //                     console.log("countySubscription ", doc.data().id);
-
-            //                     console.log(message.embeds);
-            //                     message.embeds.forEach((embed) => {
-            //                         // for (f = 0; f < 10; f++) {
-            //                         //     message.reply(embed.fields[f].name + ": " + embed.fields[f].value);
-            //                         // }
-            //                         console.log("embed");
-            //                         client.users.get(doc.id).send(embed);
-            //                     });
-            //                 });
-            //             }).catch(function (error) {
-            //                 console.log("Error getting documents: ", error);
-            //             });
-
-            //             client.removeListener('message', listentome);
-            //         }
-            //     }
-            // });
-            return;
             users.get().then(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
                     // LOCATION v
@@ -488,16 +462,15 @@ client.on("message", msg => {
                 await msg.channel.send('!worst');
                 client.on('message', function listentome(message) {
                     if (message.author.id == "692117206108209253") {
-                        if (message.embeds) {
+                        if (message.embeds != []) {
                             users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
                                 querySnapshot.forEach(function (doc) {
                                     console.log("countySubscription ", doc.data().id);
 
                                     message.embeds.forEach((embed) => {
-                                        // for (f = 0; f < 10; f++) {
-                                        //     message.reply(embed.fields[f].name + ": " + embed.fields[f].value);
-                                        // }
-                                        client.users.get(doc.id).send(embed);
+                                        client.users.get(doc.id).send({
+                                            embed: embed
+                                        });
                                     });
                                 });
                             }).catch(function (error) {
@@ -509,30 +482,30 @@ client.on("message", msg => {
                     }
                 });
 
-               return true;
+                // return true;
 
             }).then(async function (result) {
 
-            // msg.channel.send('!cases');
-            // client.on('message', function (message) {
-            //     if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
-            //         var matches = message.content.match(/\d+/g);
-            //         var data = [matches[0], matches[1]];
+                // msg.channel.send('!cases');
+                // client.on('message', function (message) {
+                //     if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
+                //         var matches = message.content.match(/\d+/g);
+                //         var data = [matches[0], matches[1]];
 
-            //         var d = new Date();
-            //         var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+                //         var d = new Date();
+                //         var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
 
-            //         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
-            //             querySnapshot.forEach(function (doc) {
-            //                 // <LOCATION>['<DATE> + <i>'][<j>];
-            //                 eval("users.doc(doc.id).update({" + addr + ": " + data + "});");
-            //                 return console.log("countrySubscription ", doc.data().id);
-            //             });
-            //         }).catch(function (error) {
-            //             console.log("Error getting documents: ", error);
-            //         });
-            //     }
-            // });
+                //         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
+                //             querySnapshot.forEach(function (doc) {
+                //                 // <LOCATION>['<DATE> + <i>'][<j>];
+                //                 eval("users.doc(doc.id).update({" + addr + ": " + data + "});");
+                //                 return console.log("countrySubscription ", doc.data().id);
+                //             });
+                //         }).catch(function (error) {
+                //             console.log("Error getting documents: ", error);
+                //         });
+                //     }
+                // });
 
                 return true;
 
