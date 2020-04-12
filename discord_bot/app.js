@@ -486,6 +486,7 @@ client.on("message", msg => {
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
             msg.reply("Activated. Now starting database query for update-enabled users.");
 
+            /*
             var locations = [];
             var locationsMatches = [];
 
@@ -659,6 +660,8 @@ client.on("message", msg => {
                 // }
 
             });
+            */
+            
             break;
         case "help":
             const embed = new Discord.RichEmbed()
