@@ -99,9 +99,14 @@ client.on("message", msg => {
                     var state = args[2];
                     var countyParts = args.slice(0, 2).toString();
                     var county = countyParts.replace(",", " ");
-                } else {
+                } else if (len == 2) {
                     var state = args[1];
                     var county = args[0];
+                } else if (args[0] == "clear") {
+                    userDoc.update({
+                        location: firebase.firestore.FieldValue.delete()
+                    });
+                    return msg.reply("Your location has been removed!")
                 }
                 
                 for (i = 0; i < args.length; i++) {
