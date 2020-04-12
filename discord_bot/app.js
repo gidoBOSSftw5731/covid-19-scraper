@@ -106,7 +106,7 @@ client.on("message", msg => {
                     userDoc.update({
                         location: firebase.firestore.FieldValue.delete()
                     });
-                    return msg.reply("Your location has been removed!")
+                    return msg.reply("Your location has been cleared!")
                 }
                 
                 for (i = 0; i < args.length; i++) {
