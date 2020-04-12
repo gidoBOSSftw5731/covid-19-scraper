@@ -371,26 +371,79 @@ client.on("message", msg => {
             }
             break;
         case "test":
-            msg.channel.send('!cases');
-            client.on('message', function (message) {
-                if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
-                    var matches = message.content.match(/\d+/g);
-                    var data = [matches[0], matches[1]];
+            users.get().then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    var state = (doc.data().state) ? doc.data().state : null;
+                    var county = (doc.data().county) ? doc.data().county : null;
 
-                    var d = new Date();
-                    var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+                    if (state && county) {
+                        var location = county + " " + state;
+                    } else if (state) {
+                        var location = state;
+                    } else if (county) {
+                        var location = county;
+                    } else {
+                        var location = null;
+                    }
 
-                    users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
-                        querySnapshot.forEach(function (doc) {
-                            // <LOCATION>['<DATE> + <i>'][<j>];
-                            eval("users.doc(doc.id).update({" + addr + ": " + data + "});");
-                            return console.log("countrySubscription ", doc.data().id);
+                    if (location && !locations.includes(location)) {
+                        locations.push(location);
+                        var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                        msg.channel.send("!botcases " + location + " " + token);
+
+                        client.on('message', function (message) {
+                            if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token)) {
+                                var data = message.content.replace(token + " ", " ").toString();
+                                console.log(location + " data: " + data);
+                                var matches = data.match(/\d+/g);
+                                console.log(location + " matches: " + matches);
+                                var cases = matches[0];
+                                var deaths = matches[1];
+
+                                return message.channel.send(location + " as Location for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
+                            }
                         });
-                    }).catch(function (error) {
-                        console.log("Error getting documents: ", error);
-                    });
-                }
+                    } else if (location && location.includes(location)) {
+                        console.log("Location has already been queried.");
+                    } else {
+                        console.log("Error occurred, location undefined.");
+                    }
+
+                    var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+                    if (watchlist) {
+                        const watchlistLoop = async _ => {
+                            for (i = 0; i < watchlist.length; i++) {
+                                var location = watchlist[i].toString();
+                                if (locations.includes(location)) {
+                                    console.log("Location has already been queried.");
+                                    continue;
+                                }
+
+                                var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                                await msg.channel.send("!botcases " + location + " " + token);
+
+                                client.on('message', function (message) {
+                                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token)) {
+                                        var data = message.content.replace(token + " ", " ").toString();
+                                        var matches = data.match(/\d+/g);
+                                        var cases = matches[0];
+                                        var deaths = matches[1];
+
+                                        return message.channel.send(location + " in Watchlist for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
+                                    }
+                                });
+                            }
+                        };
+                        watchlistLoop();
+                    }
+                });
+            }).catch(function (error) {
+                console.log("Error getting documents: ", error);
+                client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
+                client.users.get('181965297249550336').send("Error occurred with activation location and watchlist retrieval.");
+                return;
             });
+
             break;
         case "activate":
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
@@ -429,22 +482,26 @@ client.on("message", msg => {
 
             }).then(async function (result) {
 
-                if (result) {
-                    await msg.channel.send('!cases');
-                    client.on('message', function (message) {
-                        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("Country Data:")) {
-                            users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
-                                querySnapshot.forEach(function (doc) {
-                                    return console.log("countrySubscription ", doc.data().id);
+            // msg.channel.send('!cases');
+            // client.on('message', function (message) {
+            //     if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
+            //         var matches = message.content.match(/\d+/g);
+            //         var data = [matches[0], matches[1]];
 
-                                    client.users.get(doc.id).send(message.content);
-                                });
-                            }).catch(function (error) {
-                                console.log("Error getting documents: ", error);
-                            });
-                        }
-                    });
-                }
+            //         var d = new Date();
+            //         var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+
+            //         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
+            //             querySnapshot.forEach(function (doc) {
+            //                 // <LOCATION>['<DATE> + <i>'][<j>];
+            //                 eval("users.doc(doc.id).update({" + addr + ": " + data + "});");
+            //                 return console.log("countrySubscription ", doc.data().id);
+            //             });
+            //         }).catch(function (error) {
+            //             console.log("Error getting documents: ", error);
+            //         });
+            //     }
+            // });
 
                 return true;
 
