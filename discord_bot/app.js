@@ -465,8 +465,6 @@ client.on("message", msg => {
                         if (message.embeds != []) {
                             users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
                                 querySnapshot.forEach(function (doc) {
-                                    console.log("countySubscription ", doc.data().id);
-
                                     message.embeds.forEach((embed) => {
                                         client.users.get(doc.id).send({
                                             embed: embed
