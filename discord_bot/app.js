@@ -373,7 +373,7 @@ client.on("message", msg => {
         case "timeset":
             if (!args.length) {
                 return msg.reply("To use the timeset command, please follow the paradigm:\n" +
-                    "```!watchlist <action (add/remove/view - takes no time args)> <subscription method (location, subscribe, or watchlist)> <time (Hour + AM/PM)>```Note: You can only set full hour intervals.");
+                    "```!timeset <action (add/remove/view - takes no time args)> <subscription method (location, subscribe, or watchlist)> <time (Hour + AM/PM)>```Note: You can only set full hour intervals.");
             }
 
             var action = args[0];
