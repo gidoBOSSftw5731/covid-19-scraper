@@ -371,8 +371,35 @@ client.on("message", msg => {
             }
             break;
         case "test":
+            // msg.channel.send('!worst');
+            // client.on('message', function listentome(message) {
+            //     if (message.author.id == "692117206108209253") {
+            //         if (message.embeds != []) {
+            //             users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
+            //                 querySnapshot.forEach(function (doc) {
+            //                     console.log("countySubscription ", doc.data().id);
+
+            //                     console.log(message.embeds);
+            //                     message.embeds.forEach((embed) => {
+            //                         // for (f = 0; f < 10; f++) {
+            //                         //     message.reply(embed.fields[f].name + ": " + embed.fields[f].value);
+            //                         // }
+            //                         console.log("embed");
+            //                         client.users.get(doc.id).send(embed);
+            //                     });
+            //                 });
+            //             }).catch(function (error) {
+            //                 console.log("Error getting documents: ", error);
+            //             });
+
+            //             client.removeListener('message', listentome);
+            //         }
+            //     }
+            // });
+            return;
             users.get().then(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
+                    // LOCATION v
                     var state = (doc.data().state) ? doc.data().state : null;
                     var county = (doc.data().county) ? doc.data().county : null;
 
@@ -391,7 +418,7 @@ client.on("message", msg => {
                         var token = doc.id + Math.floor(100000 + Math.random() * 999999);
                         msg.channel.send("!botcases " + location + " " + token);
 
-                        client.on('message', function (message) {
+                        client.on('message', function locationsListen(message) {
                             if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token)) {
                                 var data = message.content.replace(token + " ", " ").toString();
                                 console.log(location + " data: " + data);
@@ -400,42 +427,47 @@ client.on("message", msg => {
                                 var cases = matches[0];
                                 var deaths = matches[1];
 
-                                return message.channel.send(location + " as Location for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
+                                message.channel.send(location + " as Location for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
+                                return client.removeListener('message', locationsListen);
                             }
                         });
                     } else if (location && location.includes(location)) {
-                        console.log("Location has already been queried.");
+                        console.log("Location has already been queried, getting data for that location from stored memory.");
+
                     } else {
                         console.log("Error occurred, location undefined.");
                     }
-
+                    // LOCATION ^ WATCHLIST v
                     var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
                     if (watchlist) {
                         const watchlistLoop = async _ => {
                             for (i = 0; i < watchlist.length; i++) {
                                 var location = watchlist[i].toString();
                                 if (locations.includes(location)) {
-                                    console.log("Location has already been queried.");
+                                    console.log("Location has already been queried, getting data for that location from stored memory.");
+
                                     continue;
+                                } else {
+                                    var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                                    await msg.channel.send("!botcases " + location + " " + token);
+
+                                    client.on('message', function watchlistListen(message) {
+                                        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token)) {
+                                            var data = message.content.replace(token + " ", " ").toString();
+                                            var matches = data.match(/\d+/g);
+                                            var cases = matches[0];
+                                            var deaths = matches[1];
+
+                                            message.channel.send(location + " in Watchlist for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
+                                            return client.removeListener('message', watchlistListen);
+                                        }
+                                    });
                                 }
-
-                                var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                await msg.channel.send("!botcases " + location + " " + token);
-
-                                client.on('message', function (message) {
-                                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token)) {
-                                        var data = message.content.replace(token + " ", " ").toString();
-                                        var matches = data.match(/\d+/g);
-                                        var cases = matches[0];
-                                        var deaths = matches[1];
-
-                                        return message.channel.send(location + " in Watchlist for " + doc.id + " -> Cases: " + cases + " Deaths: " + deaths);
-                                    }
-                                });
                             }
                         };
                         watchlistLoop();
                     }
+                    // WATCHLIST ^
                 });
             }).catch(function (error) {
                 console.log("Error getting documents: ", error);
@@ -462,13 +494,12 @@ client.on("message", msg => {
                                     console.log("countySubscription ", doc.data().id);
 
                                     message.embeds.forEach((embed) => {
-                                        for (f = 0; f < 10; f++) {
-                                            message.reply(embed.fields[f].name + ": " + embed.fields[f].value);
-                                        }
+                                        // for (f = 0; f < 10; f++) {
+                                        //     message.reply(embed.fields[f].name + ": " + embed.fields[f].value);
+                                        // }
+                                        client.users.get(doc.id).send(embed);
                                     });
                                 });
-                            }).then(function () {
-                                client.removeListener('message', listentome);
                             }).catch(function (error) {
                                 console.log("Error getting documents: ", error);
                             });
