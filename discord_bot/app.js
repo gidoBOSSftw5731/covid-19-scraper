@@ -66,13 +66,14 @@ client.on("message", msg => {
     const args = msg.content.slice(1).split(' ');
     const command = args.shift().toLowerCase();
     const id = msg.author.id;
-    const userDoc = db.collection('users').doc(id);
+    const users = db.collection('users');
+    const userDoc = users.doc(id);
 
     switch (command) {
         case "signup":
-            db.collection('users').doc(id).get().then(function (doc) {
+            userDoc.get().then(function (doc) {
                 if (!doc.exists) {
-                    db.collection('users').doc(id).set({
+                    userDoc.set({
                         id: id
                     });
                     msg.reply('User created with id: ' + id);
@@ -105,10 +106,10 @@ client.on("message", msg => {
                 
                 for (i = 0; i < args.length; i++) {
                     if (i == 0) {
-                        let updateState = db.collection('users').doc(msg.author.id).update({ state: state });
+                        let updateState = userDoc.update({ state: state });
                         o += "State: " + state;
                     } else if (i == 1) {
-                        let updateCounty = db.collection('users').doc(msg.author.id).update({ county: county });
+                        let updateCounty = userDoc.update({ county: county });
                         o += ", County: " + county;
                     }
                 }
@@ -122,21 +123,21 @@ client.on("message", msg => {
             }
             switch (args[0]) {
                 case "county":
-                    db.collection('users').doc(id).set({
+                    userDoc.set({
                         countySubscription: true
                     }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all county-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe county```');
                     });
                     break;
                 case "state":
-                    db.collection('users').doc(id).set({
+                    userDoc.set({
                         stateSubscription: true
                     }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all state-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe state```');
                     });
                     break;
                 case "country":
-                    db.collection('users').doc(id).set({
+                    userDoc.set({
                         countrySubscription: true
                     }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all country-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe country```');
@@ -151,21 +152,21 @@ client.on("message", msg => {
             }
             switch (args[0]) {
                 case "county":
-                    db.collection('users').doc(id).set({
+                    userDoc.set({
                         countySubscription: false
                     }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all county-level updates.\n Subscribe at any time using the command ```!subscribe county```');
                     });
                     break;
                 case "state":
-                    db.collection('users').doc(id).set({
+                    userDoc.set({
                         stateSubscription: false
                     }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all state-level updates.\n Subscribe at any time using the command ```!subscribe state```');
                     });
                     break;
                 case "country":
-                    db.collection('users').doc(id).set({
+                    userDoc.set({
                         countrySubscription: false
                     }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all country-level updates.\n Subscribe at any time using the command ```!subscribe country```');
@@ -370,22 +371,21 @@ client.on("message", msg => {
             }
             break;
         case "test":
-            msg.channel.send('!worst');
-            client.on('message', function listentome(message) {
-                if (message.author.id == "692117206108209253") {
-                    console.log("helloo");
-                    client.removeListener('message', listentome);
-                }
-                if (message.author.id == "692117206108209253" && message.content.includes("The top 10 places in the US")) {
-                    db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
+            msg.channel.send('!cases');
+            client.on('message', function (message) {
+                if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
+                    var matches = message.content.match(/\d+/g);
+                    var data = [matches[0], matches[1]];
+
+                    var d = new Date();
+                    var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+
+                    users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                         querySnapshot.forEach(function (doc) {
-                            console.log("countySubscription ", doc.data().id);
-                            message.channel.send(message.content);
-                            var matches = message.content.match(/\d+/g);
-                            message.channel.send(matches);
+                            // <LOCATION>['<DATE> + <i>'][<j>];
+                            eval("users.doc(doc.id).update({" + addr + ": " + data + "});");
+                            return console.log("countrySubscription ", doc.data().id);
                         });
-                    }).then(function () {
-                        client.removeListener('message', listentome);
                     }).catch(function (error) {
                         console.log("Error getting documents: ", error);
                     });
@@ -401,16 +401,27 @@ client.on("message", msg => {
             new Promise(async function (resolve) {
 
                 await msg.channel.send('!worst');
-                client.on('message', function (message) {
-                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("The top 10 places in the US")) {
-                        db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
-                            querySnapshot.forEach(function (doc) {
-                                console.log("countySubscription ", doc.data().id);
-                                message.channel.send(message.content);
+                client.on('message', function listentome(message) {
+                    if (message.author.id == "692117206108209253") {
+                        if (message.embeds) {
+                            users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                                querySnapshot.forEach(function (doc) {
+                                    console.log("countySubscription ", doc.data().id);
+
+                                    message.embeds.forEach((embed) => {
+                                        for (f = 0; f < 10; f++) {
+                                            message.reply(embed.fields[f].name + ": " + embed.fields[f].value);
+                                        }
+                                    });
+                                });
+                            }).then(function () {
+                                client.removeListener('message', listentome);
+                            }).catch(function (error) {
+                                console.log("Error getting documents: ", error);
                             });
-                        }).catch(function (error) {
-                            console.log("Error getting documents: ", error);
-                        });
+
+                            client.removeListener('message', listentome);
+                        }
                     }
                 });
 
@@ -422,7 +433,7 @@ client.on("message", msg => {
                     await msg.channel.send('!cases');
                     client.on('message', function (message) {
                         if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("Country Data:")) {
-                            db.collection('users').where("countrySubscription", "==", true).get().then(function (querySnapshot) {
+                            users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                                 querySnapshot.forEach(function (doc) {
                                     return console.log("countrySubscription ", doc.data().id);
 
@@ -440,7 +451,7 @@ client.on("message", msg => {
             }).then(async function (result) {
 
                 if (result) {
-                    db.collection('users').get().then(function (querySnapshot) {
+                    users.get().then(function (querySnapshot) {
                         querySnapshot.forEach(function (doc) {
                             var state = (doc.data().state) ? doc.data().state : null;
                             var county = (doc.data().county) ? doc.data().county : null;
