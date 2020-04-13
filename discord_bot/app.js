@@ -734,9 +734,9 @@ client.on("message", msg => {
                 .setFooter('Data Source: Arcgis');
             msg.channel.send({ embed });
             break;
-        case "":
-            msg.reply('You must add a command for me to know what to do! Use !help to see a list of commands');
-            break;
+        // case "":
+        //     msg.reply('You must add a command for me to know what to do! Use !help to see a list of commands');
+        //     break;
         default:
             break;
     }
