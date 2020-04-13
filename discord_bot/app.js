@@ -565,7 +565,9 @@ client.on("message", msg => {
                 if (result) {
                     users.get().then(function (querySnapshot) {
                         querySnapshot.forEach(function (doc) {
-                            var times = doc.data().timesetCommands.subscription.toString().split(",");
+                            var locationTimes = doc.data().timesetCommands.location.toString().split(",");
+                            var watchlistTimes = doc.data().timesetCommands.location.toString().split(",");
+
                             if (d.getHours() == 0) {
                                 var hour = "12AM";
                             } else if (d.getHours() == 12) {
@@ -576,8 +578,8 @@ client.on("message", msg => {
                                 var hour = d.getHours() + "AM";
                             }
 
-                            if (!times.includes(hour)) {
-                                return console.log("User is not in this timeset for countrySubscription");
+                            if (!locationTimes.includes(hour) && !watchlistTimes.includes(hour)) {
+                                return console.log("User is not in this timeset for location or watchlist.");
                             }
                             // LOCATION v
                             var state = (doc.data().state) ? doc.data().state : null;
@@ -593,7 +595,7 @@ client.on("message", msg => {
                                 return msg.channel.send("User " + doc.id + " has no location set.");
                             }
 
-                            if (location && !locations.includes(location)) {
+                            if (!locationTimes.includes(hour) && location && !locations.includes(location)) {
                                 locations.push(location);
 
                                 var token = doc.id + Math.floor(100000 + Math.random() * 999999);
@@ -613,7 +615,7 @@ client.on("message", msg => {
                                         var d = new Date();
                                         var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
 
-                                        eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                        eval("users.doc('" + doc.id + "').update({ location: '" + data + "'});");
 
                                         return client.removeListener('message', locationsListen);
                                     }
@@ -625,7 +627,7 @@ client.on("message", msg => {
                             }
                             // LOCATION ^ WATCHLIST v
                             var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
-                            if (watchlist) {
+                            if (!watchlistTimes.includes(hour) && watchlist) {
                                 const watchlistLoop = async _ => {
                                     for (i = 0; i < watchlist.length; i++) {
                                         var location = watchlist[i].toString();
