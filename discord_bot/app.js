@@ -547,11 +547,12 @@ client.on("message", msg => {
                                     return console.log("User is not in this timeset for countrySubscription");
                                 } else {
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                    return console.log("countrySubscription ", doc.data().id);
                                 }
 
-                                // LATER SEND TO ALL USERS
+                                client.users.get(doc.id).send(message.content);
                             });
+                        }).then(function () {
+                            client.removeListener('message', listentome);
                         }).catch(function (error) {
                             console.log("Error getting documents: ", error);
                         });
@@ -581,6 +582,7 @@ client.on("message", msg => {
                             if (!locationTimes.includes(hour) && !watchlistTimes.includes(hour)) {
                                 return console.log("User is not in this timeset for location or watchlist.");
                             }
+
                             // LOCATION v
                             var state = (doc.data().state) ? doc.data().state : null;
                             var county = (doc.data().county) ? doc.data().county : null;
@@ -607,25 +609,25 @@ client.on("message", msg => {
                                         var matches = data.match(/\d+/g);
                                         locationsMatches[locations.indexOf(location)] = matches;
 
-                                        // LATER TAKE OUT IF AND SEND TO ALL USERS
-                                        if (doc.id == "377934017548386307") {
-                                            client.users.get('377934017548386307').send(data);
-                                        }
-
                                         var d = new Date();
                                         var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
 
-                                        eval("users.doc('" + doc.id + "').update({ location: '" + data + "'});");
+                                        eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                        client.users.get(doc.id).send(data);
 
                                         return client.removeListener('message', locationsListen);
                                     }
                                 });
                             } else if (location && locations.includes(location)) {
                                 console.log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                                var data = locationsMatches[locations.indexOf(location)];
+                                client.users.get(doc.id).send(data);
                             } else {
                                 console.log("Error occurred, location undefined.");
                             }
-                            // LOCATION ^ WATCHLIST v
+                            // LOCATION ^
+
+                            // WATCHLIST v
                             var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
                             if (!watchlistTimes.includes(hour) && watchlist) {
                                 const watchlistLoop = async _ => {
@@ -633,7 +635,8 @@ client.on("message", msg => {
                                         var location = watchlist[i].toString();
                                         if (locations.includes(location)) {
                                             console.log("Location " + location + " has already been queried, getting data for that location from stored memory.");
-
+                                            var data = locationsMatches[locations.indexOf(location)];
+                                            client.users.get(doc.id).send(data);
                                             continue;
                                         } else {
                                             locations.push(location);
@@ -647,15 +650,11 @@ client.on("message", msg => {
                                                     var matches = data.match(/\d+/g);
                                                     locationsMatches[locations.indexOf(location)] = matches;
 
-                                                    // LATER TAKE OUT IF AND SEND TO ALL USERS
-                                                    if (doc.id == "377934017548386307") {
-                                                        client.users.get('377934017548386307').send(data);
-                                                    }
-
                                                     var d = new Date();
                                                     var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
 
                                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                                    client.users.get(doc.id).send(data);
 
                                                     return client.removeListener('message', watchlistListen);
                                                 }
@@ -664,6 +663,8 @@ client.on("message", msg => {
                                     }
                                 };
                                 watchlistLoop();
+                            } else if (!watchlist) {
+                                return console.log("User does not have a watchlist");
                             }
                             // WATCHLIST ^
                         });
@@ -678,23 +679,28 @@ client.on("message", msg => {
 
             }).then(async function (result) {
 
-                if (result) {
-                    db.collection('mailinglist').get().then(function (querySnapshot) {
-                        querySnapshot.forEach(async function (doc) {
-                            var emails = doc.data().emails;
-                            console.log("Emails: ", emails);
-                            return;
-                            emails.forEach(function (value, key) {
-                                auth.sendPasswordResetEmail(value).then(function () {
-                                    console.log("Email sent to user " + key + " with email " + value);
-                                }).catch(function (error) {
-                                    console.log("Error occurred emailing users: ", error);
-                                });
-                            });
-                        });
-                    });
-                }
+                // if (result) {
+                //     db.collection('mailinglist').get().then(function (querySnapshot) {
+                //         querySnapshot.forEach(async function (doc) {
+                //             var emails = doc.data().emails;
+                //             console.log("Emails: ", emails);
+                //             emails.forEach(function (value, key) {
+                //                 auth.sendPasswordResetEmail(value).then(function () {
+                //                     console.log("Email sent to user " + key + " with email " + value);
+                //                 }).catch(function (error) {
+                //                     console.log("Error occurred emailing users: ", error);
+                //                 });
+                //             });
+                //         });
+                //     });
+                // }
 
+                return true;
+
+            }).then(function (result) {
+                console.log("Finished updating!");
+                client.users.get('377934017548386307').send("Finished updating everyone! Check logs to see if any errors occurred.");
+                msg.channel.send("Finished updating everyone! Check logs to see if any errors occurred.");
             });
             
             break;
