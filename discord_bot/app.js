@@ -698,9 +698,11 @@ client.on("message", msg => {
                 return true;
 
             }).then(function (result) {
-                console.log("Finished updating!");
-                client.users.get('377934017548386307').send("Finished updating everyone! Check logs to see if any errors occurred.");
-                msg.channel.send("Finished updating everyone! Check logs to see if any errors occurred.");
+                if (result) {
+                    console.log("Finished updating!");
+                    client.users.get('377934017548386307').send("Finished updating everyone! Check logs to see if any errors occurred.");
+                    msg.channel.send("Finished updating everyone! Check logs to see if any errors occurred.");
+                }
             });
             
             break;
