@@ -484,9 +484,6 @@ client.on("message", msg => {
                 });
             }
             break;
-        case "test":
-
-            break;
         case "activate":
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
             msg.reply("Activated. Now starting database query for update-enabled users.");
