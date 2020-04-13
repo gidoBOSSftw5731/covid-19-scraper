@@ -3,6 +3,22 @@ window.requestAllowed = true;
 window.state = null;
 window.county = null;
 
+// block request by setting requestAllowed to false and setting the current state and county
+function blockRequest(state, county) {
+    window.requestAllowed = false;
+    window.state = state;
+    window.county = county;
+    return;
+};
+
+// all the request by setting requestAllowed to true and resetting the current state and counting
+function allowRequest() {
+    window.requestAllowed = true;
+    window.state = null;
+    window.county = null;
+    return;
+};
+
 // ask for data
 function cases() {
     // get the state input and make sure it isn't null
@@ -65,13 +81,14 @@ function cases() {
         var location = inputState;
     }
 
+    blockRequest(inputState, inputCounty);
+    setTimeout(allowRequest, 3600000);
+
     // once we get a message, make sure it's: from the bot, it's in the channel we sent to, and it includes our unique token
     client.on('message', function (msg) {
         if (msg.author.id == "692117206108209253" && msg.channel.id == channelID && msg.content.includes(token)) {
             console.log("bot");
             // block request (see the function itself) and set a timeout to allow the request later after an hour
-            blockRequest(inputState, inputCounty);
-            setTimeout(allowRequest, 3600000);
 
             // get data and do stuff blah blah
             var data = msg.content.replace(token + " ", " ").toString();
@@ -251,20 +268,4 @@ function email() {
             });
         });
     });
-};
-
-// block request by setting requestAllowed to false and setting the current state and county
-function blockRequest(state, county) {
-    window.requestAllowed = false;
-    window.state = state;
-    window.county = county;
-    return;
-};
-
-// all the request by setting requestAllowed to true and resetting the current state and counting
-function allowRequest() {
-    window.requestAllowed = true;
-    window.state = null;
-    window.county = null;
-    return;
 };
