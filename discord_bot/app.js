@@ -31,7 +31,7 @@ function isUpperCase(str) {
 // Discord
 db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token0).catch(err => {
-        console.log("err3 ", err);
+        error(err);
     });
 
     client.on("ready", () => {
@@ -39,7 +39,7 @@ db.collection('env').doc('env').get().then(function (doc) {
         client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
     })
 }).catch(function (err) {
-    console.log(err);
+    error(err);
 });
 
 function error(err) {
@@ -229,7 +229,6 @@ client.on("message", msg => {
 
                     var lastArg = location[location.length - 1];
                     if (!isUpperCase(lastArg)) {
-                        error("State isn't last/uppercase?");
                         return msg.reply("Looks like you may have typed the command in wrong! Check the full command " +
                             "(!help for how a list of command descriptions) to verify that there are no mistakes and then try again.");
                     }
@@ -240,8 +239,6 @@ client.on("message", msg => {
                         } else {
                             var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
                             if (!watchlist) {
-                                error("Error occurred - watchlist undefined (shouldn't matter, creating now)");
-
                                 if (location.length == 3) {
                                     var watchlist = [location[0] + " " + location[1], location[2]];
                                 } else {
@@ -297,7 +294,6 @@ client.on("message", msg => {
 
                     var lastArg = location[location.length - 1];
                     if (!isUpperCase(lastArg)) {
-                        error("State isn't last/uppercase?");
                         return msg.reply("Looks like you may have typed the command in wrong! Check the full command " +
                             "(!help for how a list of command descriptions) to verify that there are no mistakes and then try again.");
                     }
@@ -528,8 +524,8 @@ client.on("message", msg => {
                                             });
                                         }
                                     });
-                                }).catch(function (error) {
-                                    console.log("Error getting documents: ", error);
+                                }).catch(function (err) {
+                                    error(err);
                                 });
 
                                 client.removeListener('message', listentome);
@@ -577,8 +573,8 @@ client.on("message", msg => {
                                 });
                             }).then(function () {
                                 client.removeListener('message', listentome);
-                            }).catch(function (error) {
-                                console.log("Error getting documents: ", error);
+                            }).catch(function (err) {
+                                error(err);
                             });
                         }
                     });
@@ -594,6 +590,7 @@ client.on("message", msg => {
                             var locationTimes = doc.data().timesetCommands.location.toString().split(",");
                             var watchlistTimes = doc.data().timesetCommands.location.toString().split(",");
 
+                            var d = new Date();
                             if (d.getHours() == 0) {
                                 var hour = "12AM";
                             } else if (d.getHours() == 12) {
@@ -648,7 +645,7 @@ client.on("message", msg => {
                                 var data = locationsMatches[locations.indexOf(location)];
                                 client.users.get(doc.id).send(data);
                             } else {
-                                console.log("Error occurred, location undefined.");
+                                error("Error occurred, location undefined.");
                             }
                             // LOCATION ^
 
@@ -693,8 +690,8 @@ client.on("message", msg => {
                             }
                             // WATCHLIST ^
                         });
-                    }).catch(function (error) {
-                        console.log("Error getting documents: ", error);
+                    }).catch(function (err) {
+                        error(err);
                         client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
                         return;
                     });
@@ -712,8 +709,8 @@ client.on("message", msg => {
                 //             emails.forEach(function (value, key) {
                 //                 auth.sendPasswordResetEmail(value).then(function () {
                 //                     console.log("Email sent to user " + key + " with email " + value);
-                //                 }).catch(function (error) {
-                //                     console.log("Error occurred emailing users: ", error);
+                //                 }).catch(function (err) {
+                //                     error(err);
                 //                 });
                 //             });
                 //         });
