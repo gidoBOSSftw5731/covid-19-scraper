@@ -485,221 +485,225 @@ client.on("message", msg => {
             var locations = [];
             var locationsMatches = [];
 
+            function doWorst() {
+                msg.channel.send('!worst');
+                client.on('message', function listentome(message) {
+                    if (message.author.id == "692117206108209253" && message.embeds != []) {
+                        users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                            querySnapshot.forEach(function (doc) {
+                                if (doc.data().timesetCommands.subscribe) {
+                                    var times = doc.data().timesetCommands.subscribe;
+                                } else {
+                                    return console.log("User is not in this timeset for countySubscription.");
+                                }
+
+                                var d = new Date();
+                                if (d.getHours() == 0) {
+                                    var hour = "12AM";
+                                } else if (d.getHours() == 12) {
+                                    var hour = "12PM";
+                                } else if (d.getHours() > 12) {
+                                    var hour = (d.getHours() - 12) + "PM";
+                                } else {
+                                    var hour = d.getHours() + "AM";
+                                }
+
+                                if (!times.includes(hour)) {
+                                    return console.log("User is not in this timeset for countySubscription.");
+                                } else {
+                                    message.embeds.forEach((embed) => {
+                                        client.users.get(doc.id).send({
+                                            embed: embed
+                                        });
+                                    });
+                                }
+                            });
+                        }).then(function () {
+                            client.removeListener('message', listentome);
+                        }).catch(function (err) {
+                            error(err);
+                        });
+                    }
+                });
+            }
+
+            function doCountry() {
+                msg.channel.send('!cases');
+                client.on('message', function (message) {
+                    if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
+                        var matches = message.content.match(/\d+/g);
+                        var data = [matches[0], matches[1]];
+
+                        var d = new Date();
+                        var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+
+                        users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
+                            querySnapshot.forEach(function (doc) {
+                                var times = doc.data().timesetCommands.subscribe;
+                                if (d.getHours() == 0) {
+                                    var hour = "12AM";
+                                } else if (d.getHours() == 12) {
+                                    var hour = "12PM";
+                                } else if (d.getHours() > 12) {
+                                    var hour = (d.getHours() - 12) + "PM";
+                                } else {
+                                    var hour = d.getHours() + "AM";
+                                }
+
+                                if (!times.includes(hour)) {
+                                    return console.log("User is not in this timeset for countrySubscription");
+                                } else {
+                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                }
+
+                                client.users.get(doc.id).send(message.content);
+                            });
+                        }).then(function () {
+                            client.removeListener('message', listentome);
+                        }).catch(function (err) {
+                            error(err);
+                        });
+                    }
+                });
+            }
+
+            function doLocation() {
+                users.get().then(function (querySnapshot) {
+                    querySnapshot.forEach(function (doc) {
+                        var locationTimes = doc.data().timesetCommands.location.toString().split(",");
+
+                        var d = new Date();
+                        if (d.getHours() == 0) {
+                            var hour = "12AM";
+                        } else if (d.getHours() == 12) {
+                            var hour = "12PM";
+                        } else if (d.getHours() > 12) {
+                            var hour = (d.getHours() - 12) + "PM";
+                        } else {
+                            var hour = d.getHours() + "AM";
+                        }
+
+                        if (!locationTimes.includes(hour)) {
+                            return console.log("User is not in this timeset for location.");
+                        }
+
+                        var state = (doc.data().state) ? doc.data().state : null;
+                        var county = (doc.data().county) ? doc.data().county : null;
+
+                        if (state && county) {
+                            var location = county + " " + state;
+                        } else if (state) {
+                            var location = state;
+                        } else if (county) {
+                            var location = county;
+                        } else {
+                            return msg.channel.send("User " + doc.id + " has no location set.");
+                        }
+
+                        if (location && !locations.includes(location)) {
+                            locations.push(location);
+
+                            var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                            msg.channel.send("!botcases " + location + " " + token);
+
+                            client.on('message', function locationsListen(message) {
+                                if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
+                                    var data = message.content.replace(token + " ", " ").toString();
+                                    var matches = data.match(/\d+/g);
+                                    locationsMatches[locations.indexOf(location)] = matches;
+
+                                    var d = new Date();
+                                    var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+
+                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                    client.users.get(doc.id).send(data);
+
+                                    return client.removeListener('message', locationsListen);
+                                }
+                            });
+                        } else if (location && locations.includes(location)) {
+                            console.log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                            var data = locationsMatches[locations.indexOf(location)];
+                            client.users.get(doc.id).send(data);
+                        } else {
+                            error("Error occurred, location undefined.");
+                        }
+                    });
+                }).catch(function (err) {
+                    error(err);
+                    client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
+                    return;
+                });
+            }
+
+            function doWatchlist() {
+                users.get().then(function (querySnapshot) {
+                    querySnapshot.forEach(function (doc) {
+                        var watchlistTimes = doc.data().timesetCommands.watchlist.toString().split(",");
+
+                        var d = new Date();
+                        if (d.getHours() == 0) {
+                            var hour = "12AM";
+                        } else if (d.getHours() == 12) {
+                            var hour = "12PM";
+                        } else if (d.getHours() > 12) {
+                            var hour = (d.getHours() - 12) + "PM";
+                        } else {
+                            var hour = d.getHours() + "AM";
+                        }
+
+                        if (!watchlistTimes.includes(hour)) {
+                            return console.log("User is not in this timeset for watchlist.");
+                        }
+
+                        var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+
+                        if (watchlist) {
+                            const watchlistLoop = async _ => {
+                                for (i = 0; i < watchlist.length; i++) {
+                                    var location = watchlist[i].toString();
+
+                                    if (locations.includes(location)) {
+                                        locations.push(location);
+
+                                        var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                                        await msg.channel.send("!botcases " + location + " " + token);
+
+                                        client.on('message', function watchlistListen(message) {
+                                            if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
+                                                var data = message.content.replace(token + " ", " ").toString();
+                                                var matches = data.match(/\d+/g);
+                                                locationsMatches[locations.indexOf(location)] = matches;
+
+                                                var d = new Date();
+                                                var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+
+                                                eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                                client.users.get(doc.id).send(data);
+
+                                                return client.removeListener('message', watchlistListen);
+                                            }
+                                        });
+                                    } else {
+                                        console.log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                                        var data = locationsMatches[locations.indexOf(location)];
+                                        client.users.get(doc.id).send(data);
+                                        continue;
+                                    }
+                                }
+                            };
+                            watchlistLoop();
+                        } else if (!watchlist) {
+                            return console.log("User does not have a watchlist");
+                        }
+                    });
+                });
+            }
+
             new Promise(function (resolve) {
                 msg.reply("Activated. Now starting database query for update-enabled users.");
                 resolve(true);
-            }).then(function (result) {
-
-                if (result) {
-                    msg.channel.send('!worst');
-                    client.on('message', function listentome(message) {
-                        if (message.author.id == "692117206108209253") {
-                            if (message.embeds != []) {
-                                users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
-                                    querySnapshot.forEach(function (doc) {
-                                        if (doc.data().timesetCommands.subscribe) {
-                                            var times = doc.data().timesetCommands.subscribe;
-                                        } else {
-                                            return console.log("User is not in this timeset for countySubscription.");
-                                        }
-
-                                        var d = new Date();
-                                        if (d.getHours() == 0) {
-                                            var hour = "12AM";
-                                        } else if (d.getHours() == 12) {
-                                            var hour = "12PM";
-                                        } else if (d.getHours() > 12) {
-                                            var hour = (d.getHours() - 12) + "PM";
-                                        } else {
-                                            var hour = d.getHours() + "AM";
-                                        }
-
-                                        if (!times.includes(hour)) {
-                                            return console.log("User is not in this timeset for countySubscription.");
-                                        } else {
-                                            message.embeds.forEach((embed) => {
-                                                client.users.get(doc.id).send({
-                                                    embed: embed
-                                                });
-                                            });
-                                        }
-                                    });
-                                }).catch(function (err) {
-                                    error(err);
-                                });
-
-                                client.removeListener('message', listentome);
-                            }
-                        }
-                    });
-
-                    return true;
-                }
-
-            }).then(async function (result) {
-
-                console.log(result);
-
-                if (result) {
-                    await msg.channel.send('!cases');
-                    client.on('message', function (message) {
-                        if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
-                            var matches = message.content.match(/\d+/g);
-                            var data = [matches[0], matches[1]];
-
-                            var d = new Date();
-                            var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
-
-                            users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
-                                querySnapshot.forEach(function (doc) {
-                                    var times = doc.data().timesetCommands.subscribe;
-                                    if (d.getHours() == 0) {
-                                        var hour = "12AM";
-                                    } else if (d.getHours() == 12) {
-                                        var hour = "12PM";
-                                    } else if (d.getHours() > 12) {
-                                        var hour = (d.getHours() - 12) + "PM";
-                                    } else {
-                                        var hour = d.getHours() + "AM";
-                                    }
-
-                                    if (!times.includes(hour)) {
-                                        return console.log("User is not in this timeset for countrySubscription");
-                                    } else {
-                                        eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                    }
-
-                                    client.users.get(doc.id).send(message.content);
-                                });
-                            }).then(function () {
-                                client.removeListener('message', listentome);
-                            }).catch(function (err) {
-                                error(err);
-                            });
-                        }
-                    });
-                }
-
-                return true;
-
-            }).then(async function (result) {
-
-                if (result) {
-                    users.get().then(function (querySnapshot) {
-                        querySnapshot.forEach(function (doc) {
-                            var locationTimes = doc.data().timesetCommands.location.toString().split(",");
-                            var watchlistTimes = doc.data().timesetCommands.location.toString().split(",");
-
-                            var d = new Date();
-                            if (d.getHours() == 0) {
-                                var hour = "12AM";
-                            } else if (d.getHours() == 12) {
-                                var hour = "12PM";
-                            } else if (d.getHours() > 12) {
-                                var hour = (d.getHours() - 12) + "PM";
-                            } else {
-                                var hour = d.getHours() + "AM";
-                            }
-
-                            if (!locationTimes.includes(hour) && !watchlistTimes.includes(hour)) {
-                                return console.log("User is not in this timeset for location or watchlist.");
-                            }
-
-                            // LOCATION v
-                            var state = (doc.data().state) ? doc.data().state : null;
-                            var county = (doc.data().county) ? doc.data().county : null;
-
-                            if (state && county) {
-                                var location = county + " " + state;
-                            } else if (state) {
-                                var location = state;
-                            } else if (county) {
-                                var location = county;
-                            } else {
-                                return msg.channel.send("User " + doc.id + " has no location set.");
-                            }
-
-                            if (!locationTimes.includes(hour) && location && !locations.includes(location)) {
-                                locations.push(location);
-
-                                var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                msg.channel.send("!botcases " + location + " " + token);
-
-                                client.on('message', function locationsListen(message) {
-                                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                        var data = message.content.replace(token + " ", " ").toString();
-                                        var matches = data.match(/\d+/g);
-                                        locationsMatches[locations.indexOf(location)] = matches;
-
-                                        var d = new Date();
-                                        var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
-
-                                        eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                        client.users.get(doc.id).send(data);
-
-                                        return client.removeListener('message', locationsListen);
-                                    }
-                                });
-                            } else if (location && locations.includes(location)) {
-                                console.log("Location " + location + " has already been queried, getting data for that location from stored memory.");
-                                var data = locationsMatches[locations.indexOf(location)];
-                                client.users.get(doc.id).send(data);
-                            } else {
-                                error("Error occurred, location undefined.");
-                            }
-                            // LOCATION ^
-
-                            // WATCHLIST v
-                            var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
-                            if (!watchlistTimes.includes(hour) && watchlist) {
-                                const watchlistLoop = async _ => {
-                                    for (i = 0; i < watchlist.length; i++) {
-                                        var location = watchlist[i].toString();
-                                        if (locations.includes(location)) {
-                                            console.log("Location " + location + " has already been queried, getting data for that location from stored memory.");
-                                            var data = locationsMatches[locations.indexOf(location)];
-                                            client.users.get(doc.id).send(data);
-                                            continue;
-                                        } else {
-                                            locations.push(location);
-
-                                            var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                            await msg.channel.send("!botcases " + location + " " + token);
-
-                                            client.on('message', function watchlistListen(message) {
-                                                if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                                    var data = message.content.replace(token + " ", " ").toString();
-                                                    var matches = data.match(/\d+/g);
-                                                    locationsMatches[locations.indexOf(location)] = matches;
-
-                                                    var d = new Date();
-                                                    var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
-
-                                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                                    client.users.get(doc.id).send(data);
-
-                                                    return client.removeListener('message', watchlistListen);
-                                                }
-                                            });
-                                        }
-                                    }
-                                };
-                                watchlistLoop();
-                            } else if (!watchlist) {
-                                return console.log("User does not have a watchlist");
-                            }
-                            // WATCHLIST ^
-                        });
-                    }).catch(function (err) {
-                        error(err);
-                        client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
-                        return;
-                    });
-                }
-
-                return true;
-
-            }).then(async function (result) {
+            }).then(doWorst).then(doCountry).then(doLocation).then(doWatchlist).then(function () {
 
                 // if (result) {
                 //     db.collection('mailinglist').get().then(function (querySnapshot) {
