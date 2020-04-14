@@ -31,21 +31,27 @@ function isUpperCase(str) {
 // Discord
 db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token0).catch(err => {
-        error(err);
+        error(err + " " + new Error().lineNumber);
     });
 
     client.on("ready", () => {
-        console.log(`Client user tag: ${client.user.id}!`);
+        log(`Client user tag: ${client.user.id}!`);
         client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
     })
 }).catch(function (err) {
-    error(err);
+    error(err + " " + new Error().lineNumber);
 });
 
 function error(err) {
     var date = new Date();
-    client.channels.get("696540781787217952").send(date + " Error: " + err);
+    client.channels.get("696540781787217952").send(date + " " + err);
 };
+
+function log(message) {
+    var date = new Date();
+    client.channels.get("696540781787217952").send(date + " " + message + " at: " + message.line);
+};
+
 
 client.on("message", msg => {
     if (msg.content == "so how was your day") {
@@ -58,7 +64,7 @@ client.on("message", msg => {
     if (!msg.content.startsWith("!")) return;
 
     if (msg.content == ("!activate") && msg.channel.id == "696894398293737512") {
-        console.log("Activation message received.");
+        log("Activation message received.");
     } else if (msg.author.id == client.user.id) {
         return;
     }
@@ -80,7 +86,7 @@ client.on("message", msg => {
                     client.users.get(id).send('Welcome to the CovidBot19 Community! Use the command `!help` to see a list of commands that you can run!\n' +
                     "This bot is still a WIP, so expect bugs and new features all at the same time!\nAnd don't forget, stay home and wash your hands for 20 seconds!");
                 } else {
-                    console.log("Users doc already exists, skipped writing.");
+                    log("Users doc already exists, skipped writing.");
                     msg.reply("You're already signed up!");
                 }
             });
@@ -206,7 +212,7 @@ client.on("message", msg => {
                                     watchlistString = watchlist[0];
                                 } else {
                                     error("Error occurred, should be impossible????");
-                                    console.log(watchlist);
+                                    log(watchlist);
                                 }
                             }
                             if (watchlistString.length == 0) {
@@ -216,7 +222,7 @@ client.on("message", msg => {
                             }
                         }
                     }).catch(function (err) {
-                        console.log(err);
+                        error(err + " " + new Error().lineNumber);
                         return msg.reply("Error getting watchlist data, seems like a problem on our end. Sorry!");
                     });
                     break;
@@ -281,7 +287,7 @@ client.on("message", msg => {
                             }
                         }
                     }).catch(function (err) {
-                        error(err);
+                        error(err + " " + new Error().lineNumber);
                         return msg.reply("Oh no! Watchlist add failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
                     });
                     break;
@@ -322,7 +328,7 @@ client.on("message", msg => {
                                             watchlistString = watchlist[0];
                                         } else {
                                             error("Error occurred, should be impossible????");
-                                            console.log(watchlist);
+                                            log(watchlist);
                                         }
                                     }
 
@@ -342,7 +348,7 @@ client.on("message", msg => {
                             }
                         }
                     }).catch(function (err) {
-                        error(err);
+                        error(err + " " + new Error().lineNumber);
                         return msg.reply("Oh no! Watchlist add failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
                     });
                     break;
@@ -363,7 +369,7 @@ client.on("message", msg => {
                             }
                         }
                     }).catch(function (err) {
-                        error(err);
+                        error(err + " " + new Error().lineNumber);
                         return msg.reply("Oh no! Watchlist clear failed! Check the command to make sure you didn't make any mistakes!");
                     });
                     break;
@@ -444,7 +450,7 @@ client.on("message", msg => {
                             times.splice(t, ++t);
                         }
                     }
-                    console.log(times);
+                    log(times);
 
                     switch (timesetCommand) {
                         case "location":
@@ -491,10 +497,9 @@ client.on("message", msg => {
                     if (message.author.id == "692117206108209253" && message.embeds != []) {
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                if (doc.data().timesetCommands.subscribe) {
-                                    var times = doc.data().timesetCommands.subscribe;
-                                } else {
-                                    return console.log("User is not in this timeset for countySubscription.");
+                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands.subscribe.toString().split(",") : null;
+                                if (!times) {
+                                    return log("User is not in this timeset for countrySubscription.");
                                 }
 
                                 var d = new Date();
@@ -509,7 +514,7 @@ client.on("message", msg => {
                                 }
 
                                 if (!times.includes(hour)) {
-                                    return console.log("User is not in this timeset for countySubscription.");
+                                    return log("User is not in this timeset for countySubscription.");
                                 } else {
                                     message.embeds.forEach((embed) => {
                                         client.users.get(doc.id).send({
@@ -521,7 +526,7 @@ client.on("message", msg => {
                         }).then(function () {
                             client.removeListener('message', listentome);
                         }).catch(function (err) {
-                            error(err);
+                            error(err + " " + new Error().lineNumber);
                         });
                     }
                 });
@@ -539,9 +544,10 @@ client.on("message", msg => {
 
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands.location.toString().split(",") : null;
+                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands.subscribe.toString().split(",") : null;
+
                                 if (!times) {
-                                    return console.log("User is not in this timeset for countrySubscription.");
+                                    return log("User is not in this timeset for countrySubscription.");
                                 }
 
                                 if (d.getHours() == 0) {
@@ -555,7 +561,7 @@ client.on("message", msg => {
                                 }
 
                                 if (!times.includes(hour)) {
-                                    return console.log("User is not in this timeset for countrySubscription");
+                                    return log("User is not in this timeset for countrySubscription");
                                 } else {
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
                                 }
@@ -565,7 +571,7 @@ client.on("message", msg => {
                         }).then(function () {
                             client.removeListener('message', listentome);
                         }).catch(function (err) {
-                            error(err);
+                            error(err + " " + new Error().lineNumber);
                         });
                     }
                 });
@@ -577,7 +583,7 @@ client.on("message", msg => {
                         var locationTimes = (doc.data().timesetCommands) ? doc.data().timesetCommands.location.toString().split(",") : null;
 
                         if (!locationTimes) {
-                            return console.log("User is not in this timeset for location.");
+                            return log("User is not in this timeset for location.");
                         }
 
                         var d = new Date();
@@ -592,7 +598,7 @@ client.on("message", msg => {
                         }
 
                         if (!locationTimes.includes(hour)) {
-                            return console.log("User is not in this timeset for location.");
+                            return log("User is not in this timeset for location.");
                         }
 
                         var state = (doc.data().state) ? doc.data().state : null;
@@ -630,7 +636,7 @@ client.on("message", msg => {
                                 }
                             });
                         } else if (location && locations.includes(location)) {
-                            console.log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                            log("Location " + location + " has already been queried, getting data for that location from stored memory.");
                             var data = locationsMatches[locations.indexOf(location)];
                             client.users.get(doc.id).send(data);
                         } else {
@@ -638,7 +644,7 @@ client.on("message", msg => {
                         }
                     });
                 }).catch(function (err) {
-                    error(err);
+                    error(err + " " + new Error().lineNumber);
                     client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
                     return;
                 });
@@ -650,7 +656,7 @@ client.on("message", msg => {
                         var watchlistTimes = (doc.data().timesetCommands) ? doc.data().timesetCommands.watchlist.toString().split(",") : null;
 
                         if (!watchlistTimes) {
-                            return console.log("User is not in this timeset for watchlist.");
+                            return log("User is not in this timeset for watchlist.");
                         }
 
                         var d = new Date();
@@ -665,7 +671,7 @@ client.on("message", msg => {
                         }
 
                         if (!watchlistTimes.includes(hour)) {
-                            return console.log("User is not in this timeset for watchlist.");
+                            return log("User is not in this timeset for watchlist.");
                         }
 
                         var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
@@ -697,7 +703,7 @@ client.on("message", msg => {
                                             }
                                         });
                                     } else {
-                                        console.log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                                        log("Location " + location + " has already been queried, getting data for that location from stored memory.");
                                         var data = locationsMatches[locations.indexOf(location)];
                                         client.users.get(doc.id).send(data);
                                         continue;
@@ -706,7 +712,7 @@ client.on("message", msg => {
                             };
                             watchlistLoop();
                         } else if (!watchlist) {
-                            return console.log("User does not have a watchlist");
+                            return log("User does not have a watchlist");
                         }
                     });
                 });
@@ -721,12 +727,12 @@ client.on("message", msg => {
                 //     db.collection('mailinglist').get().then(function (querySnapshot) {
                 //         querySnapshot.forEach(async function (doc) {
                 //             var emails = doc.data().emails;
-                //             console.log("Emails: ", emails);
+                //             log("Emails: ", emails);
                 //             emails.forEach(function (value, key) {
                 //                 auth.sendPasswordResetEmail(value).then(function () {
-                //                     console.log("Email sent to user " + key + " with email " + value);
+                //                     log("Email sent to user " + key + " with email " + value);
                 //                 }).catch(function (err) {
-                //                     error(err);
+                //                     error(err + " " + new Error().lineNumber);
                 //                 });
                 //             });
                 //         });
@@ -737,7 +743,7 @@ client.on("message", msg => {
 
             }).then(function (result) {
                 if (result) {
-                    console.log("Finished updating!");
+                    log("Finished updating!");
                     client.users.get('377934017548386307').send("Finished updating everyone! Check logs to see if any errors occurred.");
                     msg.channel.send("Finished updating everyone! Check logs to see if any errors occurred.");
                 }
