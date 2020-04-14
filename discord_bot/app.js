@@ -497,8 +497,10 @@ client.on("message", msg => {
                     if (message.author.id == "692117206108209253" && message.embeds != []) {
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                var times = (doc.data().timesetCommands.subscribe) ? doc.data().timesetCommands.subscribe.toString().split(",") : null;
-                                if (!times) {
+                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
+                                var subscribeTimes = (times) ? times.subscribe.toString().split(",") : null;
+
+                                if (!subscribeTimes) {
                                     return log("User is not in this timeset for countrySubscription.");
                                 }
 
@@ -513,7 +515,7 @@ client.on("message", msg => {
                                     var hour = d.getHours() + "AM";
                                 }
 
-                                if (!times.includes(hour)) {
+                                if (!subscribeTimes.includes(hour)) {
                                     return log("User is not in this timeset for countySubscription.");
                                 } else {
                                     message.embeds.forEach((embed) => {
@@ -544,9 +546,10 @@ client.on("message", msg => {
 
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                var times = (doc.data().timesetCommands.subscribe) ? doc.data().timesetCommands.subscribe.toString().split(",") : null;
+                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
+                                var subscribeTimes = (times) ? times.subscribe.toString().split(",") : null;
 
-                                if (!times) {
+                                if (!subscribeTimes) {
                                     return log("User is not in this timeset for countrySubscription.");
                                 }
 
@@ -560,7 +563,7 @@ client.on("message", msg => {
                                     var hour = d.getHours() + "AM";
                                 }
 
-                                if (!times.includes(hour)) {
+                                if (!subscribeTimes.includes(hour)) {
                                     return log("User is not in this timeset for countrySubscription");
                                 } else {
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
@@ -580,7 +583,8 @@ client.on("message", msg => {
             function doLocation() {
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        var locationTimes = (doc.data().timesetCommands.location) ? doc.data().timesetCommands.location.toString().split(",") : null;
+                        var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
+                        var locationTimes = (times) ? times.location.toString().split(",") : null;
 
                         if (!locationTimes) {
                             return log("User is not in this timeset for location.");
@@ -653,7 +657,8 @@ client.on("message", msg => {
             function doWatchlist() {
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        var watchlistTimes = (doc.data().timesetCommands.watchlist) ? doc.data().timesetCommands.watchlist.toString().split(",") : null;
+                        var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
+                        var watchlistTimes = (times) ? times.watchlist.toString().split(",") : null;
 
                         if (!watchlistTimes) {
                             return log("User is not in this timeset for watchlist.");
