@@ -501,7 +501,7 @@ client.on("message", msg => {
                                 var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
 
                                 if (!subscribeTimes) {
-                                    return log("User is not in this timeset for countrySubscription.");
+                                    return log("User " + doc.id + " is not in this timeset for countrySubscription.");
                                 }
 
                                 var d = new Date();
@@ -516,7 +516,7 @@ client.on("message", msg => {
                                 }
 
                                 if (!subscribeTimes.includes(hour)) {
-                                    return log("User is not in this timeset for countySubscription.");
+                                    return log("User " + doc.id + " is not in this timeset for countySubscription.");
                                 } else {
                                     message.embeds.forEach((embed) => {
                                         client.users.get(doc.id).send({
@@ -550,7 +550,7 @@ client.on("message", msg => {
                                 var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
 
                                 if (!subscribeTimes) {
-                                    return log("User is not in this timeset for countrySubscription.");
+                                    return log("User " + doc.id + " is not in this timeset for countrySubscription.");
                                 }
 
                                 if (d.getHours() == 0) {
@@ -564,7 +564,7 @@ client.on("message", msg => {
                                 }
 
                                 if (!subscribeTimes.includes(hour)) {
-                                    return log("User is not in this timeset for countrySubscription");
+                                    return log("User " + doc.id + " is not in this timeset for countrySubscription");
                                 } else {
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
                                 }
@@ -587,7 +587,7 @@ client.on("message", msg => {
                         var locationTimes = (times && times.location) ? times.location.toString().split(",") : null;
 
                         if (!locationTimes) {
-                            return log("User is not in this timeset for location.");
+                            return log("User " + doc.id + " is not in this timeset for location.");
                         }
 
                         var d = new Date();
@@ -602,7 +602,7 @@ client.on("message", msg => {
                         }
 
                         if (!locationTimes.includes(hour)) {
-                            return log("User is not in this timeset for location.");
+                            return log("User " + doc.id + " is not in this timeset for location.");
                         }
 
                         var state = (doc.data().state) ? doc.data().state : null;
@@ -661,7 +661,7 @@ client.on("message", msg => {
                         var watchlistTimes = (times && times.watchlist) ? times.watchlist.toString().split(",") : null;
 
                         if (!watchlistTimes) {
-                            return log("User is not in this timeset for watchlist.");
+                            return log("User " + doc.id + " is not in this timeset for watchlist.");
                         }
 
                         var d = new Date();
@@ -676,7 +676,7 @@ client.on("message", msg => {
                         }
 
                         if (!watchlistTimes.includes(hour)) {
-                            return log("User is not in this timeset for watchlist.");
+                            return log("User " + doc.id + " is not in this timeset for watchlist.");
                         }
 
                         var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
@@ -717,7 +717,7 @@ client.on("message", msg => {
                             };
                             watchlistLoop();
                         } else if (!watchlist) {
-                            return log("User does not have a watchlist");
+                            return log("User " + doc.id + " does not have a watchlist");
                         }
                     });
                 });
