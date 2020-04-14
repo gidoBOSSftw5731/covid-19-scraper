@@ -430,7 +430,6 @@ client.on("message", msg => {
                     } else {
                         var times = commandTimes[timesetCommand];
                     }
-                    console.log(times);
                     if (action == "add") {
                         if (times.includes(time)) {
                             return msg.reply("This time is already in your list for " + timesetCommand + "!");
@@ -491,9 +490,9 @@ client.on("message", msg => {
             var locations = [];
             var locationsMatches = [];
 
-            new Promise(async function (resolve) {
+            new Promise(function (resolve) {
 
-                await msg.channel.send('!worst');
+                msg.channel.send('!worst');
                 client.on('message', function listentome(message) {
                     if (message.author.id == "692117206108209253") {
                         if (message.embeds != []) {
@@ -510,9 +509,14 @@ client.on("message", msg => {
                                         var hour = d.getHours() + "AM";
                                     }
 
-                                    var times = doc.data().timesetCommands.subscription.toString().split(",");
+                                    if (doc.data().timesetCommands.subscribe) {
+                                        var times = doc.data().timesetCommands.subscribe;
+                                    } else {
+                                        return console.log("User is not in this timeset for countySubscription.");
+                                    }
+
                                     if (!times.includes(hour)) {
-                                        return console.log("User is not in this timeset for countySubscription");
+                                        return console.log("User is not in this timeset for countySubscription.");
                                     } else {
                                         message.embeds.forEach((embed) => {
                                             client.users.get(doc.id).send({
@@ -546,7 +550,7 @@ client.on("message", msg => {
 
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                var times = doc.data().timesetCommands.subscription.toString().split(",");
+                                var times = doc.data().timesetCommands.subscribe;
                                 if (d.getHours() == 0) {
                                     var hour = "12AM";
                                 } else if (d.getHours() == 12) {
