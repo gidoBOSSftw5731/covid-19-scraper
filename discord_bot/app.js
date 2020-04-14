@@ -485,20 +485,78 @@ client.on("message", msg => {
             break;
         case "activate":
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
-            msg.reply("Activated. Now starting database query for update-enabled users.");
 
             var locations = [];
             var locationsMatches = [];
 
             new Promise(function (resolve) {
+                msg.reply("Activated. Now starting database query for update-enabled users.");
+                resolve(true);
+            }).then(function (result) {
 
-                msg.channel.send('!worst');
-                client.on('message', function listentome(message) {
-                    if (message.author.id == "692117206108209253") {
-                        if (message.embeds != []) {
-                            users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
-                                querySnapshot.forEach(function (doc) {                                    
-                                    var d = new Date();
+                if (result) {
+                    msg.channel.send('!worst');
+                    client.on('message', function listentome(message) {
+                        if (message.author.id == "692117206108209253") {
+                            if (message.embeds != []) {
+                                users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                                    querySnapshot.forEach(function (doc) {
+                                        if (doc.data().timesetCommands.subscribe) {
+                                            var times = doc.data().timesetCommands.subscribe;
+                                        } else {
+                                            return console.log("User is not in this timeset for countySubscription.");
+                                        }
+
+                                        var d = new Date();
+                                        if (d.getHours() == 0) {
+                                            var hour = "12AM";
+                                        } else if (d.getHours() == 12) {
+                                            var hour = "12PM";
+                                        } else if (d.getHours() > 12) {
+                                            var hour = (d.getHours() - 12) + "PM";
+                                        } else {
+                                            var hour = d.getHours() + "AM";
+                                        }
+
+                                        if (!times.includes(hour)) {
+                                            return console.log("User is not in this timeset for countySubscription.");
+                                        } else {
+                                            message.embeds.forEach((embed) => {
+                                                client.users.get(doc.id).send({
+                                                    embed: embed
+                                                });
+                                            });
+                                        }
+                                    });
+                                }).catch(function (error) {
+                                    console.log("Error getting documents: ", error);
+                                });
+
+                                client.removeListener('message', listentome);
+                            }
+                        }
+                    });
+
+                    return true;
+                }
+
+            }).then(async function (result) {
+
+                console.log(result);
+
+                if (result) {
+                    await msg.channel.send('!cases');
+                    client.on('message', function (message) {
+                        if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
+                            var matches = message.content.match(/\d+/g);
+                            var data = [matches[0], matches[1]];
+
+                            var d = new Date();
+                            var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+
+                            users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
+                                querySnapshot.forEach(function (doc) {
+                                    var times = doc.data().timesetCommands.subscribe;
                                     if (d.getHours() == 0) {
                                         var hour = "12AM";
                                     } else if (d.getHours() == 12) {
@@ -509,73 +567,22 @@ client.on("message", msg => {
                                         var hour = d.getHours() + "AM";
                                     }
 
-                                    if (doc.data().timesetCommands.subscribe) {
-                                        var times = doc.data().timesetCommands.subscribe;
+                                    if (!times.includes(hour)) {
+                                        return console.log("User is not in this timeset for countrySubscription");
                                     } else {
-                                        return console.log("User is not in this timeset for countySubscription.");
+                                        eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
                                     }
 
-                                    if (!times.includes(hour)) {
-                                        return console.log("User is not in this timeset for countySubscription.");
-                                    } else {
-                                        message.embeds.forEach((embed) => {
-                                            client.users.get(doc.id).send({
-                                                embed: embed
-                                            });
-                                        });
-                                    }
+                                    client.users.get(doc.id).send(message.content);
                                 });
+                            }).then(function () {
+                                client.removeListener('message', listentome);
                             }).catch(function (error) {
                                 console.log("Error getting documents: ", error);
                             });
-
-                            client.removeListener('message', listentome);
                         }
-                    }
-                });
-
-                return true;
-
-            }).then(async function (result) {
-                console.log(result);
-
-                await msg.channel.send('!cases');
-                client.on('message', function (message) {
-                    if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
-                        var matches = message.content.match(/\d+/g);
-                        var data = [matches[0], matches[1]];
-
-                        var d = new Date();
-                        var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
-
-                        users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
-                            querySnapshot.forEach(function (doc) {
-                                var times = doc.data().timesetCommands.subscribe;
-                                if (d.getHours() == 0) {
-                                    var hour = "12AM";
-                                } else if (d.getHours() == 12) {
-                                    var hour = "12PM";
-                                } else if (d.getHours() > 12) {
-                                    var hour = (d.getHours() - 12) + "PM";
-                                } else  {
-                                    var hour = d.getHours() + "AM";
-                                }
-
-                                if (!times.includes(hour)) {
-                                    return console.log("User is not in this timeset for countrySubscription");
-                                } else {
-                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                }
-
-                                client.users.get(doc.id).send(message.content);
-                            });
-                        }).then(function () {
-                            client.removeListener('message', listentome);
-                        }).catch(function (error) {
-                            console.log("Error getting documents: ", error);
-                        });
-                    }
-                });
+                    });
+                }
 
                 return true;
 
