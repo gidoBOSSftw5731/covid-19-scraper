@@ -498,7 +498,7 @@ client.on("message", msg => {
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
                                 var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
-                                var subscribeTimes = (times) ? times.subscribe.toString().split(",") : null;
+                                var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
 
                                 if (!subscribeTimes) {
                                     return log("User is not in this timeset for countrySubscription.");
@@ -547,7 +547,7 @@ client.on("message", msg => {
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
                                 var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
-                                var subscribeTimes = (times) ? times.subscribe.toString().split(",") : null;
+                                var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
 
                                 if (!subscribeTimes) {
                                     return log("User is not in this timeset for countrySubscription.");
@@ -584,7 +584,7 @@ client.on("message", msg => {
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
                         var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
-                        var locationTimes = (times) ? times.location.toString().split(",") : null;
+                        var locationTimes = (times && times.location) ? times.location.toString().split(",") : null;
 
                         if (!locationTimes) {
                             return log("User is not in this timeset for location.");
@@ -658,7 +658,7 @@ client.on("message", msg => {
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
                         var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
-                        var watchlistTimes = (times) ? times.watchlist.toString().split(",") : null;
+                        var watchlistTimes = (times && times.watchlist) ? times.watchlist.toString().split(",") : null;
 
                         if (!watchlistTimes) {
                             return log("User is not in this timeset for watchlist.");
