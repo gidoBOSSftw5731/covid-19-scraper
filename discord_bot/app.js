@@ -49,7 +49,7 @@ function error(err) {
 
 function log(message) {
     var date = new Date();
-    client.channels.get("696540781787217952").send(date + " " + message + " at: " + message.line);
+    client.channels.get("696540781787217952").send(date + " " + message);
 };
 
 
