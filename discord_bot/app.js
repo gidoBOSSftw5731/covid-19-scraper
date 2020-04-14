@@ -31,7 +31,7 @@ function isUpperCase(str) {
 // Discord
 db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token0).catch(err => {
-        error(err + " " + new Error().lineNumber);
+        error(err);
     });
 
     client.on("ready", () => {
@@ -39,7 +39,7 @@ db.collection('env').doc('env').get().then(function (doc) {
         client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
     })
 }).catch(function (err) {
-    error(err + " " + new Error().lineNumber);
+    error(err);
 });
 
 function error(err) {
@@ -211,7 +211,7 @@ client.on("message", msg => {
                                 } else if (watchlist.length == 1) {
                                     watchlistString = watchlist[0];
                                 } else {
-                                    error("Error occurred, should be impossible????" + " " + new Error().lineNumber);
+                                    error("Error occurred, should be impossible????");
                                     log(watchlist);
                                 }
                             }
@@ -222,7 +222,7 @@ client.on("message", msg => {
                             }
                         }
                     }).catch(function (err) {
-                        error(err + " " + new Error().lineNumber);
+                        error(err);
                         return msg.reply("Error getting watchlist data, seems like a problem on our end. Sorry!");
                     });
                     break;
@@ -287,7 +287,7 @@ client.on("message", msg => {
                             }
                         }
                     }).catch(function (err) {
-                        error(err + " " + new Error().lineNumber);
+                        error(err);
                         return msg.reply("Oh no! Watchlist add failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
                     });
                     break;
@@ -327,7 +327,7 @@ client.on("message", msg => {
                                         } else if (watchlist.length == 1) {
                                             watchlistString = watchlist[0];
                                         } else {
-                                            error("Error occurred, should be impossible????" + " " + new Error().lineNumber);
+                                            error("Error occurred, should be impossible????");
                                             log(watchlist);
                                         }
                                     }
@@ -348,7 +348,7 @@ client.on("message", msg => {
                             }
                         }
                     }).catch(function (err) {
-                        error(err + " " + new Error().lineNumber);
+                        error(err);
                         return msg.reply("Oh no! Watchlist add failed! Check the full command (!watchlist for a list of arguments) to make sure you didn't make any mistakes!");
                     });
                     break;
@@ -369,7 +369,7 @@ client.on("message", msg => {
                             }
                         }
                     }).catch(function (err) {
-                        error(err + " " + new Error().lineNumber);
+                        error(err);
                         return msg.reply("Oh no! Watchlist clear failed! Check the command to make sure you didn't make any mistakes!");
                     });
                     break;
@@ -497,7 +497,7 @@ client.on("message", msg => {
                     if (message.author.id == "692117206108209253" && message.embeds != []) {
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands.subscribe.toString().split(",") : null;
+                                var times = (doc.data().timesetCommands.subscribe) ? doc.data().timesetCommands.subscribe.toString().split(",") : null;
                                 if (!times) {
                                     return log("User is not in this timeset for countrySubscription.");
                                 }
@@ -526,7 +526,7 @@ client.on("message", msg => {
                         }).then(function () {
                             client.removeListener('message', listentome);
                         }).catch(function (err) {
-                            error(err + " " + new Error().lineNumber);
+                            error(err);
                         });
                     }
                 });
@@ -544,7 +544,7 @@ client.on("message", msg => {
 
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands.subscribe.toString().split(",") : null;
+                                var times = (doc.data().timesetCommands.subscribe) ? doc.data().timesetCommands.subscribe.toString().split(",") : null;
 
                                 if (!times) {
                                     return log("User is not in this timeset for countrySubscription.");
@@ -571,7 +571,7 @@ client.on("message", msg => {
                         }).then(function () {
                             client.removeListener('message', listentome);
                         }).catch(function (err) {
-                            error(err + " " + new Error().lineNumber);
+                            error(err);
                         });
                     }
                 });
@@ -580,7 +580,7 @@ client.on("message", msg => {
             function doLocation() {
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        var locationTimes = (doc.data().timesetCommands) ? doc.data().timesetCommands.location.toString().split(",") : null;
+                        var locationTimes = (doc.data().timesetCommands.location) ? doc.data().timesetCommands.location.toString().split(",") : null;
 
                         if (!locationTimes) {
                             return log("User is not in this timeset for location.");
@@ -640,11 +640,11 @@ client.on("message", msg => {
                             var data = locationsMatches[locations.indexOf(location)];
                             client.users.get(doc.id).send(data);
                         } else {
-                            error("Error occurred, location undefined." + " " + new Error().lineNumber);
+                            error("Error occurred, location undefined.");
                         }
                     });
                 }).catch(function (err) {
-                    error(err + " " + new Error().lineNumber);
+                    error(err);
                     client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
                     return;
                 });
@@ -653,7 +653,7 @@ client.on("message", msg => {
             function doWatchlist() {
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        var watchlistTimes = (doc.data().timesetCommands) ? doc.data().timesetCommands.watchlist.toString().split(",") : null;
+                        var watchlistTimes = (doc.data().timesetCommands.watchlist) ? doc.data().timesetCommands.watchlist.toString().split(",") : null;
 
                         if (!watchlistTimes) {
                             return log("User is not in this timeset for watchlist.");
@@ -732,7 +732,7 @@ client.on("message", msg => {
                 //                 auth.sendPasswordResetEmail(value).then(function () {
                 //                     log("Email sent to user " + key + " with email " + value);
                 //                 }).catch(function (err) {
-                //                     error(err + " " + new Error().lineNumber);
+                //                     error(err);
                 //                 });
                 //             });
                 //         });
