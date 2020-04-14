@@ -539,7 +539,11 @@ client.on("message", msg => {
 
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                var times = doc.data().timesetCommands.subscribe;
+                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands.location.toString().split(",") : null;
+                                if (!times) {
+                                    return console.log("User is not in this timeset for countrySubscription.");
+                                }
+
                                 if (d.getHours() == 0) {
                                     var hour = "12AM";
                                 } else if (d.getHours() == 12) {
@@ -570,7 +574,11 @@ client.on("message", msg => {
             function doLocation() {
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        var locationTimes = doc.data().timesetCommands.location.toString().split(",");
+                        var locationTimes = (doc.data().timesetCommands) ? doc.data().timesetCommands.location.toString().split(",") : null;
+
+                        if (!locationTimes) {
+                            return console.log("User is not in this timeset for location.");
+                        }
 
                         var d = new Date();
                         if (d.getHours() == 0) {
@@ -639,7 +647,11 @@ client.on("message", msg => {
             function doWatchlist() {
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        var watchlistTimes = doc.data().timesetCommands.watchlist.toString().split(",");
+                        var watchlistTimes = (doc.data().timesetCommands) ? doc.data().timesetCommands.watchlist.toString().split(",") : null;
+
+                        if (!watchlistTimes) {
+                            return console.log("User is not in this timeset for watchlist.");
+                        }
 
                         var d = new Date();
                         if (d.getHours() == 0) {
