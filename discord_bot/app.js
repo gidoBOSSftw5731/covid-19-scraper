@@ -211,7 +211,7 @@ client.on("message", msg => {
                                 } else if (watchlist.length == 1) {
                                     watchlistString = watchlist[0];
                                 } else {
-                                    error("Error occurred, should be impossible????");
+                                    error("Error occurred, should be impossible????" + " " + new Error().lineNumber);
                                     log(watchlist);
                                 }
                             }
@@ -327,7 +327,7 @@ client.on("message", msg => {
                                         } else if (watchlist.length == 1) {
                                             watchlistString = watchlist[0];
                                         } else {
-                                            error("Error occurred, should be impossible????");
+                                            error("Error occurred, should be impossible????" + " " + new Error().lineNumber);
                                             log(watchlist);
                                         }
                                     }
@@ -640,7 +640,7 @@ client.on("message", msg => {
                             var data = locationsMatches[locations.indexOf(location)];
                             client.users.get(doc.id).send(data);
                         } else {
-                            error("Error occurred, location undefined.");
+                            error("Error occurred, location undefined." + " " + new Error().lineNumber);
                         }
                     });
                 }).catch(function (err) {
