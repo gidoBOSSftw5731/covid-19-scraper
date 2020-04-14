@@ -33,6 +33,10 @@ function cases() {
     var countyInput = document.getElementById('county');
     var inputCounty = countyInput.value;
 
+    if (inputCounty.length > "Michigan Department of Corrections (MDOC)".length) {
+        return alert("Sorry, this county name is longer than any county in our database. Please make sure you entered a valid county!");
+    }
+
     // if the user is not allowed to ask for live data and the current request parameters aren't equal to the previous ones (in which case data is alr there)
     if (!requestAllowed && state == inputState && county == inputCounty) {
         console.log('request blocked (timeout)');
