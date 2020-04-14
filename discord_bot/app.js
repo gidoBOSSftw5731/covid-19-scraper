@@ -536,7 +536,7 @@ client.on("message", msg => {
 
             function doCountry() {
                 msg.channel.send('!cases');
-                client.on('message', function (message) {
+                client.on('message', function listentome(message) {
                     if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
                         var matches = message.content.match(/\d+/g);
                         var data = [matches[0], matches[1]];
