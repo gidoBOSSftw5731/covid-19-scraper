@@ -498,12 +498,28 @@ client.on("message", msg => {
                     if (message.author.id == "692117206108209253") {
                         if (message.embeds != []) {
                             users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
-                                querySnapshot.forEach(function (doc) {
-                                    message.embeds.forEach((embed) => {
-                                        client.users.get(doc.id).send({
-                                            embed: embed
+                                querySnapshot.forEach(function (doc) {                                    
+                                    var d = new Date();
+                                    if (d.getHours() == 0) {
+                                        var hour = "12AM";
+                                    } else if (d.getHours() == 12) {
+                                        var hour = "12PM";
+                                    } else if (d.getHours() > 12) {
+                                        var hour = (d.getHours() - 12) + "PM";
+                                    } else {
+                                        var hour = d.getHours() + "AM";
+                                    }
+
+                                    var times = doc.data().timesetCommands.subscription.toString().split(",");
+                                    if (!times.includes(hour)) {
+                                        return console.log("User is not in this timeset for countySubscription");
+                                    } else {
+                                        message.embeds.forEach((embed) => {
+                                            client.users.get(doc.id).send({
+                                                embed: embed
+                                            });
                                         });
-                                    });
+                                    }
                                 });
                             }).catch(function (error) {
                                 console.log("Error getting documents: ", error);
@@ -517,6 +533,7 @@ client.on("message", msg => {
                 return true;
 
             }).then(async function (result) {
+                console.log(result);
 
                 await msg.channel.send('!cases');
                 client.on('message', function (message) {
