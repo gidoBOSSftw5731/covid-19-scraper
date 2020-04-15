@@ -393,15 +393,19 @@ client.on("message", msg => {
                 var commands = ["location", "subscribe", "watchlist"];
                 if (!commands.includes(args[0])) {
                     return msg.reply("Please add a valid subscription method (location, subscribe, or watchlist) to view its timeset list.");
+                } else if (args.length != 1) {
+                    return msg.reply("The timeset view command only takes the subscription method parameter (location, subscribe, or watchlist). Please do not add any extra parameters.");
                 } else {
                     userDoc.get().then(function (doc) {
                         var commandTimes = doc.data().timesetCommands;
-                        if (!commandTimes) {
-                            return msg.reply("Timeset list is empty for " + timesetCommand)
+                        if (!commandTimes[args[0]] || commandTimes[args[0]].length < 1) {
+                            return msg.reply("Timeset list is empty for " + args[0]);
                         } else {
                             var times = commandTimes[args[0]];
                             return msg.reply(times.toString().replace(/,/g, ", "));
                         }
+                    }).catch(function (err) {
+                        error(err);
                     });
                 }
             } else {
@@ -427,52 +431,46 @@ client.on("message", msg => {
 
                 userDoc.get().then(function (doc) {
                     var commandTimes = doc.data().timesetCommands;
-                    if (!commandTimes) {
+                    if (!commandTimes[timesetCommand]) {
                         var times = [];
                     } else {
                         var times = commandTimes[timesetCommand];
                     }
                     if (action == "add") {
                         if (times.includes(time)) {
+                            log('hello1');
                             return msg.reply("This time is already in your list for " + timesetCommand + "!");
                         } else if (times.length == "3") {
+                            log('hello2');
                             return msg.reply("Looks like you already have three times for " + timesetCommand + "! Use !timeset remove <args> to open up space for other times.");
                         } else {
+                            log('hello3');
                             times.push(time);
                         }
                     } else if (action == "remove") {
                         if (!times.includes(time)) {
+                            log('hello1');
                             return msg.reply("This time is not in your list for " + timesetCommand + "!");
                         } else if (times.length == "0") {
+                            log('hello2');
                             return msg.reply("Looks like you don't have any times for " + timesetCommand + "! Use !timeset add <args> to add a time to the list.");
                         } else {
+                            log('hello3');
                             var t = times.indexOf(time);
                             times.splice(t, ++t);
                         }
                     }
-                    log(times);
+
 
                     switch (timesetCommand) {
                         case "location":
-                            userDoc.update({
-                                timesetCommands: {
-                                    location: times
-                                }
-                            });
-                            break
+                            eval("userDoc.update({ timesetCommands.location:" + times + "}).then(function () { log(goodbye ++" + times + "++); }).catch(function (err) { error(err); });");
+                            break;
                         case "watchlist":
-                            userDoc.update({
-                                timesetCommands: {
-                                    subscribe: times
-                                }
-                            });
+                            eval("userDoc.update({ timesetCommands.watchlist:" + times + "}).then(function () { log(goodbye ++" + times + "++); }).catch(function (err) { error(err); });");
                             break;
                         case "subscribe":
-                            userDoc.update({
-                                timesetCommands: {
-                                    subscribe: times
-                                }
-                            });
+                            eval("userDoc.update({ timesetCommands.subscribe:" + times + "}).then(function () { log(goodbye ++" + times + "++); }).catch(function (err) { error(err); });");
                             break;
                     }
 
