@@ -194,9 +194,13 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 			return
 		}
 
-		msgStr := fmt.Sprintf("The %v of %v has %v cases, %v deaths, has given %v tests, and has %v recoveries!",
+		// msgStr := fmt.Sprintf("The %v of %v has %v cases, %v deaths, has given %v tests, and has %v recoveries!",
+		// 	strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
+		// 	newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
+
+		msgStr := fmt.Sprintf("The %v of %v has %v cases and %v deaths!",
 			strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
-			newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
+			newAreaInfo.Deaths)
 		discord.ChannelMessageSend(message.ChannelID, msgStr)
 
 	case "top10", "worst", "top10worst", "tenworst":
