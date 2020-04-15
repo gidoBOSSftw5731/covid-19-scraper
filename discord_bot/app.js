@@ -724,25 +724,22 @@ client.on("message", msg => {
             }
 
             new Promise(function (resolve) {
-                msg.reply("Activated. Now starting database query for update-enabled users.");
+                msg.reply("Activated! Now starting database query for update-enabled users.");
                 resolve(true);
             }).then(doWorst).then(doCountry).then(doLocation).then(doWatchlist).then(function () {
 
-                // if (result) {
-                //     db.collection('mailinglist').get().then(function (querySnapshot) {
-                //         querySnapshot.forEach(async function (doc) {
-                //             var emails = doc.data().emails;
-                //             log("Emails: ", emails);
-                //             emails.forEach(function (value, key) {
-                //                 auth.sendPasswordResetEmail(value).then(function () {
-                //                     log("Email sent to user " + key + " with email " + value);
-                //                 }).catch(function (err) {
-                //                     error(err);
-                //                 });
-                //             });
-                //         });
-                //     });
-                // }
+                db.collection('mailinglist').get().then(function (querySnapshot) {
+                    querySnapshot.forEach(async function (doc) {
+                        var emails = doc.data().emails;
+                        emails.forEach(function (value, key) {
+                            auth.sendPasswordResetEmail(value).then(function () {
+                                log("Email sent to user " + key + " with email " + value);
+                            }).catch(function (err) {
+                                error(err);
+                            });
+                        });
+                    });
+                });
 
                 return true;
 
