@@ -752,7 +752,7 @@ client.on("message", msg => {
             });
             
             break;
-        case "website":
+        case "website", "site":
             const websiteEmbed = {
                 title: 'CovidBot19 Website',
                 url: 'https://covidbot19.web.app',
