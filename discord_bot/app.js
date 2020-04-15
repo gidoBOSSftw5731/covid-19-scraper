@@ -753,13 +753,22 @@ client.on("message", msg => {
             
             break;
         case "website":
-            const exampleEmbed = {
+            const websiteEmbed = {
                 title: 'CovidBot19 Website',
                 url: 'https://covidbot19.web.app',
                 description: 'Click the link to go to our website! (WIP)',
             };
 
-            msg.channel.send({ embed: exampleEmbed });
+            msg.channel.send({ embed: websiteEmbed });
+            break;
+        case "discord":
+            const discordEmbed = {
+                title: 'CovidBot19 Discord Server',
+                url: 'https://discord.gg/Cg7E8ms',
+                description: 'Click the link to join our Discord Server!',
+            };
+
+            msg.channel.send({ embed: discordEmbed });
             break;
         case "help":
             const helpEmbed = new Discord.RichEmbed()
@@ -790,7 +799,7 @@ client.on("message", msg => {
                     "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"
                 )
                 .setFooter('Data Source: Arcgis');
-            msg.channel.send({ helpEmbed });
+            msg.channel.send({ embed: helpEmbed });
             break;
         default:
             break;
