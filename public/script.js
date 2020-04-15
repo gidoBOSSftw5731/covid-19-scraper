@@ -26,6 +26,8 @@ db.collection('env').doc('env').get().then(function (doc) {
 var users = db.collection("users");
 var emails = db.collection("emails");
 
+var analytics = firebase.analytics();
+
 window.onload = function () {
     var version = localStorage.getItem("version");
     if (version != "0.2") {

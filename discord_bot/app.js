@@ -752,8 +752,17 @@ client.on("message", msg => {
             });
             
             break;
+        case "website":
+            const exampleEmbed = {
+                title: 'CovidBot19 Website',
+                url: 'https://covidbot19.web.app',
+                description: 'Click the link to go to our website! (WIP)',
+            };
+
+            msg.channel.send({ embed: exampleEmbed });
+            break;
         case "help":
-            const embed = new Discord.RichEmbed()
+            const helpEmbed = new Discord.RichEmbed()
                 .setTitle("Command List")
                 .setColor('#C70039')
                 .setThumbnail("https://www.genengnews.com/wp-content/uploads/2020/02/Getty_185760322_Coronavirus.jpg")
@@ -781,11 +790,8 @@ client.on("message", msg => {
                     "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"
                 )
                 .setFooter('Data Source: Arcgis');
-            msg.channel.send({ embed });
+            msg.channel.send({ helpEmbed });
             break;
-        // case "":
-        //     msg.reply('You must add a command for me to know what to do! Use !help to see a list of commands');
-        //     break;
         default:
             break;
     }

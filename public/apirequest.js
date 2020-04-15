@@ -273,3 +273,8 @@ function email() {
         });
     });
 };
+
+// get previous updates
+function retrieveUpdates() {
+    
+};
