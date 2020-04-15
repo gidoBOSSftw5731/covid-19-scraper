@@ -300,7 +300,7 @@ function discordAuth() {
                     firebase.auth().onAuthStateChanged(function (user) {
                         users.doc(dID).set({
                             email: email,
-                            id: dID,
+                            id: dID
                         }, { merge: true }).then(function () {
                             console.log("Document successfully written!");
                         }).catch(function (error) {
