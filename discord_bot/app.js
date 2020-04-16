@@ -733,7 +733,10 @@ client.on("message", msg => {
 
                 db.collection('mailinglist').get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        var emails = doc.data().emails;
+                        var emails = (doc.data().emails) ? doc.data().emails : null;
+                        if (!emails) {
+                            return log("No emails in the document with id " + doc.id);
+                        }
                         emails.forEach(function (value, key) {
                             auth.sendPasswordResetEmail(value).then(function () {
                                 log("Email sent to user " + key + " with email " + value);
