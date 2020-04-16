@@ -754,7 +754,7 @@ client.on("message", msg => {
                     client.users.get('377934017548386307').send("Finished updating everyone successfully!");
                     msg.channel.send("Finished updating everyone! No errors occurred!");
                 } else if (result && e != 0) {
-                    client.users.get('377934017548386307').send("Finished updating everyone with " + e +" errors!");
+                    client.users.get('377934017548386307').send("Finished updating everyone with " + e +" errors.");
                     msg.channel.send("Finished updating everyone! " + e + " errors were found.");
                 }
             });
