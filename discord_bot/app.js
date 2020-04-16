@@ -768,16 +768,17 @@ client.on("message", msg => {
                         var emails = (doc.data().emails) ? doc.data().emails : null;
                         if (!emails) {
                             return log("No emails in the document with id " + doc.id);
-                        }
-                        emails.forEach(function (value, key) {
-                            auth.sendPasswordResetEmail(value).then(function () {
-                                mlUsersSuccess.push(doc.id);
-                            }).catch(function (err) {
-                                mlUsersFailure.push(doc.id);
-                                error(err);
-                                e++;
+                        } else {
+                            emails.forEach(function (value, key) {
+                                auth.sendPasswordResetEmail(value).then(function () {
+                                    mlUsersSuccess.push(doc.id);
+                                }).catch(function (err) {
+                                    mlUsersFailure.push(doc.id);
+                                    error(err);
+                                    e++;
+                                });
                             });
-                        });
+                        }
                     });
                 }).then(function () {
                     log("Successful email attempts: " + mlUsersSuccess);
