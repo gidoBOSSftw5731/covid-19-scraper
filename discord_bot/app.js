@@ -464,13 +464,13 @@ client.on("message", msg => {
 
                     switch (timesetCommand) {
                         case "location":
-                            eval("userDoc.update({ timesetCommands.location:" + times + "}).then(function () { log(goodbye ++" + times + "++); }).catch(function (err) { error(err); });");
+                            eval("userDoc.update({ 'timesetCommands.location':" + times + "}).then(function () { console.log('hello'); }).catch(function (err) { error(err); });");
                             break;
                         case "watchlist":
-                            eval("userDoc.update({ timesetCommands.watchlist:" + times + "}).then(function () { log(goodbye ++" + times + "++); }).catch(function (err) { error(err); });");
+                            eval("userDoc.update({ 'timesetCommands.watchlist':" + times + "}).then(function () { log('goodbye ++" + times + "++'); }).catch(function (err) { error(err); });");
                             break;
                         case "subscribe":
-                            eval("userDoc.update({ timesetCommands.subscribe:" + times + "}).then(function () { log(goodbye ++" + times + "++); }).catch(function (err) { error(err); });");
+                            eval("userDoc.update({ 'timesetCommands.subscribe':" + times + "}).then(function () { log('goodbye ++" + times + "++'); }).catch(function (err) { error(err); });");
                             break;
                     }
 
@@ -488,6 +488,8 @@ client.on("message", msg => {
 
             var locations = [];
             var locationsMatches = [];
+
+            var e = 0;
 
             function doWorst() {
                 msg.channel.send('!worst');
@@ -527,6 +529,7 @@ client.on("message", msg => {
                             client.removeListener('message', listentome);
                         }).catch(function (err) {
                             error(err);
+                            e++;
                         });
                     }
                 });
@@ -573,6 +576,7 @@ client.on("message", msg => {
                             client.removeListener('message', listentome);
                         }).catch(function (err) {
                             error(err);
+                            e++;
                         });
                     }
                 });
@@ -647,6 +651,7 @@ client.on("message", msg => {
                     });
                 }).catch(function (err) {
                     error(err);
+                    e++;
                     client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
                     return;
                 });
@@ -727,13 +732,14 @@ client.on("message", msg => {
             }).then(doWorst).then(doCountry).then(doLocation).then(doWatchlist).then(function () {
 
                 db.collection('mailinglist').get().then(function (querySnapshot) {
-                    querySnapshot.forEach(async function (doc) {
+                    querySnapshot.forEach(function (doc) {
                         var emails = doc.data().emails;
                         emails.forEach(function (value, key) {
                             auth.sendPasswordResetEmail(value).then(function () {
                                 log("Email sent to user " + key + " with email " + value);
                             }).catch(function (err) {
                                 error(err);
+                                e++;
                             });
                         });
                     });
@@ -742,10 +748,14 @@ client.on("message", msg => {
                 return true;
 
             }).then(function (result) {
-                if (result) {
-                    log("Finished updating!");
-                    client.users.get('377934017548386307').send("Finished updating everyone! Check logs to see if any errors occurred.");
-                    msg.channel.send("Finished updating everyone! Check logs to see if any errors occurred.");
+                log("Finished updating!");
+
+                if (result && e == 0) {
+                    client.users.get('377934017548386307').send("Finished updating everyone successfully!");
+                    msg.channel.send("Finished updating everyone! No errors occurred!");
+                } else if (result && e != 0) {
+                    client.users.get('377934017548386307').send("Finished updating everyone with " + e +" errors!");
+                    msg.channel.send("Finished updating everyone! " + e + " errors were found.");
                 }
             });
             
