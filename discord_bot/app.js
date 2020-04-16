@@ -597,6 +597,7 @@ client.on("message", msg => {
             function doLocation() {
                 var dlUsersNo = [];
                 var dlUsersYes = [];
+
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
                         var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
@@ -677,6 +678,9 @@ client.on("message", msg => {
             }
 
             function doWatchlist() {
+                var dwlUsersNo = [];
+                var dwlUsersYes = [];
+                
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
                         var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
@@ -760,6 +764,7 @@ client.on("message", msg => {
                 resolve(true);
             }).then(doWorst).then(doCountry).then(doLocation).then(doWatchlist).then(function () {
 
+                
                 var mlUsersSuccess = [];
                 var mlUsersFailure = [];
 
