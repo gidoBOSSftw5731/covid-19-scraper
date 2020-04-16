@@ -495,13 +495,16 @@ client.on("message", msg => {
                 msg.channel.send('!worst');
                 client.on('message', function listentome(message) {
                     if (message.author.id == "692117206108209253" && message.embeds != []) {
+                        var dwUsersNo = [];
+                        var dwUsersYes = [];
+
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
                                 var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                                 var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
 
                                 if (!subscribeTimes) {
-                                    return log("User " + doc.id + " is not in this timeset for countrySubscription.");
+                                    return dwUsersNo.push(doc.id);
                                 }
 
                                 var d = new Date();
@@ -516,8 +519,9 @@ client.on("message", msg => {
                                 }
 
                                 if (!subscribeTimes.includes(hour)) {
-                                    return log("User " + doc.id + " is not in this timeset for countySubscription.");
+                                    return dwUsersNo.push(doc.id);
                                 } else {
+                                    dwUsersYes.push(doc.id);
                                     message.embeds.forEach((embed) => {
                                         client.users.get(doc.id).send({
                                             embed: embed
@@ -527,6 +531,8 @@ client.on("message", msg => {
                             });
                         }).then(function () {
                             client.removeListener('message', listentome);
+                            log("Users in this timeset for countySubscription: " + dwUsersYes);
+                            return log("Users not in this timeset for countySubscription: " + dwUsersNo);
                         }).catch(function (err) {
                             error(err);
                             e++;
@@ -545,13 +551,16 @@ client.on("message", msg => {
                         var d = new Date();
                         var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
 
+                        var dcUsersNo = [];
+                        var dcUsersYes = [];
+
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
                                 var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                                 var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
 
                                 if (!subscribeTimes) {
-                                    return log("User " + doc.id + " is not in this timeset for countrySubscription.");
+                                    return dcUsersNo.push(doc.id);
                                 }
 
                                 if (d.getHours() == 0) {
@@ -565,8 +574,9 @@ client.on("message", msg => {
                                 }
 
                                 if (!subscribeTimes.includes(hour)) {
-                                    return log("User " + doc.id + " is not in this timeset for countrySubscription");
+                                    return dcUsersNo.push(doc.id);
                                 } else {
+                                    dcUsersYes.push(doc.id);
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
                                 }
 
@@ -574,6 +584,8 @@ client.on("message", msg => {
                             });
                         }).then(function () {
                             client.removeListener('message', listentome);
+                            log("Users in this timeset for countrySubscription: " + dwUsersYes);
+                            return log("Users not in this timeset for countrySubscription: " + dwUsersNo);
                         }).catch(function (err) {
                             error(err);
                             e++;
@@ -583,13 +595,15 @@ client.on("message", msg => {
             }
 
             function doLocation() {
+                var dlUsersNo = [];
+                var dlUsersYes = [];
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
                         var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                         var locationTimes = (times && times.location) ? times.location.toString().split(",") : null;
 
                         if (!locationTimes) {
-                            return log("User " + doc.id + " is not in this timeset for location.");
+                            return dlUsersNo.push(doc.id);
                         }
 
                         var d = new Date();
@@ -604,7 +618,7 @@ client.on("message", msg => {
                         }
 
                         if (!locationTimes.includes(hour)) {
-                            return log("User " + doc.id + " is not in this timeset for location.");
+                            return dlUsersNo.push(doc.id);
                         }
 
                         var state = (doc.data().state) ? doc.data().state : null;
@@ -617,7 +631,7 @@ client.on("message", msg => {
                         } else if (county) {
                             var location = county;
                         } else {
-                            return msg.channel.send("User " + doc.id + " has no location set.");
+                            return log("User " + doc.id + " has no location set.");
                         }
 
                         if (location && !locations.includes(location)) {
@@ -635,6 +649,7 @@ client.on("message", msg => {
                                     var d = new Date();
                                     var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
 
+                                    dcUsersYes.push(doc.id);
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
                                     client.users.get(doc.id).send(data);
 
@@ -642,6 +657,7 @@ client.on("message", msg => {
                                 }
                             });
                         } else if (location && locations.includes(location)) {
+                            dcUsersYes.push(doc.id);
                             log("Location " + location + " has already been queried, getting data for that location from stored memory.");
                             var data = locationsMatches[locations.indexOf(location)];
                             client.users.get(doc.id).send(data);
@@ -649,10 +665,13 @@ client.on("message", msg => {
                             error("Error occurred, location undefined.");
                         }
                     });
+                }).then(function () {
+                    log("Users in this timeset for location: " + dlUsersYes);
+                    return log("Users not in this timeset for location: " + dlUsersNo);
                 }).catch(function (err) {
                     error(err);
                     e++;
-                    client.users.get('377934017548386307').send("Error occurred with activation location and watchlist retrieval.");
+                    client.users.get('377934017548386307').send("Error occurred with activation location retrieval.");
                     return;
                 });
             }
@@ -664,7 +683,7 @@ client.on("message", msg => {
                         var watchlistTimes = (times && times.watchlist) ? times.watchlist.toString().split(",") : null;
 
                         if (!watchlistTimes) {
-                            return log("User " + doc.id + " is not in this timeset for watchlist.");
+                            return dwlUsersNo.push(doc.id);
                         }
 
                         var d = new Date();
@@ -679,7 +698,7 @@ client.on("message", msg => {
                         }
 
                         if (!watchlistTimes.includes(hour)) {
-                            return log("User " + doc.id + " is not in this timeset for watchlist.");
+                            return dwlUsersNo.push(doc.id);
                         }
 
                         var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
@@ -704,6 +723,7 @@ client.on("message", msg => {
                                                 var d = new Date();
                                                 var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
 
+                                                dwlUsersYes.push(doc.id);
                                                 eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
                                                 client.users.get(doc.id).send(data);
 
@@ -711,6 +731,7 @@ client.on("message", msg => {
                                             }
                                         });
                                     } else {
+                                        dwlUsersYes.push(doc.id);
                                         log("Location " + location + " has already been queried, getting data for that location from stored memory.");
                                         var data = locationsMatches[locations.indexOf(location)];
                                         client.users.get(doc.id).send(data);
@@ -723,6 +744,14 @@ client.on("message", msg => {
                             return log("User " + doc.id + " does not have a watchlist");
                         }
                     });
+                }).then(function () {
+                    log("Users in this timeset for watchlist: " + dwlUsersYes);
+                    return log("Users not in this timeset for watchlist: " + dwlUsersNo);
+                }).catch(function (err) {
+                    error(err);
+                    e++;
+                    client.users.get('377934017548386307').send("Error occurred with activation watchlist retrieval.");
+                    return;
                 });
             }
 
@@ -730,6 +759,9 @@ client.on("message", msg => {
                 msg.reply("Activated! Now starting database query for update-enabled users.");
                 resolve(true);
             }).then(doWorst).then(doCountry).then(doLocation).then(doWatchlist).then(function () {
+
+                var mlUsersSuccess = [];
+                var mlUsersFailure = [];
 
                 db.collection('mailinglist').get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
@@ -739,13 +771,22 @@ client.on("message", msg => {
                         }
                         emails.forEach(function (value, key) {
                             auth.sendPasswordResetEmail(value).then(function () {
-                                log("Email sent to user " + key + " with email " + value);
+                                mlUsersSuccess.push(doc.id);
                             }).catch(function (err) {
+                                mlUsersFailure.push(doc.id);
                                 error(err);
                                 e++;
                             });
                         });
                     });
+                }).then(function () {
+                    log("Successful email attempts: " + mlUsersSuccess);
+                    return log("Failed email attempts: " + mlUsersFailure);
+                }).catch(function (err) {
+                    error(err);
+                    e++;
+                    client.users.get('377934017548386307').send("Error occurred with activation mailing list delivery.");
+                    return;
                 });
 
                 return true;
