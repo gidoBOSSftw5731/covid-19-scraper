@@ -61,7 +61,7 @@ func main() {
 		discord.AddHandler(testcommandHandler)
 	}
 	discord.AddHandler(func(discord *discordgo.Session, ready *discordgo.Ready) {
-		err = discord.UpdateStatus(2, "alone, not by choice, but by law")
+		err = discord.UpdateStatus(2, "alone | !help")
 		if err != nil {
 			log.Errorln("Error attempting to set my status")
 		}
