@@ -533,7 +533,8 @@ client.on("message", msg => {
                         }).then(function () {
                             client.removeListener('message', listentome0);
                             log("Users in this timeset for countySubscription: " + dwUsersYes);
-                            return log("Users not in this timeset for countySubscription: " + dwUsersNo);
+                            log("Users not in this timeset for countySubscription: " + dwUsersNo);
+                            return log("---------------------------");
                         }).catch(function (err) {
                             error(err);
                             e++;
@@ -587,11 +588,13 @@ client.on("message", msg => {
                         }).then(function () {
                             client.removeListener('message', listentome1);
                             log("Users in this timeset for countrySubscription: " + dwUsersYes);
-                            return log("Users not in this timeset for countrySubscription: " + dwUsersNo);
+                            log("Users not in this timeset for countrySubscription: " + dwUsersNo);
+                            return log("---------------------------");
                         }).catch(function (err) {
                             error(err);
                             e++;
                             client.removeListener('message', listentome1);
+                            return log("---------------------------");
                         });
                     }
                 });
@@ -655,7 +658,7 @@ client.on("message", msg => {
 
                                     dcUsersYes.push(doc.id);
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                    return client.removeListener('message', locationsListen);
+
                                     client.users.get(doc.id).send(data);
                                 }
                                 return client.removeListener('message', locationsListen);
@@ -671,12 +674,13 @@ client.on("message", msg => {
                     });
                 }).then(function () {
                     log("Users in this timeset for location: " + dlUsersYes);
-                    return log("Users not in this timeset for location: " + dlUsersNo);
+                    log("Users not in this timeset for location: " + dlUsersNo);
+                    return log("---------------------------");
                 }).catch(function (err) {
                     error(err);
                     e++;
                     client.users.get('377934017548386307').send("Error occurred with activation location retrieval.");
-                    return;
+                    return log("---------------------------");
                 });
             }
 
@@ -750,12 +754,13 @@ client.on("message", msg => {
                     });
                 }).then(function () {
                     log("Users in this timeset for watchlist: " + dwlUsersYes);
-                    return log("Users not in this timeset for watchlist: " + dwlUsersNo);
+                    log("Users not in this timeset for watchlist: " + dwlUsersNo);
+                    return log("---------------------------");
                 }).catch(function (err) {
                     error(err);
                     e++;
                     client.users.get('377934017548386307').send("Error occurred with activation watchlist retrieval.");
-                    return;
+                    return log("---------------------------");
                 });
             }
 
@@ -786,12 +791,13 @@ client.on("message", msg => {
                     });
                 }).then(function () {
                     log("Successful email attempts: " + mlUsersSuccess);
-                    return log("Failed email attempts: " + mlUsersFailure);
+                    log("Failed email attempts: " + mlUsersFailure);
+                    return log("---------------------------");
                 }).catch(function (err) {
                     error(err);
                     e++;
                     client.users.get('377934017548386307').send("Error occurred with activation mailing list delivery.");
-                    return;
+                    return log("---------------------------");
                 });
 
                 return true;
@@ -801,11 +807,12 @@ client.on("message", msg => {
 
                 if (result && e == 0) {
                     client.users.get('377934017548386307').send("Finished updating everyone successfully!");
-                    msg.channel.send("Finished updating everyone! No errors occurred!");
+                    log("Finished updating everyone! No errors occurred!");
                 } else if (result && e != 0) {
                     client.users.get('377934017548386307').send("Finished updating everyone with " + e +" errors.");
-                    msg.channel.send("Finished updating everyone! " + e + " errors were found.");
+                    log("Finished updating everyone! " + e + " errors were found.");
                 }
+                return log("---------------------------");
             });
             
             break;
