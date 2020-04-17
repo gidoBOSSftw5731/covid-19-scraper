@@ -708,42 +708,39 @@ client.on("message", msg => {
                         var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
 
                         if (watchlist) {
-                            const watchlistLoop = async _ => {
-                                for (i = 0; i < watchlist.length; i++) {
-                                    var location = watchlist[i].toString();
+                            for (i = 0; i < watchlist.length; i++) {
+                                var location = watchlist[i].toString();
 
-                                    if (locations.includes(location)) {
-                                        locations.push(location);
+                                if (locations.includes(location)) {
+                                    locations.push(location);
 
-                                        var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                        await msg.channel.send("!botcases " + location + " " + token);
+                                    var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                                    await msg.channel.send("!botcases " + location + " " + token);
 
-                                        client.on('message', function watchlistListen(message) {
-                                            if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                                var data = message.content.replace(token + " ", " ").toString();
-                                                var matches = data.match(/\d+/g);
-                                                locationsMatches[locations.indexOf(location)] = matches;
+                                    client.on('message', function watchlistListen(message) {
+                                        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
+                                            var data = message.content.replace(token + " ", " ").toString();
+                                            var matches = data.match(/\d+/g);
+                                            locationsMatches[locations.indexOf(location)] = matches;
 
-                                                var d = new Date();
-                                                var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+                                            var d = new Date();
+                                            var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
 
-                                                dwlUsersYes.push(doc.id);
-                                                eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                                client.users.get(doc.id).send(data);
+                                            dwlUsersYes.push(doc.id);
+                                            eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                            client.users.get(doc.id).send(data);
 
-                                                return client.removeListener('message', watchlistListen);
-                                            }
-                                        });
-                                    } else {
-                                        dwlUsersYes.push(doc.id);
-                                        log("Location " + location + " has already been queried, getting data for that location from stored memory.");
-                                        var data = locationsMatches[locations.indexOf(location)];
-                                        client.users.get(doc.id).send(data);
-                                        continue;
-                                    }
+                                            return client.removeListener('message', watchlistListen);
+                                        }
+                                    });
+                                } else {
+                                    dwlUsersYes.push(doc.id);
+                                    log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                                    var data = locationsMatches[locations.indexOf(location)];
+                                    client.users.get(doc.id).send(data);
+                                    continue;
                                 }
-                            };
-                            watchlistLoop();
+                            }
                         } else if (!watchlist) {
                             return log("User " + doc.id + " does not have a watchlist");
                         }
