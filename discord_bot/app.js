@@ -34,9 +34,10 @@ db.collection('env').doc('env').get().then(function (doc) {
         error(err);
     });
 
-    client.on("ready", () => {
+    client.on("ready", function readysetgo() {
         log(`Client user tag: ${client.user.id}!`);
         client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
+        return client.removeListener('on', readysetgo);
     })
 }).catch(function (err) {
     error(err);
@@ -493,7 +494,7 @@ client.on("message", msg => {
 
             function doWorst() {
                 msg.channel.send('!worst');
-                client.on('message', function listentome(message) {
+                client.on('message', function listentome0(message) {
                     if (message.author.id == "692117206108209253" && message.embeds != []) {
                         var dwUsersNo = [];
                         var dwUsersYes = [];
@@ -530,12 +531,13 @@ client.on("message", msg => {
                                 }
                             });
                         }).then(function () {
-                            client.removeListener('message', listentome);
+                            client.removeListener('message', listentome0);
                             log("Users in this timeset for countySubscription: " + dwUsersYes);
                             return log("Users not in this timeset for countySubscription: " + dwUsersNo);
                         }).catch(function (err) {
                             error(err);
                             e++;
+                            return client.removeListener('message', listentome0);
                         });
                     }
                 });
@@ -543,7 +545,7 @@ client.on("message", msg => {
 
             function doCountry() {
                 msg.channel.send('!cases');
-                client.on('message', function listentome(message) {
+                client.on('message', function listentome1(message) {
                     if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
                         var matches = message.content.match(/\d+/g);
                         var data = [matches[0], matches[1]];
@@ -583,12 +585,13 @@ client.on("message", msg => {
                                 client.users.get(doc.id).send(message.content);
                             });
                         }).then(function () {
-                            client.removeListener('message', listentome);
+                            client.removeListener('message', listentome1);
                             log("Users in this timeset for countrySubscription: " + dwUsersYes);
                             return log("Users not in this timeset for countrySubscription: " + dwUsersNo);
                         }).catch(function (err) {
                             error(err);
                             e++;
+                            client.removeListener('message', listentome1);
                         });
                     }
                 });
@@ -652,10 +655,10 @@ client.on("message", msg => {
 
                                     dcUsersYes.push(doc.id);
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                    client.users.get(doc.id).send(data);
-
                                     return client.removeListener('message', locationsListen);
+                                    client.users.get(doc.id).send(data);
                                 }
+                                return client.removeListener('message', locationsListen);
                             });
                         } else if (location && locations.includes(location)) {
                             dcUsersYes.push(doc.id);
@@ -715,7 +718,7 @@ client.on("message", msg => {
                                     locations.push(location);
 
                                     var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                    await msg.channel.send("!botcases " + location + " " + token);
+                                    msg.channel.send("!botcases " + location + " " + token);
 
                                     client.on('message', function watchlistListen(message) {
                                         if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
