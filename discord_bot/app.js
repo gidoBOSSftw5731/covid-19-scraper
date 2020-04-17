@@ -36,7 +36,7 @@ db.collection('env').doc('env').get().then(function (doc) {
 
     client.on("ready", function readysetgo() {
         log(`Client user tag: ${client.user.id}!`);
-        client.user.setActivity("alone, not by choice, but by law", { type: "Playing" });
+        client.user.setActivity("alone | !help", { type: "Playing" });
         return client.removeListener('on', readysetgo);
     })
 }).catch(function (err) {
@@ -646,7 +646,7 @@ client.on("message", msg => {
 
                             client.on('message', function locationsListen(message) {
                                 if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                    var data = message.content.replace(token + " ", " ").toString();
+                                    var data = message.content.replace(token + " ", "").toString();
                                     var matches = data.match(/\d+/g);
                                     locationsMatches[locations.indexOf(location)] = matches;
 
@@ -722,7 +722,7 @@ client.on("message", msg => {
 
                                     client.on('message', function watchlistListen(message) {
                                         if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                            var data = message.content.replace(token + " ", " ").toString();
+                                            var data = message.content.replace(token + " ", "").toString();
                                             var matches = data.match(/\d+/g);
                                             locationsMatches[locations.indexOf(location)] = matches;
 
