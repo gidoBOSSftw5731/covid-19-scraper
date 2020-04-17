@@ -764,7 +764,6 @@ client.on("message", msg => {
                 resolve(true);
             }).then(doWorst).then(doCountry).then(doLocation).then(doWatchlist).then(function () {
 
-                
                 var mlUsersSuccess = [];
                 var mlUsersFailure = [];
 
