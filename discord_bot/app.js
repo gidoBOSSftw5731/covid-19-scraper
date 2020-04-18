@@ -626,6 +626,8 @@ client.on("message", msg => {
                                     case "HST":
                                         var hotspot = "Honolulu";
                                         break;
+                                    default:
+                                        var hotspot = "New_York";
                                 }
 
                                 var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
@@ -704,6 +706,8 @@ client.on("message", msg => {
                                     case "HST":
                                         var hotspot = "Honolulu";
                                         break;
+                                    default:
+                                        var hotspot = "New_York";
                                 }
 
                                 var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
@@ -773,6 +777,8 @@ client.on("message", msg => {
                             case "HST":
                                 var hotspot = "Honolulu";
                                 break;
+                            default:
+                                var hotspot = "New_York";
                         }
 
                         var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
@@ -878,6 +884,8 @@ client.on("message", msg => {
                             case "HST":
                                 var hotspot = "Honolulu";
                                 break;
+                            default:
+                                var hotspot = "New_York";
                         }
 
                         var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
