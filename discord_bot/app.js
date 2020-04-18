@@ -584,6 +584,7 @@ client.on("message", msg => {
             var locations = [];
             var locationsMatches = [];
 
+            var pass = 0;
             var e = 0;
 
             function doWorst() {
@@ -653,6 +654,7 @@ client.on("message", msg => {
                             e++;
                             return client.removeListener('message', listentome0);
                         });
+                        pass++;
                     }
                 });
             }
@@ -729,6 +731,8 @@ client.on("message", msg => {
                             client.removeListener('message', listentome1);
                             return log("---------------------------");
                         });
+                        
+                        pass++;
                     }
                 });
             }
@@ -834,6 +838,8 @@ client.on("message", msg => {
                     client.users.get('377934017548386307').send("Error occurred with activation location retrieval.");
                     return log("---------------------------");
                 });
+
+                pass++;
             }
 
             function doWatchlist() {
@@ -933,6 +939,8 @@ client.on("message", msg => {
                     client.users.get('377934017548386307').send("Error occurred with activation watchlist retrieval.");
                     return log("---------------------------");
                 });
+
+                pass++;
             }
 
             new Promise(function (resolve) {
@@ -974,16 +982,22 @@ client.on("message", msg => {
                 return true;
 
             }).then(function (result) {
-                log("Finished updating!");
 
-                if (result && e == 0) {
-                    client.users.get('377934017548386307').send("Finished updating everyone successfully!");
-                    log("Finished updating everyone! No errors occurred!");
-                } else if (result && e != 0) {
-                    client.users.get('377934017548386307').send("Finished updating everyone with " + e +" errors.");
-                    log("Finished updating everyone! " + e + " errors were found.");
+                if (pass == 4) {
+                    log("Finished updating!");
+
+                    if (result && e == 0) {
+                        client.users.get('377934017548386307').send("Finished updating everyone successfully!");
+                        log("Finished updating everyone! No errors occurred!");
+                    } else if (result && e != 0) {
+                        client.users.get('377934017548386307').send("Finished updating everyone with " + e + " errors.");
+                        log("Finished updating everyone! " + e + " errors were found.");
+                    }
+                    return log("---------------------------");
+                } else {
+                    error("Interesting...");
                 }
-                return log("---------------------------");
+
             });
             
             break;
