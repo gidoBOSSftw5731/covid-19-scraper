@@ -387,7 +387,7 @@ client.on("message", msg => {
 
             var action = args[0];
             if (action != "add" && action != "remove" && action != "view" && action != "timezone") {
-                return msg.reply("Oops! Looks like you entered an invalid command! !timeset supports add, remove, and view.");
+                return msg.reply("Oops! Looks like you entered an invalid command! !timeset supports add, remove, view, and timezone.");
             }
             args.shift();
 
@@ -412,8 +412,80 @@ client.on("message", msg => {
                 }
             } else if (action == "timezone") {
                 var timezone = args[0].toUpperCase();
-                switch (time) {
-                    case "EDT", "CDT", "MDT", "MST", "PDT", "AKDT", "HST":
+                switch (timezone) {
+                    case "EDT":
+                        userDoc.update({
+                            tz: timezone
+                        }).then(function () {
+                            msg.reply("Your new timezone is " + timezone + "!");
+                            return log("User " + id + " given timezone " + timezone + "!");
+                        }).catch(function (err) {
+                            error(err);
+                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
+                            return e++;
+                        });
+                        break;
+                    case "CDT":
+                        userDoc.update({
+                            tz: timezone
+                        }).then(function () {
+                            msg.reply("Your new timezone is " + timezone + "!");
+                            return log("User " + id + " given timezone " + timezone + "!");
+                        }).catch(function (err) {
+                            error(err);
+                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
+                            return e++;
+                        });
+                        break;
+                    case "MDT":
+                        userDoc.update({
+                            tz: timezone
+                        }).then(function () {
+                            msg.reply("Your new timezone is " + timezone + "!");
+                            return log("User " + id + " given timezone " + timezone + "!");
+                        }).catch(function (err) {
+                            error(err);
+                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
+                            return e++;
+                        });
+                        break;
+                    case "MST":
+                        userDoc.update({
+                            tz: timezone
+                        }).then(function () {
+                            msg.reply("Your new timezone is " + timezone + "!");
+                            return log("User " + id + " given timezone " + timezone + "!");
+                        }).catch(function (err) {
+                            error(err);
+                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
+                            return e++;
+                        });
+                        break;
+                    case "PDT":
+                        userDoc.update({
+                            tz: timezone
+                        }).then(function () {
+                            msg.reply("Your new timezone is " + timezone + "!");
+                            return log("User " + id + " given timezone " + timezone + "!");
+                        }).catch(function (err) {
+                            error(err);
+                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
+                            return e++;
+                        });
+                        break;
+                    case "AKDT":
+                        userDoc.update({
+                            tz: timezone
+                        }).then(function () {
+                            msg.reply("Your new timezone is " + timezone + "!");
+                            return log("User " + id + " given timezone " + timezone + "!");
+                        }).catch(function (err) {
+                            error(err);
+                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
+                            return e++;
+                        });
+                        break;
+                    case "HST":
                         userDoc.update({
                             tz: timezone
                         }).then(function () {
