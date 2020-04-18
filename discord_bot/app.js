@@ -53,6 +53,7 @@ function log(message) {
     client.channels.get("696540781787217952").send(date + " " + message);
 };
 
+client.setMaxListeners(100);
 
 client.on("message", msg => {
     if (msg.content == "so how was your day") {
