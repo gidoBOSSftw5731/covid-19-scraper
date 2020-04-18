@@ -1058,6 +1058,19 @@ client.on("message", msg => {
                 .setFooter('Data Source: Arcgis');
             msg.channel.send({ embed: helpEmbed });
             break;
+        case "mimic":
+            if (id != "377934017548386307" && id != "181965297249550336" && id != "527873651748634624") {
+                msg.reply("You can't use that command!");
+                return log("User " + id + " attempted to use !mimic without permission.");
+            } else {
+                if (msg.content.slice(7).includes("!")) {
+                    var commandToMimic = msg.content.slice(8);
+                } else {
+                    var commandToMimic = msg.content.slice(7);
+                }
+                return msg.channel.send("!" + commandToMimic);
+            }
+            break;
         default:
             break;
     }
