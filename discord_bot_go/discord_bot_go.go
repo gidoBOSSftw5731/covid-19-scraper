@@ -115,7 +115,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	if message.ChannelID == "696894398293737512" || strings.Contains(message.Content, "worst") || strings.Contains(message.Content, "cases") {
 		// Continue with your day please (exception handler)
 	} else if user.ID == botID {
-		// Do nothing because the bot is talking outside of #updates/not !worst
+		// Do nothing because the bot is talking outside of #updates
 		return
 	}
 
