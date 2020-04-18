@@ -524,7 +524,6 @@ client.on("message", msg => {
                             querySnapshot.forEach(function (doc) {
                                 var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                                 var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
-                                var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                                 if (!subscribeTimes) {
                                     return dwUsersNo.push(doc.id);
@@ -532,37 +531,50 @@ client.on("message", msg => {
 
                                 var d = new Date();
                                 if (d.getHours() == 0) {
-                                    var meridiem = "12AM";
+                                    var hour = "12AM";
                                 } else if (d.getHours() == 12) {
-                                    var meridiem = "12PM";
+                                    var hour = "12PM";
                                 } else if (d.getHours() > 12) {
-                                    var meridiem = (d.getHours() - 12) + "PM";
+                                    var hour = (d.getHours() - 12) + "PM";
                                 } else {
-                                    var meridiem = d.getHours() + "AM";
+                                    var hour = d.getHours() + "AM";
                                 }
 
-                                switch (timezone) {
-                                    case "EDT", null:
-                                        break;
-                                    case "CDT":
-                                        hour -= 1;
-                                        break;
-                                    case "MDT":
-                                        hour -= 2;
-                                        break;
-                                    case "MST":
-                                        hour -= 3;
-                                        break;
-                                    case "PDT":
-                                        hour -= 3;
-                                        break;
-                                    case "AKDT":
-                                        hour -= 4;
-                                        break;
-                                    case "HST":
-                                        hour -= 6;
-                                        break;
-                                }
+                                // var timezone = (doc.data().tz) ? doc.data().tz : null;
+                                // var d = new Date();
+
+                                // switch (timezone) {
+                                //     case "EDT", null:
+                                //         break;
+                                //     case "CDT":
+                                //         var hour = d.getHours() - 1;
+                                //         break;
+                                //     case "MDT":
+                                //         var hour = d.getHours() - 2;
+                                //         break;
+                                //     case "MST":
+                                //         var hour = d.getHours() - 3;
+                                //         break;
+                                //     case "PDT":
+                                //         var hour = d.getHours() - 3;
+                                //         break;
+                                //     case "AKDT":
+                                //         var hour = d.getHours() - 4; 
+                                //         break;
+                                //     case "HST":
+                                //         var hour = d.getHours() - 6;
+                                //         break;
+                                // }
+
+                                // if (hour == 0) {
+                                //     var meridiem = "12AM";
+                                // } else if (hour == 12) {
+                                //     var meridiem = "12PM";
+                                // } else if (hour > 12) {
+                                //     var meridiem = (hour - 12) + "PM";
+                                // } else {
+                                //     var meridiem = hour + "AM";
+                                // }
 
                                 if (!subscribeTimes.includes(hour)) {
                                     return dwUsersNo.push(doc.id);
