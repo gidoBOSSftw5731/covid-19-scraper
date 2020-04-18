@@ -612,41 +612,37 @@ client.on("message", msg => {
                                     var hour = d.getHours() + "AM";
                                 }
 
-                                // var timezone = (doc.data().tz) ? doc.data().tz : null;
-                                // var d = new Date();
+                                var timezone = (doc.data().tz) ? doc.data().tz : null;
+                                var d = new Date();
 
-                                // switch (timezone) {
-                                //     case "EDT", null:
-                                //         break;
-                                //     case "CDT":
-                                //         var hour = d.getHours() - 1;
-                                //         break;
-                                //     case "MDT":
-                                //         var hour = d.getHours() - 2;
-                                //         break;
-                                //     case "MST":
-                                //         var hour = d.getHours() - 3;
-                                //         break;
-                                //     case "PDT":
-                                //         var hour = d.getHours() - 3;
-                                //         break;
-                                //     case "AKDT":
-                                //         var hour = d.getHours() - 4; 
-                                //         break;
-                                //     case "HST":
-                                //         var hour = d.getHours() - 6;
-                                //         break;
-                                // }
+                                switch (timezone) {
+                                    case "EDT", null:
+                                        var location = "New_York";
+                                        break;
+                                    case "CDT":
+                                        var location = "Chicago";
+                                        break;
+                                    case "MDT":
+                                        var location = "Salt_Lake_City";
+                                        break;
+                                    case "MST":
+                                        var location = "Phoenix";
+                                        break;
+                                    case "PDT":
+                                        var location = "Los_Angeles";
+                                        break;
+                                    case "AKDT":
+                                        var location = "Anchorage";
+                                        break;
+                                    case "HST":
+                                        var location = "Honolulu";
+                                        break;
+                                }
 
-                                // if (hour == 0) {
-                                //     var meridiem = "12AM";
-                                // } else if (hour == 12) {
-                                //     var meridiem = "12PM";
-                                // } else if (hour > 12) {
-                                //     var meridiem = (hour - 12) + "PM";
-                                // } else {
-                                //     var meridiem = hour + "AM";
-                                // }
+                                var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + location });
+                                localTime = new Date(localTime);
+                                var lt = localTime.toLocaleString();
+                                var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
 
                                 if (!subscribeTimes.includes(hour)) {
                                     return dwUsersNo.push(doc.id);
