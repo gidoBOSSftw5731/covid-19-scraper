@@ -596,50 +596,37 @@ client.on("message", msg => {
                             querySnapshot.forEach(function (doc) {
                                 var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                                 var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
+                                var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                                 if (!subscribeTimes) {
                                     return dwUsersNo.push(doc.id);
                                 }
 
-                                var d = new Date();
-                                if (d.getHours() == 0) {
-                                    var hour = "12AM";
-                                } else if (d.getHours() == 12) {
-                                    var hour = "12PM";
-                                } else if (d.getHours() > 12) {
-                                    var hour = (d.getHours() - 12) + "PM";
-                                } else {
-                                    var hour = d.getHours() + "AM";
-                                }
-
-                                var timezone = (doc.data().tz) ? doc.data().tz : null;
-                                var d = new Date();
-
                                 switch (timezone) {
                                     case "EDT", null:
-                                        var location = "New_York";
+                                        var hotspot = "New_York";
                                         break;
                                     case "CDT":
-                                        var location = "Chicago";
+                                        var hotspot = "Chicago";
                                         break;
                                     case "MDT":
-                                        var location = "Salt_Lake_City";
+                                        var hotspot = "Salt_Lake_City";
                                         break;
                                     case "MST":
-                                        var location = "Phoenix";
+                                        var hotspot = "Phoenix";
                                         break;
                                     case "PDT":
-                                        var location = "Los_Angeles";
+                                        var hotspot = "Los_Angeles";
                                         break;
                                     case "AKDT":
-                                        var location = "Anchorage";
+                                        var hotspot = "Anchorage";
                                         break;
                                     case "HST":
-                                        var location = "Honolulu";
+                                        var hotspot = "Honolulu";
                                         break;
                                 }
 
-                                var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + location });
+                                var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
                                 localTime = new Date(localTime);
                                 var lt = localTime.toLocaleString();
                                 var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
@@ -686,20 +673,40 @@ client.on("message", msg => {
                             querySnapshot.forEach(function (doc) {
                                 var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                                 var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
+                                var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                                 if (!subscribeTimes) {
                                     return dcUsersNo.push(doc.id);
                                 }
 
-                                if (d.getHours() == 0) {
-                                    var hour = "12AM";
-                                } else if (d.getHours() == 12) {
-                                    var hour = "12PM";
-                                } else if (d.getHours() > 12) {
-                                    var hour = (d.getHours() - 12) + "PM";
-                                } else {
-                                    var hour = d.getHours() + "AM";
+                                switch (timezone) {
+                                    case "EDT", null:
+                                        var hotspot = "New_York";
+                                        break;
+                                    case "CDT":
+                                        var hotspot = "Chicago";
+                                        break;
+                                    case "MDT":
+                                        var hotspot = "Salt_Lake_City";
+                                        break;
+                                    case "MST":
+                                        var hotspot = "Phoenix";
+                                        break;
+                                    case "PDT":
+                                        var hotspot = "Los_Angeles";
+                                        break;
+                                    case "AKDT":
+                                        var hotspot = "Anchorage";
+                                        break;
+                                    case "HST":
+                                        var hotspot = "Honolulu";
+                                        break;
                                 }
+
+                                var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
+                                localTime = new Date(localTime);
+                                var lt = localTime.toLocaleString();
+                                var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
 
                                 if (!subscribeTimes.includes(hour)) {
                                     return dcUsersNo.push(doc.id);
@@ -733,21 +740,40 @@ client.on("message", msg => {
                     querySnapshot.forEach(function (doc) {
                         var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                         var locationTimes = (times && times.location) ? times.location.toString().split(",") : null;
+                        var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                         if (!locationTimes) {
                             return dlUsersNo.push(doc.id);
                         }
 
-                        var d = new Date();
-                        if (d.getHours() == 0) {
-                            var hour = "12AM";
-                        } else if (d.getHours() == 12) {
-                            var hour = "12PM";
-                        } else if (d.getHours() > 12) {
-                            var hour = (d.getHours() - 12) + "PM";
-                        } else {
-                            var hour = d.getHours() + "AM";
+                        switch (timezone) {
+                            case "EDT", null:
+                                var hotspot = "New_York";
+                                break;
+                            case "CDT":
+                                var hotspot = "Chicago";
+                                break;
+                            case "MDT":
+                                var hotspot = "Salt_Lake_City";
+                                break;
+                            case "MST":
+                                var hotspot = "Phoenix";
+                                break;
+                            case "PDT":
+                                var hotspot = "Los_Angeles";
+                                break;
+                            case "AKDT":
+                                var hotspot = "Anchorage";
+                                break;
+                            case "HST":
+                                var hotspot = "Honolulu";
+                                break;
                         }
+
+                        var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
+                        localTime = new Date(localTime);
+                        var lt = localTime.toLocaleString();
+                        var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
 
                         if (!locationTimes.includes(hour)) {
                             return dlUsersNo.push(doc.id);
@@ -817,21 +843,40 @@ client.on("message", msg => {
                     querySnapshot.forEach(function (doc) {
                         var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                         var watchlistTimes = (times && times.watchlist) ? times.watchlist.toString().split(",") : null;
+                        var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                         if (!watchlistTimes) {
                             return dwlUsersNo.push(doc.id);
                         }
 
-                        var d = new Date();
-                        if (d.getHours() == 0) {
-                            var hour = "12AM";
-                        } else if (d.getHours() == 12) {
-                            var hour = "12PM";
-                        } else if (d.getHours() > 12) {
-                            var hour = (d.getHours() - 12) + "PM";
-                        } else {
-                            var hour = d.getHours() + "AM";
+                        switch (timezone) {
+                            case "EDT", null:
+                                var hotspot = "New_York";
+                                break;
+                            case "CDT":
+                                var hotspot = "Chicago";
+                                break;
+                            case "MDT":
+                                var hotspot = "Salt_Lake_City";
+                                break;
+                            case "MST":
+                                var hotspot = "Phoenix";
+                                break;
+                            case "PDT":
+                                var hotspot = "Los_Angeles";
+                                break;
+                            case "AKDT":
+                                var hotspot = "Anchorage";
+                                break;
+                            case "HST":
+                                var hotspot = "Honolulu";
+                                break;
                         }
+
+                        var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
+                        localTime = new Date(localTime);
+                        var lt = localTime.toLocaleString();
+                        var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
 
                         if (!watchlistTimes.includes(hour)) {
                             return dwlUsersNo.push(doc.id);
