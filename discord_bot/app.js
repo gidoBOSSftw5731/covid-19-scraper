@@ -382,11 +382,11 @@ client.on("message", msg => {
         case "timeset":
             if (!args.length) {
                 return msg.reply("To use the timeset command, please follow the paradigm:\n" +
-                    "```!timeset <action (add/remove/view - takes no time args)> <subscription method (location, subscribe, or watchlist)> <time (Hour + AM/PM)>```Note: You can only set full hour intervals.");
+                    "```!timeset <action (add/remove/view (no args)/timezone (takes your timezone or help))> <subscription method (location, subscribe, or watchlist)> <time (Hour + AM/PM)>```Note: You can only set full hour intervals.");
             }
 
             var action = args[0];
-            if (action != "add" && action != "remove" && action != "view") {
+            if (action != "add" && action != "remove" && action != "view" && action != "timezone") {
                 return msg.reply("Oops! Looks like you entered an invalid command! !timeset supports add, remove, and view.");
             }
             args.shift();
@@ -409,6 +409,26 @@ client.on("message", msg => {
                     }).catch(function (err) {
                         error(err);
                     });
+                }
+            } else if (action == "timezone") {
+                var timezone = args[0].toUpperCase();
+                switch (time) {
+                    case "EDT", "CDT", "MDT", "MST", "PDT", "AKDT", "HST":
+                        userDoc.update({
+                            tz: timezone
+                        }).then(function () {
+                            msg.reply("Your new timezone is " + timezone + "!");
+                            return log("User " + id + " given timezone " + timezone + "!");
+                        }).catch(function (err) {
+                            error(err);
+                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
+                            return e++;
+                        });
+                        break;
+                    case "HELP":
+                        return msg.reply("Valid timezones: EDT, CDT, MDT, MST, PDT, AKDT, and HST.\n Go to https://bit.ly/us-timezones to see a list of the accepted timezones.");
+                    default:
+                        return msg.reply("Please enter a valid timezone!");
                 }
             } else {
                 var commands = ["location", "subscribe", "watchlist"];
@@ -504,6 +524,7 @@ client.on("message", msg => {
                             querySnapshot.forEach(function (doc) {
                                 var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                                 var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
+                                var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                                 if (!subscribeTimes) {
                                     return dwUsersNo.push(doc.id);
@@ -511,13 +532,36 @@ client.on("message", msg => {
 
                                 var d = new Date();
                                 if (d.getHours() == 0) {
-                                    var hour = "12AM";
+                                    var meridiem = "12AM";
                                 } else if (d.getHours() == 12) {
-                                    var hour = "12PM";
+                                    var meridiem = "12PM";
                                 } else if (d.getHours() > 12) {
-                                    var hour = (d.getHours() - 12) + "PM";
+                                    var meridiem = (d.getHours() - 12) + "PM";
                                 } else {
-                                    var hour = d.getHours() + "AM";
+                                    var meridiem = d.getHours() + "AM";
+                                }
+
+                                switch (timezone) {
+                                    case "EDT", null:
+                                        break;
+                                    case "CDT":
+                                        hour -= 1;
+                                        break;
+                                    case "MDT":
+                                        hour -= 2;
+                                        break;
+                                    case "MST":
+                                        hour -= 3;
+                                        break;
+                                    case "PDT":
+                                        hour -= 3;
+                                        break;
+                                    case "AKDT":
+                                        hour -= 4;
+                                        break;
+                                    case "HST":
+                                        hour -= 6;
+                                        break;
                                 }
 
                                 if (!subscribeTimes.includes(hour)) {
