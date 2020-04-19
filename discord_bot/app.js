@@ -58,7 +58,7 @@ db.collection('env').doc('env').get().then(function (doc) {
 
     proxyClient.on("ready", function readysetgo() {
         client.channels.get(`Site Client user tag: ${proxyClient.user.id}!`);
-        proxyClient.user.setActivity("Washing hands", { type: 4 });
+        proxyClient.user.setActivity({ type: 4 });
         return proxyClient.removeListener('on', readysetgo);
     });
 }).catch(function (err) {
