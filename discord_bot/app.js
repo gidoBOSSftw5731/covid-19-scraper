@@ -31,6 +31,17 @@ function isUpperCase(str) {
 
 // Discord
 db.collection('env').doc('env').get().then(function (doc) {
+    client.login(doc.data().token0).catch(err => {
+        client.channels.get("696540781787217952").send(err);
+    });
+
+    client.on("ready", function readysetgo() {
+        client.channels.get("696540781787217952").send(`Client user tag: ${client.user.id}!`);
+        client.user.setActivity("alone | !help", { type: "Playing" });
+
+        return client.removeListener('on', readysetgo);
+    });
+
     function error(err) {
         var date = new Date();
         client.channels.get("696540781787217952").send(date + " " + err);
@@ -40,17 +51,6 @@ db.collection('env').doc('env').get().then(function (doc) {
         var date = new Date();
         client.channels.get("696540781787217952").send(date + " " + message);
     };
-
-    client.login(doc.data().token0).catch(err => {
-        error(err);
-    });
-
-    client.on("ready", function readysetgo() {
-        log(`Client user tag: ${client.user.id}!`);
-        client.user.setActivity("alone | !help", { type: "Playing" });
-
-        return client.removeListener('on', readysetgo);
-    });
 
     proxyClient.login(doc.data().token).catch(err => {
         error(err);
