@@ -1,6 +1,5 @@
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
-const proxyClient = new Discord.Client({ disableEveryone: true });
 
 // Firebasee
 var firebase = require("firebase");
@@ -32,41 +31,29 @@ function isUpperCase(str) {
 // Discord
 db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token0).catch(err => {
-        console.log(err);
-    });
-
-    client.on("ready", function readysetgo() {
-        client.channels.get("696540781787217952").send(`Client user tag: ${client.user.id}!`);
-        client.user.setActivity("alone | !help", { type: "Playing" });
-
-        return client.removeListener('on', readysetgo);
-    });
-
-    function error(err) {
-        var date = new Date();
-        client.channels.get("696540781787217952").send(date + " " + err);
-    };
-
-    function log(message) {
-        var date = new Date();
-        client.channels.get("696540781787217952").send(date + " " + message);
-    };
-
-    proxyClient.login(doc.data().token).catch(err => {
         error(err);
     });
 
-    proxyClient.on("ready", function readysetgo() {
-        client.channels.get(`Site Client user tag: ${proxyClient.user.id}!`);
-        proxyClient.user.setActivity({ type: 4 });
-        return proxyClient.removeListener('on', readysetgo);
-    });
+    client.on("ready", function readysetgo() {
+        log(`Client user tag: ${client.user.id}!`);
+        client.user.setActivity("alone | !help", { type: "Playing" });
+        return client.removeListener('on', readysetgo);
+    })
 }).catch(function (err) {
     error(err);
 });
 
-client.setMaxListeners(100);
+function error(err) {
+    var date = new Date();
+    client.channels.get("696540781787217952").send(date + " " + err);
+};
 
+function log(message) {
+    var date = new Date();
+    client.channels.get("696540781787217952").send(date + " " + message);
+};
+
+client.setMaxListeners(100);
 
 client.on("message", msg => {
     if (msg.content == "so how was your day") {
@@ -601,7 +588,7 @@ client.on("message", msg => {
             var e = 0;
 
             function doWorst() {
-                proxyClient.channels.get('696894398293737512').send("!worst");
+                msg.channel.send('!worst');
                 client.on('message', function listentome0(message) {
                     if (message.author.id == "692117206108209253" && message.embeds != []) {
                         var dwUsersNo = [];
@@ -675,7 +662,7 @@ client.on("message", msg => {
             }
 
             function doCountry() {
-                proxyClient.channels.get('696894398293737512').send("!cases");
+                msg.channel.send('!cases');
                 client.on('message', function listentome1(message) {
                     if (message.author.id == "692117206108209253" && message.content.includes("The country of US")) {
                         var matches = message.content.match(/\d+/g);
@@ -820,7 +807,7 @@ client.on("message", msg => {
                             locations.push(location);
 
                             var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                            proxyClient.channels.get('696894398293737512').send("!botcases " + location + " " + token);
+                            msg.channel.send("!botcases " + location + " " + token);
 
                             client.on('message', function locationsListen(message) {
                                 if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
@@ -920,7 +907,7 @@ client.on("message", msg => {
                                     locations.push(location);
 
                                     var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                    proxyClient.channels.get('696894398293737512').then(channel => channel.send("!botcases " + location + " " + token));
+                                    msg.channel.send("!botcases " + location + " " + token);
 
                                     client.on('message', function watchlistListen(message) {
                                         if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
