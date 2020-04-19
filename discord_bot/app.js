@@ -57,7 +57,7 @@ db.collection('env').doc('env').get().then(function (doc) {
     });
 
     proxyClient.on("ready", function readysetgo() {
-        log(`Site Client user tag: ${proxyClient.user.id}!`);
+        console.log(`Site Client user tag: ${proxyClient.user.id}!`);
         proxyClient.user.setActivity("alone", { type: "Playing" });
         return proxyClient.removeListener('on', readysetgo);
     });
