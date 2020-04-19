@@ -32,7 +32,7 @@ function isUpperCase(str) {
 // Discord
 db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token0).catch(err => {
-        client.channels.get("696540781787217952").send(err);
+        console.log(err);
     });
 
     client.on("ready", function readysetgo() {
