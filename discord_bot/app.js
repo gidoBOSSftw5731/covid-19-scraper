@@ -1063,6 +1063,7 @@ client.on("message", msg => {
                 msg.reply("You can't use that command!");
                 return log("User " + id + " attempted to use !mimic without permission.");
             } else {
+                if (msg.content.slice(7).includes("channel="))
                 if (msg.content.slice(7).includes("!")) {
                     var commandToMimic = msg.content.slice(8);
                 } else {
