@@ -1072,13 +1072,25 @@ client.on("message", msg => {
                 msg.reply("You can't use that command!");
                 return log("User " + id + " attempted to use !mimic without permission.");
             } else {
-                if (msg.content.slice(7).includes("channel="))
                 if (msg.content.slice(7).includes("!")) {
                     var commandToMimic = msg.content.slice(8);
                 } else {
                     var commandToMimic = msg.content.slice(7);
                 }
-                return msg.channel.send("!" + commandToMimic);
+
+                if (msg.content.includes("channel=")) {
+                    var cid = msg.content.slice(msg.content.indexOf("channel=") + 8);
+                    if (cid.length == 21 && /<#\d{18}>/g.test(cid)) {
+                        var channelToMimic = client.channels.find('name', cid);
+                        log(channelToMimic);
+                    } else {
+                        return msg.reply("Looks like you didn't enter the channel correctly! Use `\#<channel-name>` to send to a specific channel.\n You entered: " + cid);
+                    }
+                } else {
+                    var channelToMimic = msg.channel;
+                }
+                
+                return channelToMimic.send("!" + commandToMimic);
             }
             break;
         default:
