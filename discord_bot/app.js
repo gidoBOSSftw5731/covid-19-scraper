@@ -580,6 +580,7 @@ client.on("message", msg => {
             break;
         case "activate":
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
+            msg.reply("Activated! Now starting database query for update-enabled users.");
 
             var locations = [];
             var locationsMatches = [];
@@ -643,6 +644,8 @@ client.on("message", msg => {
                                         client.users.get(doc.id).send({
                                             embed: embed
                                         });
+                                    }).then(function () {
+                                        doCountry();
                                     });
                                 }
                             });
@@ -728,7 +731,8 @@ client.on("message", msg => {
                             client.removeListener('message', listentome1);
                             log("Users in this timeset for countrySubscription: " + dwUsersYes);
                             log("Users not in this timeset for countrySubscription: " + dwUsersNo);
-                            return log("---------------------------");
+                            log("---------------------------");
+                            return doLocation();
                         }).catch(function (err) {
                             error(err);
                             e++;
@@ -837,7 +841,8 @@ client.on("message", msg => {
                 }).then(function () {
                     log("Users in this timeset for location: " + dlUsersYes);
                     log("Users not in this timeset for location: " + dlUsersNo);
-                    return log("---------------------------");
+                    log("---------------------------");
+                    return doWatchlist();
                 }).catch(function (err) {
                     error(err);
                     e++;
@@ -940,7 +945,8 @@ client.on("message", msg => {
                 }).then(function () {
                     log("Users in this timeset for watchlist: " + dwlUsersYes);
                     log("Users not in this timeset for watchlist: " + dwlUsersNo);
-                    return log("---------------------------");
+                    log("---------------------------");
+                    finish();
                 }).catch(function (err) {
                     error(err);
                     e++;
@@ -951,10 +957,7 @@ client.on("message", msg => {
                 pass++;
             }
 
-            new Promise(function (resolve) {
-                msg.reply("Activated! Now starting database query for update-enabled users.");
-                resolve(true);
-            }).then(doWorst).then(doCountry).then(doLocation).then(doWatchlist).then(function () {
+            let finish = new Promise((resolve) => {
 
                 var mlUsersSuccess = [];
                 var mlUsersFailure = [];
@@ -987,7 +990,7 @@ client.on("message", msg => {
                     return log("---------------------------");
                 });
 
-                return true;
+                resolve(true);
 
             }).then(function (result) {
 
