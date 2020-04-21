@@ -682,8 +682,8 @@ client.on("message", msg => {
                             querySnapshot.forEach(function (doc) {
                                 if (doc.id == "filler") {
                                     client.removeListener('message', listentome1);
-                                    log("Users in this timeset for countrySubscription: " + dwUsersYes);
-                                    log("Users not in this timeset for countrySubscription: " + dwUsersNo);
+                                    log("Users in this timeset for countrySubscription: " + dcUsersYes);
+                                    log("Users not in this timeset for countrySubscription: " + dcUsersNo);
                                     log("---------------------------");
                                     pass++;
                                     return doLocation();
