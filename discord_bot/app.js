@@ -963,59 +963,61 @@ client.on("message", msg => {
 
             doWorst();
 
-            let finish = new Promise((resolve) => {
+            function finish() {
+                let endThisAll = new Promise((resolve) => {
 
-                var mlUsersSuccess = [];
-                var mlUsersFailure = [];
+                    var mlUsersSuccess = [];
+                    var mlUsersFailure = [];
 
-                db.collection('mailinglist').get().then(function (querySnapshot) {
-                    querySnapshot.forEach(function (doc) {
-                        var emails = (doc.data().emails) ? doc.data().emails : null;
-                        if (!emails) {
-                            return log("No emails in the document with id " + doc.id);
-                        } else {
-                            emails.forEach(function (value, key) {
-                                auth.sendPasswordResetEmail(value).then(function () {
-                                    mlUsersSuccess.push(doc.id);
-                                }).catch(function (err) {
-                                    mlUsersFailure.push(doc.id);
-                                    error(err);
-                                    e++;
+                    db.collection('mailinglist').get().then(function (querySnapshot) {
+                        querySnapshot.forEach(function (doc) {
+                            var emails = (doc.data().emails) ? doc.data().emails : null;
+                            if (!emails) {
+                                return log("No emails in the document with id " + doc.id);
+                            } else {
+                                emails.forEach(function (value, key) {
+                                    auth.sendPasswordResetEmail(value).then(function () {
+                                        mlUsersSuccess.push(doc.id);
+                                    }).catch(function (err) {
+                                        mlUsersFailure.push(doc.id);
+                                        error(err);
+                                        e++;
+                                    });
                                 });
-                            });
-                        }
+                            }
+                        });
+                    }).then(function () {
+                        log("Successful email attempts: " + mlUsersSuccess);
+                        log("Failed email attempts: " + mlUsersFailure);
+                        return log("---------------------------");
+                    }).catch(function (err) {
+                        error(err);
+                        e++;
+                        client.users.get('377934017548386307').send("Error occurred with activation mailing list delivery.");
+                        return log("---------------------------");
                     });
-                }).then(function () {
-                    log("Successful email attempts: " + mlUsersSuccess);
-                    log("Failed email attempts: " + mlUsersFailure);
-                    return log("---------------------------");
-                }).catch(function (err) {
-                    error(err);
-                    e++;
-                    client.users.get('377934017548386307').send("Error occurred with activation mailing list delivery.");
-                    return log("---------------------------");
-                });
 
-                resolve(true);
+                    resolve(true);
 
-            }).then(function (result) {
+                }).then(function (result) {
 
-                if (pass == 4) {
-                    log("Finished updating!");
+                    if (pass == 4) {
+                        log("Finished updating!");
 
-                    if (result && e == 0) {
-                        client.users.get('377934017548386307').send("Finished updating everyone successfully!");
-                        log("Finished updating everyone! No errors occurred!");
-                    } else if (result && e != 0) {
-                        client.users.get('377934017548386307').send("Finished updating everyone with " + e + " errors.");
-                        log("Finished updating everyone! " + e + " errors were found.");
+                        if (result && e == 0) {
+                            client.users.get('377934017548386307').send("Finished updating everyone successfully!");
+                            log("Finished updating everyone! No errors occurred!");
+                        } else if (result && e != 0) {
+                            client.users.get('377934017548386307').send("Finished updating everyone with " + e + " errors.");
+                            log("Finished updating everyone! " + e + " errors were found.");
+                        }
+                        return log("---------------------------");
+                    } else {
+                        error("Interesting...");
                     }
-                    return log("---------------------------");
-                } else {
-                    error("Interesting...");
-                }
 
-            });
+                });
+            }
             
             break;
         case "website", "site":
