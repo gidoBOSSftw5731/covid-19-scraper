@@ -294,11 +294,13 @@ function retrieveUpdates() {
         } else {
             console.log("User " + doc.id + " has no location set.");
         }
+        
+        // MAKE SURE YOU USE THE LOCATION!
 
         for (i = 0; i < watchlist.length; i++) {
             var watchlistLocation = watchlist[i].toString().replace(" ", "_");
             eval("var watchlistLocationData = doc.data()." + watchlistLocation + ";");
-            
+            // NOW ITERATE OVER EACH ELEMENT, SEPARATE DATE AND TIME AND GET EM NUMBERS AND GRAPH!
         }
     });
 };
