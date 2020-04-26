@@ -16,9 +16,15 @@ db.collection('env').doc('env').get().then(function (doc) {
     window.client = new Discord.Client();
     client.login(doc.data().token);
     client.on('ready', function () {
-        console.log('Discord Bot is ready for use!');
+        console.log('CovidSite Client is ready for use!');
         countryCases();
     });
+
+    window.botClient = new Discord.Client();
+    botClient.login(doc.data().token0);
+    botClient.on('ready', function () {
+        console.log("CovidBot Client is ready for use!");
+    })
 }).catch(function (err) {
     console.log(err);
 });

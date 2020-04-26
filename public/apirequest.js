@@ -276,5 +276,29 @@ function email() {
 
 // get previous updates
 function retrieveUpdates() {
-    
+    if (!user) return console.log("No user, please ask for signin/signup");
+    usersUser.get().then(function (doc) {
+        if (!doc.data()) return console.log("User does not exist somehow.");
+
+        var watchlist = doc.data().watchlist;
+
+        var state = (doc.data().state) ? doc.data().state : null;
+        var county = (doc.data().county) ? doc.data().county : null;
+
+        if (state && county) {
+            var location = county + " " + state;
+        } else if (state) {
+            var location = state;
+        } else if (county) {
+            var location = county;
+        } else {
+            console.log("User " + doc.id + " has no location set.");
+        }
+
+        for (i = 0; i < watchlist.length; i++) {
+            var watchlistLocation = watchlist[i].toString().replace(" ", "_");
+            eval("var watchlistLocationData = doc.data()." + watchlistLocation + ";");
+            
+        }
+    });
 };
