@@ -674,7 +674,12 @@ client.on("message", msg => {
                         var data = [matches[0], matches[1]];
 
                         var d = new Date();
-                        var addr = ("US." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+
+                        var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
+                        var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
+                        var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
+
+                        var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
 
                         var dcUsersNo = [];
                         var dcUsersYes = [];
@@ -831,7 +836,12 @@ client.on("message", msg => {
                                     locationsMatches[locations.indexOf(location)] = matches;
 
                                     var d = new Date();
-                                    var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+                                    
+                                    var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
+                                    var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
+                                    var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
+
+                                    var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
 
                                     dcUsersYes.push(doc.id);
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
@@ -933,7 +943,12 @@ client.on("message", msg => {
                                             locationsMatches[locations.indexOf(location)] = matches;
 
                                             var d = new Date();
-                                            var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + (d.getMonth() + 1).toString() + d.getDate().toString() + (d.getHours() % 12 || 12).toString()).toString();
+
+                                            var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
+                                            var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
+                                            var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
+
+                                            var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
 
                                             dwlUsersYes.push(doc.id);
                                             eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");

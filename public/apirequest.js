@@ -237,22 +237,32 @@ function graph(location) {
     });
 };
 
+function checkUpdate(location, data) {
+    usersUser.get().then(function (doc) {
+        
+    });
+};
+
 function worstCounties() {
     client.channels.get("696894398293737512").send('!worst');
     client.on('message', function (message) {
-        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes("The top 10 places in the US")) {
+        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512") {
             db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
                 querySnapshot.forEach(function (doc) {
-                    return console.log("countySubscription ", doc.data().id);
+                    console.log("countySubscription ", doc.data().id);
 
-                    client.users.get(doc.id).send(message.content);
+                    message.embeds.forEach((embed) => {
+                        client.users.get(doc.id).send({
+                            embed: embed
+                        });
+                    });
                 });
             }).catch(function (error) {
                 console.log("Error getting documents: ", error);
             });
         }
     });
-}
+};
 
 // email the user
 function email() {
@@ -300,7 +310,26 @@ function retrieveUpdates() {
         for (i = 0; i < watchlist.length; i++) {
             var watchlistLocation = watchlist[i].toString().replace(" ", "_");
             eval("var watchlistLocationData = doc.data()." + watchlistLocation + ";");
-            // NOW ITERATE OVER EACH ELEMENT, SEPARATE DATE AND TIME AND GET EM NUMBERS AND GRAPH!
+
+            if (!watchlistLocationData) return console.log("Location " + watchlistLocation + " has no saved data.");
+            
+            for (const key in watchlistLocationData) {
+                var data = watchlistLocationData[key];
+
+                var year = key.slice(0, 4);
+                var month = key.slice(4, 6);
+                var day = key.slice(6, 8);
+                var hour = key.slice(8, 10);
+
+                var date = hour + " " + month + "/" + day + "/" + year;
+
+                var matches = data.match(/\d+/g);
+                var cases = matches[0];
+                var deaths = matches[1];
+                var deathRate = (deaths / cases) * 100;
+
+                console.log(`${date}: [${cases}, ${deaths}, ${deathRate}]`);
+            }
         }
     });
 };
