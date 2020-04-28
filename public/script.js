@@ -24,7 +24,7 @@ db.collection('env').doc('env').get().then(function (doc) {
     botClient.login(doc.data().token0);
     botClient.on('ready', function () {
         console.log("CovidBot Client is ready for use!");
-    })
+    });
 }).catch(function (err) {
     console.log(err);
 });

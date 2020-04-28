@@ -237,7 +237,7 @@ function graph(location) {
     });
 };
 
-function checkUpdate(location, data) {
+function CheckAndUpdate(location, data) {
     usersUser.get().then(function (doc) {
         
     });
