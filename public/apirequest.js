@@ -269,7 +269,7 @@ function email() {
     // get all the location documents
     db.collection('mailinglist').get().then(function (querySnapshot) {
         querySnapshot.forEach(async function (doc) {
-            // get all the emails for that loocation
+            // get all the emails for that location
             var emails = doc.data().emails;
             
             // email each user with the "password reset" email (customized in FB console)
