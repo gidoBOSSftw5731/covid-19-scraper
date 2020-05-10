@@ -581,7 +581,6 @@ client.on("message", msg => {
         case "activate":
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
             msg.reply("Activated! Now starting database query for update-enabled users.");
-            return;
 
             var locations = [];
             var locationsMatches = [];
@@ -679,7 +678,7 @@ client.on("message", msg => {
                         var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
                         var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
 
-                        var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
+                        var addr = ("US." + d.getFullYear().toString() + month + day + hour).toString();
 
                         var dcUsersNo = [];
                         var dcUsersYes = [];
@@ -843,7 +842,7 @@ client.on("message", msg => {
 
                                     var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
 
-                                    dcUsersYes.push(doc.id);
+                                    dlUsersYes.push(doc.id);
                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
 
                                     client.users.get(doc.id).send(data);
@@ -851,7 +850,7 @@ client.on("message", msg => {
                                 return client.removeListener('message', locationsListen);
                             });
                         } else if (location && locations.includes(location)) {
-                            dcUsersYes.push(doc.id);
+                            dlUsersYes.push(doc.id);
                             log("Location " + location + " has already been queried, getting data for that location from stored memory.");
                             var data = locationsMatches[locations.indexOf(location)];
                             client.users.get(doc.id).send(data);
