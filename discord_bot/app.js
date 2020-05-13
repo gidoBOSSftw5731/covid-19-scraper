@@ -92,6 +92,8 @@ client.on("message", msg => {
                     log("Users doc already exists, skipped writing.");
                     msg.reply("You're already signed up!");
                 }
+            }).catch(function (err) {
+                error(err);
             });
             break;
         case "id":
@@ -141,6 +143,8 @@ client.on("message", msg => {
                         countySubscription: true
                     }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all county-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe county```');
+                    }).catch(function (err) {
+                        error(err);
                     });
                     break;
                 case "state":
@@ -148,6 +152,8 @@ client.on("message", msg => {
                         stateSubscription: true
                     }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all state-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe state```');
+                    }).catch(function (err) {
+                        error(err);
                     });
                     break;
                 case "country":
@@ -155,6 +161,8 @@ client.on("message", msg => {
                         countrySubscription: true
                     }, { merge: true }).then(function () {
                         msg.reply('Subscribed to all country-level updates! These will be sent in your DM to prevent spam.\n Unsubscribe at any time using the command ```!unsubscribe country```');
+                    }).catch(function (err) {
+                        error(err);
                     });
                     break;
             }
@@ -170,6 +178,8 @@ client.on("message", msg => {
                         countySubscription: false
                     }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all county-level updates.\n Subscribe at any time using the command ```!subscribe county```');
+                    }).catch(function (err) {
+                        error(err);
                     });
                     break;
                 case "state":
@@ -177,6 +187,8 @@ client.on("message", msg => {
                         stateSubscription: false
                     }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all state-level updates.\n Subscribe at any time using the command ```!subscribe state```');
+                    }).catch(function (err) {
+                        error(err);
                     });
                     break;
                 case "country":
@@ -184,6 +196,8 @@ client.on("message", msg => {
                         countrySubscription: false
                     }, { merge: true }).then(function () {
                         msg.reply('Unsubcribed from all country-level updates.\n Subscribe at any time using the command ```!subscribe country```');
+                    }).catch(function (err) {
+                        error(err);
                     });
                     break;
             }
@@ -259,6 +273,8 @@ client.on("message", msg => {
                                 }, { merge: true }).then(function () {
                                     msg.reply("Added " + location + " to your watchlist!");
                                     return msg.reply("Your new watchlist: " + location);
+                                }).catch(function (err) {
+                                    error(err);
                                 });
                             } else {
                                 if (watchlist.includes(location)) {
@@ -285,6 +301,8 @@ client.on("message", msg => {
                                     }).then(function () {
                                         msg.reply("Added " + location + " to your watchlist!");
                                         return msg.reply("Your new watchlist: " + watchlistString);
+                                    }).catch(function (err) {
+                                        error(err);
                                     });
                                 }
                             }
@@ -344,7 +362,9 @@ client.on("message", msg => {
                                         } else {
                                             return msg.reply("Your watchlist is now empty!");
                                        }
-                                     });
+                                    }).catch(function (err) {
+                                        error(err);
+                                    });
                                 } else {
                                     return msg.reply("Hm, looks like you don't have " + location + " in your watchlist!");
                                 }
@@ -366,6 +386,8 @@ client.on("message", msg => {
                                     watchlist: []
                                 }).then(function () {
                                     return msg.reply("Successfully cleared your watchlist!");
+                                }).catch(function (err) {
+                                    error(err);
                                 });
                             } else {
                                 return msg.reply("Your watchlist is already empty!");
@@ -533,24 +555,18 @@ client.on("message", msg => {
                     }
                     if (action == "add") {
                         if (times.includes(time)) {
-                            log('hello1');
                             return msg.reply("This time is already in your list for " + timesetCommand + "!");
                         } else if (times.length == "3") {
-                            log('hello2');
                             return msg.reply("Looks like you already have three times for " + timesetCommand + "! Use !timeset remove <args> to open up space for other times.");
                         } else {
-                            log('hello3');
                             times.push(time);
                         }
                     } else if (action == "remove") {
                         if (!times.includes(time)) {
-                            log('hello1');
                             return msg.reply("This time is not in your list for " + timesetCommand + "!");
                         } else if (times.length == "0") {
-                            log('hello2');
                             return msg.reply("Looks like you don't have any times for " + timesetCommand + "! Use !timeset add <args> to add a time to the list.");
                         } else {
-                            log('hello3');
                             var t = times.indexOf(time);
                             times.splice(t, ++t);
                         }
@@ -575,6 +591,8 @@ client.on("message", msg => {
                         var conj = " from ";
                     }
                     return msg.reply("Successfully " + action + "ed " + time + conj + "your " + timesetCommand + " list!\nNew " + timesetCommand + " timeset list: " + times.toString().replace(/,/g, ", "));
+                }).catch(function (err) {
+                    error(err);
                 });
             }
             break;
