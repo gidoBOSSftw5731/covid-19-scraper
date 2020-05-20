@@ -103,7 +103,7 @@ func loopingDownloader() {
 	for _, entry := range form.Featuress {
 		p := &entry.Properties
 
-		uTime, err := time.Parse("2020/05/20 10:51:34+07", p.LastUpdate)
+		uTime, err := time.Parse("2006/01/02 15:04:05+07", p.LastUpdate)
 		if err != nil {
 			log.Errorln(err)
 			continue
