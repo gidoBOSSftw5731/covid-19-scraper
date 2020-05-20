@@ -3,6 +3,22 @@ window.requestAllowed = true;
 window.state = null;
 window.county = null;
 
+// block request by setting requestAllowed to false and setting the current state and county
+function blockRequest(state, county) {
+    window.requestAllowed = false;
+    window.state = state;
+    window.county = county;
+    return;
+};
+
+// all the request by setting requestAllowed to true and resetting the current state and counting
+function allowRequest() {
+    window.requestAllowed = true;
+    window.state = null;
+    window.county = null;
+    return;
+};
+
 // ask for data
 function cases() {
     // get the state input and make sure it isn't null
@@ -16,6 +32,10 @@ function cases() {
     // get county value (isn't required, null is fine)
     var countyInput = document.getElementById('county');
     var inputCounty = countyInput.value;
+
+    if (inputCounty.length > "Michigan Department of Corrections (MDOC)".length) {
+        return alert("Sorry, this county name is longer than any county in our database. Please make sure you entered a valid county!");
+    }
 
     // if the user is not allowed to ask for live data and the current request parameters aren't equal to the previous ones (in which case data is alr there)
     if (!requestAllowed && state == inputState && county == inputCounty) {
@@ -65,13 +85,14 @@ function cases() {
         var location = inputState;
     }
 
+    blockRequest(inputState, inputCounty);
+    setTimeout(allowRequest, 3600000);
+
     // once we get a message, make sure it's: from the bot, it's in the channel we sent to, and it includes our unique token
     client.on('message', function (msg) {
         if (msg.author.id == "692117206108209253" && msg.channel.id == channelID && msg.content.includes(token)) {
             console.log("bot");
             // block request (see the function itself) and set a timeout to allow the request later after an hour
-            blockRequest(inputState, inputCounty);
-            setTimeout(allowRequest, 3600000);
 
             // get data and do stuff blah blah
             var data = msg.content.replace(token + " ", " ").toString();
@@ -216,12 +237,39 @@ function graph(location) {
     });
 };
 
+function CheckAndUpdate(location, data) {
+    usersUser.get().then(function (doc) {
+        
+    });
+};
+
+function worstCounties() {
+    client.channels.get("696894398293737512").send('!worst');
+    client.on('message', function (message) {
+        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512") {
+            db.collection('users').where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    console.log("countySubscription ", doc.data().id);
+
+                    message.embeds.forEach((embed) => {
+                        client.users.get(doc.id).send({
+                            embed: embed
+                        });
+                    });
+                });
+            }).catch(function (error) {
+                console.log("Error getting documents: ", error);
+            });
+        }
+    });
+};
+
 // email the user
 function email() {
     // get all the location documents
     db.collection('mailinglist').get().then(function (querySnapshot) {
         querySnapshot.forEach(async function (doc) {
-            // get all the emails for that loocation
+            // get all the emails for that location
             var emails = doc.data().emails;
             
             // email each user with the "password reset" email (customized in FB console)
@@ -236,18 +284,52 @@ function email() {
     });
 };
 
-// block request by setting requestAllowed to false and setting the current state and county
-function blockRequest(state, county) {
-    window.requestAllowed = false;
-    window.state = state;
-    window.county = county;
-    return;
-};
+// get previous updates
+function retrieveUpdates() {
+    if (!user) return console.log("No user, please ask for signin/signup");
+    usersUser.get().then(function (doc) {
+        if (!doc.data()) return console.log("User does not exist somehow.");
 
-// all the request by setting requestAllowed to true and resetting the current state and counting
-function allowRequest() {
-    window.requestAllowed = true;
-    window.state = null;
-    window.county = null;
-    return;
+        var watchlist = doc.data().watchlist;
+
+        var state = (doc.data().state) ? doc.data().state : null;
+        var county = (doc.data().county) ? doc.data().county : null;
+
+        if (state && county) {
+            var location = county + " " + state;
+        } else if (state) {
+            var location = state;
+        } else if (county) {
+            var location = county;
+        } else {
+            console.log("User " + doc.id + " has no location set.");
+        }
+        
+        // MAKE SURE YOU USE THE LOCATION!
+
+        for (i = 0; i < watchlist.length; i++) {
+            var watchlistLocation = watchlist[i].toString().replace(" ", "_");
+            eval("var watchlistLocationData = doc.data()." + watchlistLocation + ";");
+
+            if (!watchlistLocationData) return console.log("Location " + watchlistLocation + " has no saved data.");
+            
+            for (const key in watchlistLocationData) {
+                var data = watchlistLocationData[key];
+
+                var year = key.slice(0, 4);
+                var month = key.slice(4, 6);
+                var day = key.slice(6, 8);
+                var hour = key.slice(8, 10);
+
+                var date = hour + " " + month + "/" + day + "/" + year;
+
+                var matches = data.match(/\d+/g);
+                var cases = matches[0];
+                var deaths = matches[1];
+                var deathRate = (deaths / cases) * 100;
+
+                console.log(`${date}: [${cases}, ${deaths}, ${deathRate}]`);
+            }
+        }
+    });
 };

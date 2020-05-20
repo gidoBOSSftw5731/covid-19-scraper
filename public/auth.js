@@ -232,10 +232,7 @@ function discordTokenGenerate(use) {
         var method = "authenticate with Discord";
     }
 
-    client.sendMessage({
-        to: id,
-        message: "Use this token: " + token + " to " + method + " on https://covidbot19.web.app !"
-    });
+    botClient.users.get(id).send("Use this token: " + token + " to " + method + " on https://covidbot19.web.app !");
 
     display(use + 'discordID');
     display(use + 'discordTokenGenerate');
@@ -256,22 +253,34 @@ function discordTokenGenerate(use) {
 // Disord Token Verification
 function discordTokenVerify(use, token) {
     var userToken = document.getElementById(use + 'discordToken').value;
+    var dID = document.getElementById(use + "discordID").value;
 
     if (!userToken) {
         return alert('Please enter the token!');
     } else if (userToken == token) {
-        if (use == "C") {
-            discordConnect();
-        } else {
-            display(use + 'discordToken');
-            display(use + 'discordTokenSubmit');
+        users.doc(dID).get().then(function (doc) {
+            if (doc.exists) {
+                firebase.auth().signInWithEmailAndPassword(doc.data().email, dID).then(function () {
+                    console.log("Success!");
+                    
+                    display('discordAuth');
+                    pageLoad(true);
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            } else if (use == "C") {
+                discordConnect();
+            } else {
+                display(use + 'discordToken');
+                display(use + 'discordTokenSubmit');
 
-            display('Aemail');
-            display('AemailSubmit');
+                display('Aemail');
+                display('AemailSubmit');
 
-            display('auth2');
-            display('auth3');
-        }
+                display('auth2');
+                display('auth3');
+            }
+        });
     } else {
         return alert('Invalid token! Please note that tokens reset each time you enter your Discord ID!');
     }
@@ -317,6 +326,10 @@ function discordAuth() {
                         });
                     });
                 }).catch(function (err) {
+                    if (err.code == "auth/email-already-in-use") {
+                        botClient.users.get("377934017548386307").send("Interesting error with Discord Authentication (account already exists but passed doc.exists check. Email is " + email);
+                        alert("An interesting error occurred that will require developer action. Developers have been notified of this error, please try again later.");
+                    }
                     console.log("Error occurred creating user: ", err);
                 });
             }

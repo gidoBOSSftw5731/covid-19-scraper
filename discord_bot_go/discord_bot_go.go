@@ -61,7 +61,7 @@ func main() {
 		discord.AddHandler(testcommandHandler)
 	}
 	discord.AddHandler(func(discord *discordgo.Session, ready *discordgo.Ready) {
-		err = discord.UpdateStatus(2, "alone, not by choice, but by law")
+		err = discord.UpdateStatus(2, "alone | !help")
 		if err != nil {
 			log.Errorln("Error attempting to set my status")
 		}
@@ -112,9 +112,8 @@ func testcommandHandler(discord *discordgo.Session, message *discordgo.MessageCr
 
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	user := message.Author
-	//fmt.Println("hello")
-	if message.ChannelID == "696894398293737512" {
-		// Continue with your day please
+	if message.ChannelID == "696894398293737512" || strings.Contains(message.Content, "worst") || strings.Contains(message.Content, "cases") {
+		// Continue with your day please (exception handler)
 	} else if user.ID == botID {
 		// Do nothing because the bot is talking outside of #updates
 		return
@@ -195,9 +194,13 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 			return
 		}
 
-		msgStr := fmt.Sprintf("The %v of %v has %v cases, %v deaths, has given %v tests, and has %v recoveries!",
+		// msgStr := fmt.Sprintf("The %v of %v has %v cases, %v deaths, has given %v tests, and has %v recoveries!",
+		// 	strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
+		// 	newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
+
+		msgStr := fmt.Sprintf("The %v of %v has %v cases and %v deaths!",
 			strings.ToLower(fmt.Sprint(newAreaInfo.Type)), location, newAreaInfo.ConfirmedCases,
-			newAreaInfo.Deaths, newAreaInfo.TestsGiven, newAreaInfo.Recoveries)
+			newAreaInfo.Deaths)
 		discord.ChannelMessageSend(message.ChannelID, msgStr)
 
 	case "top10", "worst", "top10worst", "tenworst":
