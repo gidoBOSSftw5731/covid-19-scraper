@@ -10,5 +10,6 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.3.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
+	github.com/yudppp/gotimefmt v0.0.0-20161206111348-2911021fa66f // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
 )
