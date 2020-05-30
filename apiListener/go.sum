@@ -1,6 +1,7 @@
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/gidoBOSSftw5731/covid-19-scraper v0.0.0-20200325035239-0eb8094337dd h1:Y6ppFOEoErpivpm2kYcU/Pdjf5oTfgb+r8jaOdBMFqA=
+github.com/gidoBOSSftw5731/covid-19-scraper v0.0.0-20200520150206-2eceefa88e87 h1:4GAfrK5SMdceSJKsr33t2pzHjyz4lK0cwLCRfz21fxQ=
 github.com/gidoBOSSftw5731/log v0.0.0-20190718204308-3ae037c6203f h1:vg/m9Ir/7GFkx2+ZWxdVjIF7ExwETtWZA99uqJtwuiQ=
 github.com/gidoBOSSftw5731/log v0.0.0-20190718204308-3ae037c6203f/go.mod h1:a8Ke7EvCSaGUHJbc4PB7gaOgeqAsb8TgGX0kOaunaOY=
 github.com/golang/protobuf v1.4.0-rc.1/go.mod h1:ceaxUfeHdC40wWswd/P6IGgMaK3YpKi5j83Wpe3EHw8=

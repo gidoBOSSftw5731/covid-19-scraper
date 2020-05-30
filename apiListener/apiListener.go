@@ -27,6 +27,7 @@ var (
 	wd, _  = os.Getwd()
 	// h prefix means historical, c prefix means current
 	stmtMap  = make(map[string]*sql.Stmt)
+	loc, _   = time.LoadLocation("UTC")
 	queryMap = map[string]string{
 		"hCountyQuery": `SELECT date_trunc('day', inserttime) as inserttime, sum(deaths) as deaths,
 		sum(confirmed) as confirmed,
@@ -417,7 +418,7 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 	}
 
 	// infoMap is a map of per insertTime to data record at that time.
-	infoMap := make(map[time.Time]*pb.AreaInfo)
+	infoMap := make(map[string]*pb.AreaInfo)
 
 	for rows.Next() {
 		var info pb.AreaInfo
@@ -429,7 +430,7 @@ func stateData(country, state string) (*pb.HistoricalInfo, error) {
 			continue
 		}
 		info.UnixTimeOfRequest = insertTime.Unix()
-		infoMap[insertTime] = &info
+		infoMap[insertTime.Format("2006-01-02")] = &info
 	}
 
 	log.Tracef("%v elements", len(infoMap))
@@ -457,7 +458,7 @@ func countyData(country, state, county string) (*pb.HistoricalInfo, error) {
 		return nil, err
 	}
 
-	infoMap := make(map[time.Time]*pb.AreaInfo)
+	infoMap := make(map[string]*pb.AreaInfo)
 
 	for rows.Next() {
 		var countyinfo pb.AreaInfo
@@ -469,12 +470,13 @@ func countyData(country, state, county string) (*pb.HistoricalInfo, error) {
 			continue
 		}
 
+		insertTime = insertTime.In(loc)
 		countyinfo.UnixTimeOfRequest = insertTime.Unix()
 		countyinfo.Type = pb.AreaInfo_COUNTY
 
 		unique := true
 		for i, j := range infoMap {
-			if inTimeSpan(insertTime.Add(-12*time.Hour), insertTime.Add(12*time.Hour), i) {
+			if i == insertTime.Format("2006-01-02") {
 				if j.ConfirmedCases == countyinfo.ConfirmedCases &&
 					j.TestsGiven == countyinfo.TestsGiven &&
 					j.Deaths == countyinfo.Deaths &&
@@ -485,7 +487,7 @@ func countyData(country, state, county string) (*pb.HistoricalInfo, error) {
 			}
 		}
 		if unique {
-			infoMap[insertTime] = &countyinfo
+			infoMap[insertTime.Format("2006-01-02")] = &countyinfo
 			countyData.Info = append(countyData.Info, &countyinfo)
 		}
 
@@ -509,6 +511,7 @@ func rowsToHistoricalInfo(rows *sql.Rows, areatype pb.AreaInfo_LocationType, has
 				log.Errorln(err)
 				continue
 			}
+			insertTime = insertTime.In(loc)
 			info.UnixTimeOfRequest = insertTime.Unix()
 			info.Type = areatype
 			hInfo.Info = append(hInfo.Info, &info)
@@ -523,6 +526,7 @@ func rowsToHistoricalInfo(rows *sql.Rows, areatype pb.AreaInfo_LocationType, has
 				log.Errorln(err)
 				continue
 			}
+			insertTime = insertTime.In(loc)
 			info.UnixTimeOfRequest = insertTime.Unix()
 			info.Type = areatype
 			hInfo.Info = append(hInfo.Info, &info)
@@ -549,6 +553,7 @@ func currentStateInfo(country, state string) (*pb.AreaInfo, error) {
 		return nil, err
 	}
 
+	insertTime = insertTime.In(loc)
 	cInfo.Type = pb.AreaInfo_STATE
 	cInfo.UnixTimeOfRequest = insertTime.Unix()
 
@@ -588,6 +593,8 @@ func currentCountryInfo(country string) (*pb.AreaInfo, error) {
 		return nil, err
 	}
 
+	insertTime = insertTime.In(loc)
+
 	cInfo.Type = pb.AreaInfo_COUNTRY
 	cInfo.UnixTimeOfRequest = insertTime.Unix()
 
@@ -626,6 +633,8 @@ func currentCountyInfo(country, state, county string) (*pb.AreaInfo, error) {
 		log.Errorln(err)
 		return nil, err
 	}
+
+	insertTime = insertTime.In(loc)
 
 	cInfo.Type = pb.AreaInfo_COUNTY
 	cInfo.UnixTimeOfRequest = insertTime.Unix()
@@ -714,10 +723,3 @@ func listCounties(country, state string) (*pb.ListOfCounties, error) {
 func inTimeSpan(start, end, check time.Time) bool {
 	return check.After(start) && check.Before(end)
 }
-
-/*
-and I will save you for later
-		var county pb.AreaInfo
-		err = db.QueryRow("SELECT lat, long, deaths, confirmed, tests, recovered, incidentrate, inserttime FROM (SELECT combined, lat, long, deaths, confirmed, tests, recovered, incidentrate, inserttime ROW_NUMBER() OVER (PARTITION BY combined ORDER BY time_stamp DESC) rn FROM records) tmp WHERE rn = 1 AND county = $1",
-	countyName).Scan(&county.Lat, &county.Long, &)
-*/
