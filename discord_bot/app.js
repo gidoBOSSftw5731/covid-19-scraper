@@ -1,7 +1,6 @@
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
 
-// Firebasee
 var firebase = require("firebase");
 firebase.initializeApp({
     apiKey: "AIzaSyDMq0mi1Se1KXRyqaIwVZnv1csYshtrgu0",
@@ -22,13 +21,11 @@ admin.initializeApp({
 });
 
 let db = admin.firestore();
-// Firebase End
 
 function isUpperCase(str) {
     return str === str.toUpperCase();
 }
 
-// Discord
 db.collection('env').doc('env').get().then(function (doc) {
     client.login(doc.data().token0).catch(err => {
         error(err);
