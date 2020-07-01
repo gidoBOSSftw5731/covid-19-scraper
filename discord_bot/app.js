@@ -1080,6 +1080,9 @@ client.on("message", msg => {
                 .addField("ID",
                     "`!id (no args)` - retrieves your Discord ID; useful on our website to connect / sign in to a Discord account.\n"
                 )
+                .addField("Cases",
+                    "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"
+                )
                 .addField("Location",
                     "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n"
                 )
@@ -1093,8 +1096,11 @@ client.on("message", msg => {
                 .addField("Watchlist",
                     "`!watchlist <view (no args)/add/remove/clear (no args)> <county (optional)> <state (abbreviation)>` - adds a specific location to your watchlist.\n"
                 )
-                .addField("Cases",
-                    "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"
+                .addField("Website",
+                    "`!site (no args)` - Sends our website URL.\n"
+                )
+                .addField("Server",
+                    "`!discord (no args)` - Sends the invite link to our Discord Server.\n"
                 )
                 .setFooter('Data Source: Arcgis');
             msg.channel.send({ embed: helpEmbed });
