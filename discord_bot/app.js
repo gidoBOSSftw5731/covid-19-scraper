@@ -420,7 +420,7 @@ client.on("message", msg => {
                 } else {
                     userDoc.get().then(function (doc) {
                         var commandTimes = doc.data().timesetCommands;
-                        if (!commandTimes[args[0]] || commandTimes[args[0]].length < 1) {
+                        if (!commandTimes[args[0]] || commandTimes[args[0]].length < 1 || !commandTimes) {
                             return msg.reply("Timeset list is empty for " + args[0]);
                         } else {
                             var times = commandTimes[args[0]];
