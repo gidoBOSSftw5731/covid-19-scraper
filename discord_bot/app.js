@@ -612,12 +612,12 @@ client.on("message", msg => {
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
                                 if (doc.id == "AAAAAA") {
-                                    client.removeListener('message', listentome0);
                                     log("Users in this timeset for countySubscription: " + dwUsersYes);
                                     log("Users not in this timeset for countySubscription: " + dwUsersNo);
                                     log("---------------------------");
                                     pass++;
-                                    return doCountry();
+                                    doCountry();
+                                    return client.removeListener('message', listentome0);
                                 } else {
                                     var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                                     var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
