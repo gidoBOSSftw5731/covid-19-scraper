@@ -427,7 +427,7 @@ client.on("message", msg => {
                             return msg.reply(times.toString().replace(/,/g, ", "));
                         }
                     }).catch(function (err) {
-                        error(err);
+                        error("hi there", err, commandTimes);
                         return msg.reply("Looks like an error occurred. This is most likely not your fault, so please contact a developer on our server (Command: !discord) or wait for an update.");
                     });
                 }
