@@ -416,7 +416,7 @@ client.on("message", msg => {
                 if (!commands.includes(args[0])) {
                     return msg.reply("Please add a valid subscription method (location, subscribe, or watchlist) to view its timeset list.");
                 } else if (args.length != 1) {
-                    return msg.reply("The timeset view command only takes the subscription method parameter (location, subscribe, or watchlist). Please do not add any extra parameters.");
+                    return msg.reply("The timeset view command only takes one category parameter (location, subscribe, or watchlist). Please do not add any extra parameters.");
                 } else {
                     userDoc.get().then(function (doc) {
                         var commandTimes = doc.data().timesetCommands;
@@ -428,6 +428,7 @@ client.on("message", msg => {
                         }
                     }).catch(function (err) {
                         error(err);
+                        return msg.reply("Looks like an error occurred. This is most likely not your fault, so please contact a developer on our server (Command: !discord) or wait for an update.");
                     });
                 }
             } else if (action == "timezone") {
@@ -520,7 +521,7 @@ client.on("message", msg => {
                     case "HELP":
                         return msg.reply("Valid timezones: EDT, CDT, MDT, MST, PDT, AKDT, and HST.\n Go to https://bit.ly/us-timezones to see a list of the accepted timezones.");
                     default:
-                        return msg.reply("Please enter a valid timezone!");
+                        return msg.reply("Please enter a valid timezone or 'help'!");
                 }
             } else {
                 var commands = ["location", "subscribe", "watchlist"];
@@ -536,11 +537,11 @@ client.on("message", msg => {
                 } else if (args.length == 3) {
                     var time = (args[1] + args[2]).toUpperCase();
                 } else {
-                    return msg.reply("Oops! Looks like you entered the time wrong!");
+                    return msg.reply("Oops! Looks like you entered the command wrong! Example: `!timeset add watchlist 4pm`");
                 }
 
                 if (!/\b((1[0-2]|0?[1-9])\s?([AaPp][Mm]))/g.test(time)) {
-                    return msg.reply("Oops! Looks like you formatted the time wrong!");
+                    return msg.reply("Oops! Looks like you formatted the time wrong! Examples: 4pm, 4PM, 4 pm, 4 PM");
                 }
 
                 userDoc.get().then(function (doc) {
@@ -1093,16 +1094,19 @@ client.on("message", msg => {
                 .addField("Unsubscribe",
                     "`!unsubscribe <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n"
                 )
+                .addField("Timeset",
+                    "`!timeset <level (county, state, country)>` - subscribes to the specified level of data, allowing direct messages from the bot for new cases.\n"
+                )
                 .addField("Watchlist",
                     "`!watchlist <view (no args)/add/remove/clear (no args)> <county (optional)> <state (abbreviation)>` - adds a specific location to your watchlist.\n"
                 )
                 .addField("Website",
                     "`!site (no args)` - Sends our website URL.\n"
                 )
-                .addField("Server",
+                .addField("Discord Server",
                     "`!discord (no args)` - Sends the invite link to our Discord Server.\n"
                 )
-                .setFooter('Data Source: Arcgis');
+                .setFooter('Data Source: Arcgis | DM Rasmit#2549 if you have any difficulties');
             msg.channel.send({ embed: helpEmbed });
             break;
         case "mimic":
