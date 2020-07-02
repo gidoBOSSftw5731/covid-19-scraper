@@ -399,7 +399,7 @@ client.on("message", msg => {
                     return msg.reply("I couldn't recognize that command, make sure you typed it in correctly!");
             }
             break;
-        case "timeset":
+        case "timeset": // adjust everything so time saves or is checked in EST
             if (!args.length) {
                 return msg.reply("To use the timeset command, please follow the paradigm:\n" +
                     "```!timeset <action (add/remove/view (no args)/timezone (takes your timezone or help))> <subscription method (location, subscribe, or watchlist)> <time (Hour + AM/PM)>```Note: You can only set full hour intervals.");
@@ -427,7 +427,7 @@ client.on("message", msg => {
                             return msg.reply(times.toString().replace(/,/g, ", "));
                         }
                     }).catch(function (err) {
-                        error("hi there", err, commandTimes);
+                        error(err);
                         return msg.reply("Looks like an error occurred. This is most likely not your fault, so please contact a developer on our server (Command: !discord) or wait for an update.");
                     });
                 }
@@ -546,7 +546,7 @@ client.on("message", msg => {
 
                 userDoc.get().then(function (doc) {
                     var commandTimes = doc.data().timesetCommands;
-                    if (!commandTimes[timesetCommand]) {
+                    if (!commandTimes || !commandTimes[timesetCommand]) {
                         var times = [];
                     } else {
                         var times = commandTimes[timesetCommand];
@@ -562,8 +562,6 @@ client.on("message", msg => {
                     } else if (action == "remove") {
                         if (!times.includes(time)) {
                             return msg.reply("This time is not in your list for " + timesetCommand + "!");
-                        } else if (times.length == "0") {
-                            return msg.reply("Looks like you don't have any times for " + timesetCommand + "! Use !timeset add <args> to add a time to the list.");
                         } else {
                             var t = times.indexOf(time);
                             times.splice(t, ++t);
@@ -572,13 +570,13 @@ client.on("message", msg => {
 
                     switch (timesetCommand) {
                         case "location":
-                            eval("userDoc.update({ 'timesetCommands.location':" + times + "}).then(function () { log('hello ++'" + times + "); }).catch(function (err) { error(err); });");
+                            eval(`userDoc.update({ 'timesetCommands.location': times }).catch(function (err) { error(err); });`);
                             break;
                         case "watchlist":
-                            eval("userDoc.update({ 'timesetCommands.watchlist':" + times + "}).then(function () { log('goodbye ++" + times + "++'); }).catch(function (err) { error(err); });");
+                            eval(`userDoc.update({ 'timesetCommands.watchlist': times }).catch(function (err) { error(err); });`);
                             break;
                         case "subscribe":
-                            eval("userDoc.update({ 'timesetCommands.subscribe':" + times + "}).then(function () { log('good riddance ++" + times + "++'); }).catch(function (err) { error(err); });");
+                            eval(`userDoc.update({ 'timesetCommands.subscribe': times }).catch(function (err) { error(err); });`);
                             break;
                     }
 
@@ -590,6 +588,7 @@ client.on("message", msg => {
                     return msg.reply("Successfully " + action + "ed " + time + conj + "your " + timesetCommand + " list!\nNew " + timesetCommand + " timeset list: " + times.toString().replace(/,/g, ", "));
                 }).catch(function (err) {
                     error(err);
+                    return msg.reply("Looks like an error occurred. This is most likely not your fault, so please contact a developer on our server (Command: !discord) or wait for an update.");
                 });
             }
             break;
@@ -606,13 +605,14 @@ client.on("message", msg => {
             function doWorst() {
                 msg.channel.send('!worst');
                 client.on('message', function listentome0(message) {
-                    if (message.author.id == "692117206108209253" && message.embeds != []) {
+                    if (message.author.id == "692117206108209253" && message.embeds[0] != null && message.channel.id == "696894398293737512") {
                         var dwUsersNo = [];
                         var dwUsersYes = [];
 
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                            log("checkpoint A" + querySnapshot.size);
                             querySnapshot.forEach(function (doc) {
-                                if (doc.id == "filler") {
+                                if (doc.id == "AAAAAA") {
                                     client.removeListener('message', listentome0);
                                     log("Users in this timeset for countySubscription: " + dwUsersYes);
                                     log("Users not in this timeset for countySubscription: " + dwUsersNo);
@@ -625,6 +625,7 @@ client.on("message", msg => {
                                     var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                                     if (!subscribeTimes) {
+                                        log("checkpoint B");
                                         return dwUsersNo.push(doc.id);
                                     }
 
@@ -700,7 +701,7 @@ client.on("message", msg => {
 
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                if (doc.id == "filler") {
+                                if (doc.id == "AAAAAA") {
                                     client.removeListener('message', listentome1);
                                     log("Users in this timeset for countrySubscription: " + dcUsersYes);
                                     log("Users not in this timeset for countrySubscription: " + dcUsersNo);
@@ -773,7 +774,7 @@ client.on("message", msg => {
 
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        if (doc.id == "filler") {
+                        if (doc.id == "AAAAAA") {
                             log("Users in this timeset for location: " + dlUsersYes);
                             log("Users not in this timeset for location: " + dlUsersNo);
                             log("---------------------------");
@@ -887,7 +888,7 @@ client.on("message", msg => {
                 
                 users.get().then(function (querySnapshot) {
                     querySnapshot.forEach(function (doc) {
-                        if (doc.id == "filler") {
+                        if (doc.id == "AAAAAA") {
                             log("Users in this timeset for watchlist: " + dwlUsersYes);
                             log("Users not in this timeset for watchlist: " + dwlUsersNo);
                             log("---------------------------");
@@ -1110,7 +1111,7 @@ client.on("message", msg => {
             break;
         case "mimic":
             if (id != "377934017548386307" && id != "181965297249550336" && id != "527873651748634624") {
-                msg.reply("You can't use that command!");
+                msg.reply("You can't use that command! You're not cool enough! Go do your homework!");
                 return log("User " + id + " attempted to use !mimic without permission.");
             } else {
                 if (msg.content.slice(7).includes("!")) {
