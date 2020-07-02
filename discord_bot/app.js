@@ -620,6 +620,8 @@ client.on("message", msg => {
                                     doCountry();
                                     return client.removeListener('message', listentome0);
                                 } else {
+                                    l++;
+                                    
                                     var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
                                     var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
                                     var timezone = (doc.data().tz) ? doc.data().tz : null;
@@ -669,7 +671,6 @@ client.on("message", msg => {
                                                 embed: embed
                                             });
                                         });
-                                        l++;
                                     }
                                 }
                             });
