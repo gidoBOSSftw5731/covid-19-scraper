@@ -610,7 +610,6 @@ client.on("message", msg => {
                         var dwUsersYes = [];
 
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
-                            log("checkpoint A" + querySnapshot.size);
                             querySnapshot.forEach(function (doc) {
                                 if (doc.id == "AAAAAA") {
                                     client.removeListener('message', listentome0);
@@ -625,7 +624,6 @@ client.on("message", msg => {
                                     var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                                     if (!subscribeTimes) {
-                                        log("checkpoint B");
                                         return dwUsersNo.push(doc.id);
                                     }
 
