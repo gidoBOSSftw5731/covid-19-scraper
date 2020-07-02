@@ -610,10 +610,11 @@ client.on("message", msg => {
                         var dwUsersYes = [];
 
                         users.where("countySubscription", "==", true).get().then(function (querySnapshot) {
+                            var l = 0;
                             querySnapshot.forEach(function (doc) {
-                                if (doc.id == "AAAAAA") {
-                                    log("Users in this timeset for countySubscription: " + dwUsersYes);
-                                    log("Users not in this timeset for countySubscription: " + dwUsersNo);
+                                if (l = querySnapshot.size) {
+                                    log("Users in this timeset for countySubscription: " + dwUsersYes.toString() + ".");
+                                    log("Users not in this timeset for countySubscription: " + dwUsersNo.toString() + ".");
                                     log("---------------------------");
                                     pass++;
                                     doCountry();
@@ -663,10 +664,12 @@ client.on("message", msg => {
                                     } else {
                                         dwUsersYes.push(doc.id);
                                         message.embeds.forEach((embed) => {
+                                            log('Embed Found');
                                             client.users.get(doc.id).send({
                                                 embed: embed
                                             });
                                         });
+                                        l++;
                                     }
                                 }
                             });
@@ -700,61 +703,62 @@ client.on("message", msg => {
                         users.where("countrySubscription", "==", true).get().then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
                                 if (doc.id == "AAAAAA") {
-                                    client.removeListener('message', listentome1);
                                     log("Users in this timeset for countrySubscription: " + dcUsersYes);
                                     log("Users not in this timeset for countrySubscription: " + dcUsersNo);
                                     log("---------------------------");
                                     pass++;
-                                    return doLocation();
-                                }
-
-                                var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
-                                var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
-                                var timezone = (doc.data().tz) ? doc.data().tz : null;
-
-                                if (!subscribeTimes) {
-                                    return dcUsersNo.push(doc.id);
-                                }
-
-                                switch (timezone) {
-                                    case "EDT", null:
-                                        var hotspot = "New_York";
-                                        break;
-                                    case "CDT":
-                                        var hotspot = "Chicago";
-                                        break;
-                                    case "MDT":
-                                        var hotspot = "Salt_Lake_City";
-                                        break;
-                                    case "MST":
-                                        var hotspot = "Phoenix";
-                                        break;
-                                    case "PDT":
-                                        var hotspot = "Los_Angeles";
-                                        break;
-                                    case "AKDT":
-                                        var hotspot = "Anchorage";
-                                        break;
-                                    case "HST":
-                                        var hotspot = "Honolulu";
-                                        break;
-                                    default:
-                                        var hotspot = "New_York";
-                                }
-
-                                var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
-                                localTime = new Date(localTime);
-                                var lt = localTime.toLocaleString();
-                                var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
-
-                                if (!subscribeTimes.includes(hour)) {
-                                    return dcUsersNo.push(doc.id);
+                                    doLocation();
+                                    return client.removeListener('message', listentome1);
                                 } else {
-                                    dcUsersYes.push(doc.id);
-                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                }
 
-                                client.users.get(doc.id).send(message.content);
+                                    var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
+                                    var subscribeTimes = (times && times.subscribe) ? times.subscribe.toString().split(",") : null;
+                                    var timezone = (doc.data().tz) ? doc.data().tz : null;
+
+                                    if (!subscribeTimes) {
+                                        return dcUsersNo.push(doc.id);
+                                    }
+
+                                    switch (timezone) {
+                                        case "EDT", null:
+                                            var hotspot = "New_York";
+                                            break;
+                                        case "CDT":
+                                            var hotspot = "Chicago";
+                                            break;
+                                        case "MDT":
+                                            var hotspot = "Salt_Lake_City";
+                                            break;
+                                        case "MST":
+                                            var hotspot = "Phoenix";
+                                            break;
+                                        case "PDT":
+                                            var hotspot = "Los_Angeles";
+                                            break;
+                                        case "AKDT":
+                                            var hotspot = "Anchorage";
+                                            break;
+                                        case "HST":
+                                            var hotspot = "Honolulu";
+                                            break;
+                                        default:
+                                            var hotspot = "New_York";
+                                    }
+
+                                    var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
+                                    localTime = new Date(localTime);
+                                    var lt = localTime.toLocaleString();
+                                    var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
+
+                                    if (!subscribeTimes.includes(hour)) {
+                                        return dcUsersNo.push(doc.id);
+                                    } else {
+                                        dcUsersYes.push(doc.id);
+                                        eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                    }
+
+                                    client.users.get(doc.id).send(message.content);
+                                }
                             });
                         }).catch(function (err) {
                             error(err);
