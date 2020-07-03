@@ -15,7 +15,6 @@ firebase.initializeApp({
 
 var admin = require("firebase-admin");
 var serviceAccount = require("./coronavirusbot19-firebase-adminsdk-sckiv-6ca1e54162.json");
-const { handler } = require("firebase-functions");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://coronavirusbot19.firebaseio.com"
