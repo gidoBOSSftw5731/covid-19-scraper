@@ -1094,7 +1094,7 @@ client.on("message", msg => {
                 return msg.reply("To use the restrictions command, please follow the paradigm:\n" +
                     "```!restrictions <state (abbreviation)> ```Note: At this moment, only states in the US is supported.");
             } else {
-                var i = stateNumbers.indexOf(args[0]);
+                var i = stateNumbers.indexOf(args[0].toUpperCase());
 
                 var text = "";
                 var xhttp = new XMLHttpRequest();
