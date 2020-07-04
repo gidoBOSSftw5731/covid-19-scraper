@@ -1106,7 +1106,7 @@ client.on("message", msg => {
                         var general = JSON.stringify(text.features[i].attributes["Statewide_Limits_on_Gatherings_"]);
                         var school = JSON.stringify(text.features[i].attributes["Statewide_School_Closures"]);
                         msg.reply("State of " + state.substring(1, state.length - 1)
-                            + ":\nLockdown Order? - " + general.substring(1, general.length - 1) + "\nSchool Closed ? - " + school.substring(1, school.length - 1));
+                            + ":\nLockdown Order? - " + general.substring(1, general.length - 1) + "\nSchool Closed? - " + school.substring(1, school.length - 1));
                     }
                 };
                 xhttp.open("GET", "https://services3.arcgis.com/EvmgEO8WtpouUbyD/arcgis/rest/services/COVID19_State_Actions_Download/FeatureServer/0/query?where=1%3D1&outFields=STUSPS,NAME,Statewide_School_Closures,Statewide_Limits_on_Gatherings_&returnGeometry=false&outSR=4326&f=json", true);
