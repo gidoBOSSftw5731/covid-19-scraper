@@ -1,6 +1,8 @@
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
 
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
 var firebase = require("firebase");
 firebase.initializeApp({
     apiKey: "AIzaSyDMq0mi1Se1KXRyqaIwVZnv1csYshtrgu0",
@@ -1088,24 +1090,27 @@ client.on("message", msg => {
             msg.channel.send({ embed: discordEmbed });
             break;
         case "restrictions":
-            if (!args.length) {
+            if (!args.length || args.length != 1) {
                 return msg.reply("To use the restrictions command, please follow the paradigm:\n" +
                     "```!restrictions <state (abbreviation)> ```Note: At this moment, only states in the US is supported.");
             } else {
-                function getRestrictionsData(i) {
-                    var text = "";
+                var i = stateNumbers.indexOf(args[0]);
 
-                    var xhttp = new XMLHttpRequest();
-                    xhttp.onreadystatechange = function () {
-                        if (this.readyState == 4 && this.status == 200) {
-                            text = this.responseText;
-                            text = JSON.parse(text);
-                            document.getElementById("demo").innerHTML = JSON.stringify(text.features[i]);
-                        }
-                    };
-                    xhttp.open("GET", "https://services3.arcgis.com/EvmgEO8WtpouUbyD/arcgis/rest/services/COVID19_State_Actions_Download/FeatureServer/0/query?where=1%3D1&outFields=STUSPS,NAME,Statewide_School_Closures&returnGeometry=false&outSR=4326&f=json", true);
-                    xhttp.send();
-                }
+                var text = "";
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        text = this.responseText;
+                        text = JSON.parse(text);
+                        var state = JSON.stringify(text.features[i].attributes["NAME"]);
+                        var general = JSON.stringify(text.features[i].attributes["Statewide_Limits_on_Gatherings_"]);
+                        var school = JSON.stringify(text.features[i].attributes["Statewide_School_Closures"]);
+                        msg.reply("State of " + state.substring(1, state.length - 1)
+                            + ":\nLockdown Order? - " + general.substring(1, general.length - 1) + "\nSchool Closed ? - " + school.substring(1, school.length - 1));
+                    }
+                };
+                xhttp.open("GET", "https://services3.arcgis.com/EvmgEO8WtpouUbyD/arcgis/rest/services/COVID19_State_Actions_Download/FeatureServer/0/query?where=1%3D1&outFields=STUSPS,NAME,Statewide_School_Closures,Statewide_Limits_on_Gatherings_&returnGeometry=false&outSR=4326&f=json", true);
+                xhttp.send();
             }
             break;
         case "help":
