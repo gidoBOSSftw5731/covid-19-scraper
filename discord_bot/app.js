@@ -1128,6 +1128,9 @@ client.on("message", msg => {
                 .addField("Cases",
                     "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"
                 )
+                .addField("Restrictions",
+                    "`!restrictions <state (abbreviation)>` - sends the general and school restrictions at the state level.\n"
+                )
                 .addField("Location",
                     "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n"
                 )
