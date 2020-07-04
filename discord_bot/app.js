@@ -50,7 +50,9 @@ function log(message) {
     client.channels.get("696540781787217952").send(date + " " + message);
 };
 
-client.setMaxListeners(100);
+client.setMaxListeners(15);
+
+var stateNumbers = ['WV','FL','IL','MN','MD','RI','ID','NH','NC','VT','CT','DE','NM','CA','NJ','WI','OR','NE','PA','WA','LA','GA','AL','UT','OH','TX','CO','SC','OK','TN','WY','HI','ND','KY','VI','MP','GU','ME','NY','NV','AK','AS','MI','AR','MS','MO','MT','KS','IN','PR','SD','MA','VA','DC','IA']
 
 client.on("message", msg => {
     if (msg.content == "so how was your day") {
@@ -594,6 +596,7 @@ client.on("message", msg => {
             break;
         case "activate":
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
+            return;
             msg.reply("Activated! Now starting database query for update-enabled users.");
 
             var locations = [];
@@ -1083,6 +1086,27 @@ client.on("message", msg => {
             };
 
             msg.channel.send({ embed: discordEmbed });
+            break;
+        case "restrictions":
+            if (!args.length) {
+                return msg.reply("To use the restrictions command, please follow the paradigm:\n" +
+                    "```!restrictions <state (abbreviation)> ```Note: At this moment, only states in the US is supported.");
+            } else {
+                function getRestrictionsData(i) {
+                    var text = "";
+
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            text = this.responseText;
+                            text = JSON.parse(text);
+                            document.getElementById("demo").innerHTML = JSON.stringify(text.features[i]);
+                        }
+                    };
+                    xhttp.open("GET", "https://services3.arcgis.com/EvmgEO8WtpouUbyD/arcgis/rest/services/COVID19_State_Actions_Download/FeatureServer/0/query?where=1%3D1&outFields=STUSPS,NAME,Statewide_School_Closures&returnGeometry=false&outSR=4326&f=json", true);
+                    xhttp.send();
+                }
+            }
             break;
         case "help":
             const helpEmbed = new Discord.RichEmbed()
