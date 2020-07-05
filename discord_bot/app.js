@@ -441,7 +441,7 @@ client.on("message", msg => {
             } else if (action == "timezone") {
                 var timezone = args[0].toUpperCase();
                 switch (timezone) {
-                    case "EDT" || "EST" || "CDT" || "EST" || "MDT" || "MST" || "PDT" || "PST" || "AKDT" || "HST":
+                    case "EDT": case "EST": case "CDT": case "MDT": case "MST": case "PDT": case "PST": case "AKDT": case "HST":
                         userDoc.update({
                             tz: timezone
                         }).then(function () {
