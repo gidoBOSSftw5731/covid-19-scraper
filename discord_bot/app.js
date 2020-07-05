@@ -438,7 +438,7 @@ client.on("message", msg => {
             } else if (action == "timezone") {
                 var timezone = args[0].toUpperCase();
                 switch (timezone) {
-                    case "EDT":
+                    case "EDT" || "EST":
                         userDoc.update({
                             tz: timezone
                         }).then(function () {
@@ -450,7 +450,7 @@ client.on("message", msg => {
                             return e++;
                         });
                         break;
-                    case "CDT":
+                    case "CDT" || "EST":
                         userDoc.update({
                             tz: timezone
                         }).then(function () {
@@ -462,7 +462,7 @@ client.on("message", msg => {
                             return e++;
                         });
                         break;
-                    case "MDT":
+                    case "MDT" || "MST":
                         userDoc.update({
                             tz: timezone
                         }).then(function () {
@@ -474,19 +474,7 @@ client.on("message", msg => {
                             return e++;
                         });
                         break;
-                    case "MST":
-                        userDoc.update({
-                            tz: timezone
-                        }).then(function () {
-                            msg.reply("Your new timezone is " + timezone + "!");
-                            return log("User " + id + " given timezone " + timezone + "!");
-                        }).catch(function (err) {
-                            error(err);
-                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
-                            return e++;
-                        });
-                        break;
-                    case "PDT":
+                    case "PDT" || "PST":
                         userDoc.update({
                             tz: timezone
                         }).then(function () {
