@@ -438,67 +438,7 @@ client.on("message", msg => {
             } else if (action == "timezone") {
                 var timezone = args[0].toUpperCase();
                 switch (timezone) {
-                    case "EDT" || "EST":
-                        userDoc.update({
-                            tz: timezone
-                        }).then(function () {
-                            msg.reply("Your new timezone is " + timezone + "!");
-                            return log("User " + id + " given timezone " + timezone + "!");
-                        }).catch(function (err) {
-                            error(err);
-                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
-                            return e++;
-                        });
-                        break;
-                    case "CDT" || "EST":
-                        userDoc.update({
-                            tz: timezone
-                        }).then(function () {
-                            msg.reply("Your new timezone is " + timezone + "!");
-                            return log("User " + id + " given timezone " + timezone + "!");
-                        }).catch(function (err) {
-                            error(err);
-                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
-                            return e++;
-                        });
-                        break;
-                    case "MDT" || "MST":
-                        userDoc.update({
-                            tz: timezone
-                        }).then(function () {
-                            msg.reply("Your new timezone is " + timezone + "!");
-                            return log("User " + id + " given timezone " + timezone + "!");
-                        }).catch(function (err) {
-                            error(err);
-                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
-                            return e++;
-                        });
-                        break;
-                    case "PDT" || "PST":
-                        userDoc.update({
-                            tz: timezone
-                        }).then(function () {
-                            msg.reply("Your new timezone is " + timezone + "!");
-                            return log("User " + id + " given timezone " + timezone + "!");
-                        }).catch(function (err) {
-                            error(err);
-                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
-                            return e++;
-                        });
-                        break;
-                    case "AKDT":
-                        userDoc.update({
-                            tz: timezone
-                        }).then(function () {
-                            msg.reply("Your new timezone is " + timezone + "!");
-                            return log("User " + id + " given timezone " + timezone + "!");
-                        }).catch(function (err) {
-                            error(err);
-                            msg.reply("Sorry, an error occurred while trying to update your timezone. Try again later!");
-                            return e++;
-                        });
-                        break;
-                    case "HST":
+                    case "EDT" || "EST" || "CDT" || "EST" || "MDT" || "MST" || "PDT" || "PST" || "AKDT" || "HST":
                         userDoc.update({
                             tz: timezone
                         }).then(function () {
