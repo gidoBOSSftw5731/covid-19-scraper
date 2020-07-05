@@ -63,7 +63,10 @@ client.on("message", msg => {
     if (msg.content == "so whatcha up to tomorrow?") {
         msg.reply('nothing much, just beating up some bitches');
     }
-    
+    if (msg.content == "the bot is broken") {
+        msg.reply("no i'm not")
+    }
+
     if (!msg.content.startsWith("!")) return;
 
     if (msg.content == ("!activate") && msg.channel.id == "696894398293737512") {
@@ -514,10 +517,12 @@ client.on("message", msg => {
 
                     if (action == "add") {
                         var conj = " to ";
+                        var past = "ed "
                     } else {
                         var conj = " from ";
+                        var past = "d "
                     }
-                    return msg.reply("Successfully " + action + "ed " + time + conj + "your " + timesetCommand + " list!\nNew " + timesetCommand + " timeset list: " + times.toString().replace(/,/g, ", "));
+                    return msg.reply("Successfully " + action + past + time + conj + "your " + timesetCommand + " list!\nNew " + timesetCommand + " timeset list: " + times.toString().replace(/,/g, ", "));
                 }).catch(function (err) {
                     error(err);
                     return msg.reply("Looks like an error occurred. This is most likely not your fault, so please contact a developer on our server (Command: !discord) or wait for an update.");
@@ -526,7 +531,6 @@ client.on("message", msg => {
             break;
         case "activate":
             if (msg.channel.id != "696894398293737512") return msg.reply("no u");
-            return;
             msg.reply("Activated! Now starting database query for update-enabled users.");
 
             var locations = [];
@@ -552,49 +556,49 @@ client.on("message", msg => {
                                 var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                                 if (!subscribeTimes) {
-                                    return dwUsersNo.push(doc.id);
-                                }
-
-                                switch (timezone) {
-                                    case "EDT", null:
-                                        var hotspot = "New_York";
-                                        break;
-                                    case "CDT":
-                                        var hotspot = "Chicago";
-                                        break;
-                                    case "MDT":
-                                        var hotspot = "Salt_Lake_City";
-                                        break;
-                                    case "MST":
-                                        var hotspot = "Phoenix";
-                                        break;
-                                    case "PDT":
-                                        var hotspot = "Los_Angeles";
-                                        break;
-                                    case "AKDT":
-                                        var hotspot = "Anchorage";
-                                        break;
-                                    case "HST":
-                                        var hotspot = "Honolulu";
-                                        break;
-                                    default:
-                                        var hotspot = "New_York";
-                                }
-
-                                var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
-                                localTime = new Date(localTime);
-                                var lt = localTime.toLocaleString();
-                                var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
-
-                                if (!subscribeTimes.includes(hour)) {
-                                    return dwUsersNo.push(doc.id);
+                                    dwUsersNo.push(doc.id);
                                 } else {
-                                    dwUsersYes.push(doc.id);
-                                    message.embeds.forEach((embed) => {
-                                        client.users.get(doc.id).send({
-                                            embed: embed
+                                    switch (timezone) {
+                                        case "EDT", "EST", null:
+                                            var hotspot = "New_York";
+                                            break;
+                                        case "CDT":
+                                            var hotspot = "Chicago";
+                                            break;
+                                        case "MDT":
+                                            var hotspot = "Salt_Lake_City";
+                                            break;
+                                        case "MST":
+                                            var hotspot = "Phoenix";
+                                            break;
+                                        case "PDT":
+                                            var hotspot = "Los_Angeles";
+                                            break;
+                                        case "AKDT":
+                                            var hotspot = "Anchorage";
+                                            break;
+                                        case "HST":
+                                            var hotspot = "Honolulu";
+                                            break;
+                                        default:
+                                            var hotspot = "New_York";
+                                    }
+
+                                    var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
+                                    localTime = new Date(localTime);
+                                    var lt = localTime.toLocaleString();
+                                    var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
+
+                                    if (!subscribeTimes.includes(hour)) {
+                                        dwUsersNo.push(doc.id);
+                                    } else {
+                                        dwUsersYes.push(doc.id);
+                                        message.embeds.forEach((embed) => {
+                                            client.users.get(doc.id).send({
+                                                embed: embed
+                                            });
                                         });
-                                    });
+                                    }
                                 }
 
                                 if (l == querySnapshot.size) {
@@ -602,8 +606,8 @@ client.on("message", msg => {
                                     log("Users not in this timeset for countySubscription: " + dwUsersNo.toString() + ".");
                                     log("---------------------------");
                                     pass++;
-                                    doCountry();
-                                    return client.removeListener('message', listentome0);
+                                    client.removeListener('message', listentome0);
+                                    return doCountry();
                                 }
                             });
                         }).catch(function (err) {
@@ -617,12 +621,18 @@ client.on("message", msg => {
 
             function doCountry() {
                 setTimeout(function () {
-                    msg.channel.send('!cases');                    
+                    msg.channel.send('!cases');
                 }, 1000);
+
+                var retry = setTimeout(function () {
+                    msg.channel.send('!cases');
+                }, 5000);
 
                 var o = true;
                 client.on('message', function listentome1(message) {
                     if (message.author.id == "692117206108209253" && message.content.includes("The country of US") && message.channel.id == "696894398293737512" && o) {
+                        clearTimeout(retry);
+                        
                         o = false;
 
                         var matches = message.content.match(/\d+/g);
@@ -649,56 +659,56 @@ client.on("message", msg => {
                                 var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                                 if (!subscribeTimes) {
-                                    return dcUsersNo.push(doc.id);
-                                }
-
-                                switch (timezone) {
-                                    case "EDT", null:
-                                        var hotspot = "New_York";
-                                        break;
-                                    case "CDT":
-                                        var hotspot = "Chicago";
-                                        break;
-                                    case "MDT":
-                                        var hotspot = "Salt_Lake_City";
-                                        break;
-                                    case "MST":
-                                        var hotspot = "Phoenix";
-                                        break;
-                                    case "PDT":
-                                        var hotspot = "Los_Angeles";
-                                        break;
-                                    case "AKDT":
-                                        var hotspot = "Anchorage";
-                                        break;
-                                    case "HST":
-                                        var hotspot = "Honolulu";
-                                        break;
-                                    default:
-                                        var hotspot = "New_York";
-                                }
-
-                                var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
-                                localTime = new Date(localTime);
-                                var lt = localTime.toLocaleString();
-                                var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
-
-                                if (!subscribeTimes.includes(hour)) {
-                                    return dcUsersNo.push(doc.id);
+                                    dcUsersNo.push(doc.id);
                                 } else {
-                                    dcUsersYes.push(doc.id);
-                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                }
+                                    switch (timezone) {
+                                        case "EDT", "EST", null:
+                                            var hotspot = "New_York";
+                                            break;
+                                        case "CDT":
+                                            var hotspot = "Chicago";
+                                            break;
+                                        case "MDT":
+                                            var hotspot = "Salt_Lake_City";
+                                            break;
+                                        case "MST":
+                                            var hotspot = "Phoenix";
+                                            break;
+                                        case "PDT":
+                                            var hotspot = "Los_Angeles";
+                                            break;
+                                        case "AKDT":
+                                            var hotspot = "Anchorage";
+                                            break;
+                                        case "HST":
+                                            var hotspot = "Honolulu";
+                                            break;
+                                        default:
+                                            var hotspot = "New_York";
+                                    }
 
-                                client.users.get(doc.id).send(message.content);
+                                    var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
+                                    localTime = new Date(localTime);
+                                    var lt = localTime.toLocaleString();
+                                    var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
+
+                                    if (!subscribeTimes.includes(hour)) {
+                                        dcUsersNo.push(doc.id);
+                                    } else {
+                                        dcUsersYes.push(doc.id);
+                                        eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                    }
+
+                                    client.users.get(doc.id).send(message.content);
+                                }
 
                                 if (l == querySnapshot.size) {
                                     log("Users in this timeset for countrySubscription: " + dcUsersYes);
                                     log("Users not in this timeset for countrySubscription: " + dcUsersNo);
                                     log("---------------------------");
                                     pass++;
-                                    doLocation();
-                                    return client.removeListener('message', listentome1);
+                                    client.removeListener('message', listentome1);
+                                    return doLocation();
                                 }
                             });
                         }).catch(function (err) {
@@ -726,91 +736,92 @@ client.on("message", msg => {
 
                         if (!locationTimes) {
                             return dlUsersNo.push(doc.id);
-                        }
-
-                        switch (timezone) {
-                            case "EDT", null:
-                                var hotspot = "New_York";
-                                break;
-                            case "CDT":
-                                var hotspot = "Chicago";
-                                break;
-                            case "MDT":
-                                var hotspot = "Salt_Lake_City";
-                                break;
-                            case "MST":
-                                var hotspot = "Phoenix";
-                                break;
-                            case "PDT":
-                                var hotspot = "Los_Angeles";
-                                break;
-                            case "AKDT":
-                                var hotspot = "Anchorage";
-                                break;
-                            case "HST":
-                                var hotspot = "Honolulu";
-                                break;
-                            default:
-                                var hotspot = "New_York";
-                        }
-
-                        var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
-                        localTime = new Date(localTime);
-                        var lt = localTime.toLocaleString();
-                        var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
-
-                        if (!locationTimes.includes(hour)) {
-                            return dlUsersNo.push(doc.id);
-                        }
-
-                        var state = (doc.data().state) ? doc.data().state : null;
-                        var county = (doc.data().county) ? doc.data().county : null;
-
-                        if (state && county) {
-                            var location = county + " " + state;
-                        } else if (state) {
-                            var location = state;
-                        } else if (county) {
-                            var location = county;
                         } else {
-                            return log("User " + doc.id + " has no location set.");
-                        }
+                            switch (timezone) {
+                                case "EDT", "EST", null:
+                                    var hotspot = "New_York";
+                                    break;
+                                case "CDT":
+                                    var hotspot = "Chicago";
+                                    break;
+                                case "MDT":
+                                    var hotspot = "Salt_Lake_City";
+                                    break;
+                                case "MST":
+                                    var hotspot = "Phoenix";
+                                    break;
+                                case "PDT":
+                                    var hotspot = "Los_Angeles";
+                                    break;
+                                case "AKDT":
+                                    var hotspot = "Anchorage";
+                                    break;
+                                case "HST":
+                                    var hotspot = "Honolulu";
+                                    break;
+                                default:
+                                    var hotspot = "New_York";
+                            }
 
-                        if (location && !locations.includes(location)) {
-                            locations.push(location);
+                            var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
+                            localTime = new Date(localTime);
+                            var lt = localTime.toLocaleString();
+                            var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
 
-                            var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                            msg.channel.send("!botcases " + location + " " + token);
+                            if (!locationTimes.includes(hour)) {
+                                dlUsersNo.push(doc.id);
+                            } else {
+                                var state = (doc.data().state) ? doc.data().state : null;
+                                var county = (doc.data().county) ? doc.data().county : null;
 
-                            client.on('message', function locationsListen(message) {
-                                if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                    var data = message.content.replace(token + " ", "").toString();
-                                    var matches = data.match(/\d+/g);
-                                    locationsMatches[locations.indexOf(location)] = matches;
-
-                                    var d = new Date();
-                                    
-                                    var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
-                                    var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
-                                    var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
-
-                                    var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
-
-                                    dlUsersYes.push(doc.id);
-                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-
-                                    client.users.get(doc.id).send(data);
-
-                                    client.removeListener('message', locationsListen);
+                                if (state && county) {
+                                    var location = county + " " + state;
+                                } else if (state) {
+                                    var location = state;
+                                } else if (county) {
+                                    var location = county;
+                                } else {
+                                    log("User " + doc.id + " has no location set.");
+                                    var location = null;
                                 }
-                            });
-                        } else if (location && locations.includes(location)) {
-                            dlUsersYes.push(doc.id);
-                            log("Location " + location + " has already been queried, getting data for that location from stored memory.");
-                            var data = locationsMatches[locations.indexOf(location)];
-                            client.users.get(doc.id).send(data);
-                        } else {
-                            error("Error occurred, location undefined.");
+
+                                if (location && !locations.includes(location)) {
+                                    locations.push(location);
+
+                                    var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                                    msg.channel.send("!botcases " + location + " " + token);
+
+                                    client.on('message', function locationsListen(message) {
+                                        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
+                                            var data = message.content.replace(token + " ", "").toString();
+                                            var matches = data.match(/\d+/g);
+                                            locationsMatches[locations.indexOf(location)] = matches;
+
+                                            var d = new Date();
+
+                                            var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
+                                            var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
+                                            var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
+
+                                            var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
+
+                                            dlUsersYes.push(doc.id);
+                                            eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+
+                                            client.users.get(doc.id).send(data);
+
+                                            client.removeListener('message', locationsListen);
+                                        }
+                                    });
+                                } else if (location && locations.includes(location)) {
+                                    dlUsersYes.push(doc.id);
+                                    log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                                    var data = locationsMatches[locations.indexOf(location)];
+                                    client.users.get(doc.id).send(data);
+                                } else {
+                                    error("Error occurred, location undefined.");
+                                }
+                            }
                         }
 
                         if (l == querySnapshot.size) {
@@ -847,7 +858,7 @@ client.on("message", msg => {
                         }
 
                         switch (timezone) {
-                            case "EDT", null:
+                            case "EDT", "EST", null:
                                 var hotspot = "New_York";
                                 break;
                             case "CDT":
