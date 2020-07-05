@@ -632,7 +632,7 @@ client.on("message", msg => {
                 client.on('message', function listentome1(message) {
                     if (message.author.id == "692117206108209253" && message.content.includes("The country of US") && message.channel.id == "696894398293737512" && o) {
                         clearTimeout(retry);
-                        
+
                         o = false;
 
                         var matches = message.content.match(/\d+/g);
