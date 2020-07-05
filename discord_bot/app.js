@@ -854,87 +854,86 @@ client.on("message", msg => {
                         var timezone = (doc.data().tz) ? doc.data().tz : null;
 
                         if (!watchlistTimes) {
-                            return dwlUsersNo.push(doc.id);
-                        }
+                            dwlUsersNo.push(doc.id);
+                        } else {
+                            switch (timezone) {
+                                case "EDT", "EST", null:
+                                    var hotspot = "New_York";
+                                    break;
+                                case "CDT":
+                                    var hotspot = "Chicago";
+                                    break;
+                                case "MDT":
+                                    var hotspot = "Salt_Lake_City";
+                                    break;
+                                case "MST":
+                                    var hotspot = "Phoenix";
+                                    break;
+                                case "PDT":
+                                    var hotspot = "Los_Angeles";
+                                    break;
+                                case "AKDT":
+                                    var hotspot = "Anchorage";
+                                    break;
+                                case "HST":
+                                    var hotspot = "Honolulu";
+                                    break;
+                                default:
+                                    var hotspot = "New_York";
+                            }
 
-                        switch (timezone) {
-                            case "EDT", "EST", null:
-                                var hotspot = "New_York";
-                                break;
-                            case "CDT":
-                                var hotspot = "Chicago";
-                                break;
-                            case "MDT":
-                                var hotspot = "Salt_Lake_City";
-                                break;
-                            case "MST":
-                                var hotspot = "Phoenix";
-                                break;
-                            case "PDT":
-                                var hotspot = "Los_Angeles";
-                                break;
-                            case "AKDT":
-                                var hotspot = "Anchorage";
-                                break;
-                            case "HST":
-                                var hotspot = "Honolulu";
-                                break;
-                            default:
-                                var hotspot = "New_York";
-                        }
+                            var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
+                            localTime = new Date(localTime);
+                            var lt = localTime.toLocaleString();
+                            var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
 
-                        var localTime = new Date().toLocaleString("en-US", { timeZone: "America/" + hotspot });
-                        localTime = new Date(localTime);
-                        var lt = localTime.toLocaleString();
-                        var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
+                            if (!watchlistTimes.includes(hour)) {
+                                dwlUsersNo.push(doc.id);
+                            } else {
+                                var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
 
-                        if (!watchlistTimes.includes(hour)) {
-                            return dwlUsersNo.push(doc.id);
-                        }
+                                if (watchlist) {
+                                    for (i = 0; i < watchlist.length; i++) {
+                                        var location = watchlist[i].toString();
 
-                        var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
+                                        if (locations.includes(location)) {
+                                            locations.push(location);
 
-                        if (watchlist) {
-                            for (i = 0; i < watchlist.length; i++) {
-                                var location = watchlist[i].toString();
+                                            var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                                            msg.channel.send("!botcases " + location + " " + token);
 
-                                if (locations.includes(location)) {
-                                    locations.push(location);
+                                            client.on('message', function watchlistListen(message) {
+                                                if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
+                                                    var data = message.content.replace(token + " ", "").toString();
+                                                    var matches = data.match(/\d+/g);
+                                                    locationsMatches[locations.indexOf(location)] = matches;
 
-                                    var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                    msg.channel.send("!botcases " + location + " " + token);
+                                                    var d = new Date();
 
-                                    client.on('message', function watchlistListen(message) {
-                                        if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                            var data = message.content.replace(token + " ", "").toString();
-                                            var matches = data.match(/\d+/g);
-                                            locationsMatches[locations.indexOf(location)] = matches;
+                                                    var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
+                                                    var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
+                                                    var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
 
-                                            var d = new Date();
+                                                    var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
 
-                                            var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
-                                            var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
-                                            var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
+                                                    dwlUsersYes.push(doc.id);
+                                                    eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                                    client.users.get(doc.id).send(data);
 
-                                            var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
-
+                                                    client.removeListener('message', watchlistListen);
+                                                }
+                                            });
+                                        } else {
                                             dwlUsersYes.push(doc.id);
-                                            eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                            log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                                            var data = locationsMatches[locations.indexOf(location)];
                                             client.users.get(doc.id).send(data);
-
-                                            client.removeListener('message', watchlistListen);
                                         }
-                                    });
-                                } else {
-                                    dwlUsersYes.push(doc.id);
-                                    log("Location " + location + " has already been queried, getting data for that location from stored memory.");
-                                    var data = locationsMatches[locations.indexOf(location)];
-                                    client.users.get(doc.id).send(data);
-                                    continue;
+                                    }
+                                } else if (!watchlist) {
+                                    log("User " + doc.id + " does not have a watchlist");
                                 }
                             }
-                        } else if (!watchlist) {
-                            return log("User " + doc.id + " does not have a watchlist");
                         }
 
                         if (l == querySnapshot.size) {
@@ -942,7 +941,7 @@ client.on("message", msg => {
                             log("Users not in this timeset for watchlist: " + dwlUsersNo);
                             log("---------------------------");
                             pass++;
-                            finish();
+                            return finish();
                         }
                     });
                 }).catch(function (err) {
