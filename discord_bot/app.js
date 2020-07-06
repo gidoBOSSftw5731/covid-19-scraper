@@ -697,9 +697,9 @@ client.on("message", msg => {
                                     } else {
                                         dcUsersYes.push(doc.id);
                                         eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                    }
 
-                                    client.users.get(doc.id).send(message.content);
+                                        client.users.get(doc.id).send(message.content);
+                                    }
                                 }
 
                                 if (l == querySnapshot.size) {
