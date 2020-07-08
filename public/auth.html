@@ -1,0 +1,237 @@
+<!--Popup-->
+<div id="popupsignin" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+    class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+            <div
+                class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+
+                <div class="mdl-card__title mdl-color--light-blue-600 mdl-color-text--white">
+                    <h2 class="mdl-card__title-text">Sign In or Sign Up</h2>
+                </div>
+
+                <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+                    <button class="signinoptions" onclick="togglepsi(); display('email')">Email</button>
+                    <br><br>
+                    <button class="signinoptions" onclick="gToggleSignIn()">Google</button>
+                    <br><br>
+                    <button class="signinoptions" onclick="togglepsi(); display('discordAuth')">Discord</button>
+                    <br><br>
+                    <button class="signinoptions" onclick="display('popupsignin'); display('signup')">Sign Up</button>
+                    <br><br>
+                    <button class="signinoptions" onclick="togglepsi()">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+<!--Popup  End-->
+
+<!--Email Popup-->
+<div id="email" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+    class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+            <div
+                class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+                <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+
+                    <p>Enter an email and password below to sign in.</p>
+
+                    <input class="mdl-textfield__input" style="display:inline;" type="text" id="emailemail" name="email"
+                        placeholder="Email" />
+                    &nbsp;&nbsp;&nbsp;
+                    <input class="mdl-textfield__input" style="display:inline;" type="password" id="password"
+                        name="password" placeholder="Password" />
+                    <br /><br />
+                    <button class="mdl-button mdl-js-button mdl-button--raised" onclick="eToggleSignIn()"
+                        name="signin">Sign
+                        In</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised"
+                        onclick="display('email'); display('pwreset')">Reset Password</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised" name="signIn"
+                        onclick="display('email'); signIn()">Return to Sign In</button>
+
+                    <p>
+                        <li>
+                            <a onclick="display('email')">Close</a>
+                        </li>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<!--Email Popup End-->
+
+<!--Signup Popup-->
+<div id="signup" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+    class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+            <div
+                class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+                <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+
+                    <p>Enter the information below to create an account and gain full access to this very cool site!</p>
+
+                    <input class="mdl-textfield__input" style="display:inline;" type="text" id="suusername"
+                        name="username" placeholder="Username" />
+                    &nbsp;&nbsp;&nbsp;
+                    <input class="mdl-textfield__input" style="display:inline;" type="text" id="suemail" name="email"
+                        placeholder="Email" />
+                    &nbsp;&nbsp;&nbsp;
+                    <input class="mdl-textfield__input" style="display:inline;" type="password" id="supassword"
+                        name="password" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                        title="Your password must contain at least: one number, one uppercase letter, one lowercase letter, and at least 8 characters">
+                    <br /><br />
+                    <button class="mdl-button mdl-js-button mdl-button--raised" name="signup"
+                        onclick="handleSignUp()">Sign
+                        Up</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised" name="signIn"
+                        onclick="display('signup'); signIn()">Return to Sign In</button>
+
+                    <p>
+                        <li>
+                            <a onclick="display('signup')">Close</a>
+                        </li>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<!--Signup Popup End-->
+
+<!--Password Reset-->
+<div id="pwreset" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+    class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+            <div
+                class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+                <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+
+                    <p>Enter your email below and, if an account associated with that email exists, you will be sent an
+                        email with
+                        instructions on how to reset your password.</p>
+
+                    <input class="mdl-textfield__input" style="display:inline;" type="text" id="premail" name="email"
+                        placeholder="Email" />
+                    <br /> <br />
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
+                        onclick="sendPasswordReset()">Send Password Reset Email</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised" name="signIn"
+                        onclick="display('pwreset'); signIn()">Return to Sign In</button>
+
+                    <p>
+                        <li>
+                            <a onclick="display('pwreset')">Close</a>
+                        </li>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<!--Password Reset End-->
+
+<!--Discord Connect-->
+<div id="discordConnect" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+    class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+            <div
+                class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+                <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+
+                    <p>Enter your Discord ID here (can be found by running the command !signup to the bot).
+                        Once submitted, you should receive a DM with a unique token to verify that the account is yours.
+                    </p>
+
+                    <input class="mdl-textfield__input" style="display:inline;" type="text" id="CdiscordID"
+                        name="CdiscordID" placeholder="Discord ID" />
+                    <input class="mdl-textfield__input" style="display:none;" type="text" id="CdiscordToken"
+                        name="CdiscordToken" placeholder="Discord Token" />
+                    <br /> <br />
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised" name="passwordreset"
+                        onclick="discordTokenGenerate('C')">Submit</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised" name="dAuthSignIn"
+                        onclick="display('discordConnect'); signIn()">Return
+                        to Sign In</button>
+
+                    <p>
+                        <li>
+                            <a onclick="display('discordConnect')">Close</a>
+                        </li>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<!--Discord Connect End-->
+
+<!--Discord Auth-->
+<div id="discordAuth" style="display: none; z-index: 5; background-color: rgba(0,0,0,0.5);"
+    class="popup demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <main class="popupwrap mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
+            <div
+                class="mdl-card sis mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
+                <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+
+                    <p id="auth1">Enter your Discord ID here (can be found by running the command !id on the bot).</p>
+                    <p id="auth2" style="display: none;">Now, you should receive a DM with a unique token to verify that
+                        the account is yours.</p>
+                    <p id="auth3" style="display: none;">Looks like it's your first time using Discord Auth on our site!
+                        Welcome! Please enter an email to use.
+                        This email must be different from ones you use in Email Auth and Google Auth. If you'd like to
+                        merge an email
+                        from one of those methods to a Discord Auth, please sign in to those accounts and head over to
+                        the Account>Connect Accounts page! (WIP)
+                    </p>
+
+                    <input class="mdl-textfield__input" style="display:block;" type="text" id="AdiscordID"
+                        name="AdiscordID" placeholder="Discord ID" />
+                    <input class="mdl-textfield__input" style="display:none;" type="text" id="AdiscordToken"
+                        name="AdiscordToken" placeholder="Discord Token" />
+                    <input class="mdl-textfield__input" style="display:none;" type="text" id="Aemail" name="Aemail"
+                        placeholder="Email" />
+                    <br /> <br />
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised" id="AdiscordTokenGenerate"
+                        name="dAuthIDSubmit" onclick="discordTokenGenerate('A')">Submit</button>
+                    <button class="mdl-button mdl-js-button mdl-button--raised" style="display: none;"
+                        id="AdiscordTokenSubmit" name="dAuthTokenSubmit">Submit</button>
+                    <button class="mdl-button mdl-js-button mdl-button--raised" style="display: none;" id="AemailSubmit"
+                        name="dAuthEmailSubmit" onclick="discordAuth()">Submit</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="mdl-button mdl-js-button mdl-button--raised" name="dAuthSignIn"
+                        onclick="display('discordAuth'); signIn()">Return
+                        to Sign In</button>
+
+                    <p>
+                        <li>
+                            <a onclick="display('discordAuth');">Close</a>
+                        </li>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<!--Discord Auth End-->

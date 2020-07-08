@@ -12,23 +12,6 @@ firebase.initializeApp({
 var db = firebase.firestore();
 db.enablePersistence();
 
-db.collection('env').doc('env').get().then(function (doc) {
-    window.client = new Discord.Client();
-    client.login(doc.data().token);
-    client.on('ready', function () {
-        console.log('CovidSite Client is ready for use!');
-        countryCases();
-    });
-
-    window.botClient = new Discord.Client();
-    botClient.login(doc.data().token0);
-    botClient.on('ready', function () {
-        console.log("CovidBot Client is ready for use!");
-    });
-}).catch(function (err) {
-    console.log(err);
-});
-
 var users = db.collection("users");
 var emails = db.collection("emails");
 
@@ -49,20 +32,6 @@ window.onload = function () {
     $('#toast').toast('show');
 };
 
-// var messaging = firebase.messaging();
-// messaging.requestPermission().then(function () {
-//     console.log('Permission granted');
-//     return messaging.getToken();
-// }).then(function (token) {
-//     console.log(token);
-// }).catch(function (err) {
-//     console.log('Error occurred');
-// });
-
-// messaging.onMessage(function (payload) {
-//     console.log('onMessage: ', payload);
-// });
-
 document.addEventListener('keydown', function (event) {
     const key = event.key;
     if (key == "Enter") {
@@ -79,17 +48,6 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-function search() {
-    var search = document.getElementById("search");
-
-    if (search.value != "") {
-        var text = search.value.toString().toLowerCase();
-        window.location = "states.html?query=" + text;
-    } else {
-        display('search');
-    }
-};
-
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         pageLoad(true);
@@ -99,7 +57,47 @@ firebase.auth().onAuthStateChanged(function (user) {
 });
 
 function pageLoad(u) {
-    if (u == true) {
+    var urlParams = new URLSearchParams(window.location.search);
+    var content = urlParams.get('content');
+
+    switch (content) {
+        case "homepage": case null:
+            xhttp("homepage", "main-content-wrapper");
+            xhttp("discordToast", "toast-wrapper");
+
+            break;
+        case "data":
+            xhttp("data", "main-content-wrapper");
+            xhttp("discordToast", "toast-wrapper");
+
+            db.collection('env').doc('env').get().then(function (doc) {
+                window.client = new Discord.Client();
+                client.login(doc.data().token);
+                client.on('ready', function () {
+                    console.log('CovidSite Client is ready for use!');
+                    countryCases();
+                });
+
+                window.botClient = new Discord.Client();
+                botClient.login(doc.data().token0);
+                botClient.on('ready', function () {
+                    console.log("CovidBot Client is ready for use!");
+                });
+            }).catch(function (err) {
+                console.log(err);
+            });
+
+            break;
+        case "discord":
+            xhttp("discord", "main-content-wrapper");
+            xhttp("basicToast", "toast-wrapper");
+
+            break;
+    }
+
+    xhttp("auth", "auth-wrapper");
+
+    if (u) {
         document.getElementById("signin").innerHTML = "Sign Out";
 
         window.user = firebase.auth().currentUser;
@@ -110,8 +108,82 @@ function pageLoad(u) {
     }
 };
 
-function redirect(pagePath) {
-    window.location.replace(pagePath);
+function xhttp(source, tag) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById(tag).innerHTML = this.responseText;
+        }
+    };
+
+    xhttp.open("GET", `${source}.html`, true);
+    xhttp.send();
+};
+
+function redirect(source) {
+    var newURL = "?content=" + source;
+    history.pushState(source, source, newURL);
+
+    if (source == "homepage") {
+        xhttp("homepage", "main-content-wrapper");
+        xhttp("discordToast", "toast-wrapper");
+    } else if (source == "data") {
+        xhttp("data", "main-content-wrapper");
+        xhttp("discordToast", "toast-wrapper");
+
+        db.collection('env').doc('env').get().then(function (doc) {
+            window.client = new Discord.Client();
+            client.login(doc.data().token);
+            client.on('ready', function () {
+                console.log('CovidSite Client is ready for use!');
+                countryCases();
+            });
+
+            window.botClient = new Discord.Client();
+            botClient.login(doc.data().token0);
+            botClient.on('ready', function () {
+                console.log("CovidBot Client is ready for use!");
+            });
+        }).catch(function (err) {
+            console.log(err);
+        });
+    } else if (source == "discord") {
+        xhttp("discord", "main-content-wrapper");
+        xhttp("basicToast", "toast-wrapper");
+    }
+}
+
+window.onpopstate = function (event) {
+    var urlParams = new URLSearchParams(window.location.search);
+    var content = urlParams.get('content');
+ 
+    if (content == "homepage" || !content) {
+        xhttp("homepage", "main-content-wrapper");
+        xhttp("discordToast", "toast-wrapper");
+    } else if (content == "data") {
+        xhttp("data", "main-content-wrapper");
+        xhttp("discordToast", "toast-wrapper");
+
+        db.collection('env').doc('env').get().then(function (doc) {
+            window.client = new Discord.Client();
+            client.login(doc.data().token);
+            client.on('ready', function () {
+                console.log('CovidSite Client is ready for use!');
+                countryCases();
+            });
+
+            window.botClient = new Discord.Client();
+            botClient.login(doc.data().token0);
+            botClient.on('ready', function () {
+                console.log("CovidBot Client is ready for use!");
+            });
+        }).catch(function (err) {
+            console.log(err);
+        });
+    } else if (content == "discord") {
+        xhttp("discord", "main-content-wrapper");
+        xhttp("basicToast", "toast-wrapper");
+    }
 };
 
 function display(elem) {
@@ -122,7 +194,7 @@ function togglepsi() {
     if (document.getElementById('popupsignin').style.display == "none") {
         $('#popupsignin').show();
         $("#popupsignin").animate({
-            top: '0.015%',
+            top: '0.015%'
         });
         $('#popupsignin').css({
             'background-color': 'rgba(0,0,0,0.5)'
