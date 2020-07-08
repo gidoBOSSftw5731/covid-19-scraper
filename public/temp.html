@@ -1,0 +1,73 @@
+<html>
+
+<head>
+    <title>Nutrify</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@600&display=swap" rel="stylesheet">
+
+    <script src='https://www.gstatic.com/firebasejs/7.15.5/firebase.js'></script>
+
+    <link rel="stylesheet" type="text/css" src="index.css">
+
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+</head>
+
+<body style="background-image: url('background.png'); background-repeat: no-repeat; background-size: 100% 100%;">
+    <nav style="display: flex; flex-direction: row-reverse; margin-right: 3.5%">
+        <button class="button" style="margin-left: 4%;">Sign In</button>
+        <button class="button">Discord</button>
+    </nav>
+
+    <main style="display: flex; flex-direction: column; justify-content: center;">
+        <div style="display: flex; flex-direction: row; justify-content: center;">
+            <h1 style="font-size: 60px; margin-bottom: 0px; color: rgb(22, 17, 17);">We've got all the information you need</h1>
+        </div>
+
+        <div style="display: flex; flex-direction: row; justify-content: center; text-align: center; margin-left: 7%; margin-right: 7%;">
+            <img src='favicon.ico' style="width: 30%">
+
+            <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; margin-left: 7%; margin-right: 7%;">
+
+                <h1 style="font-size: 30px; ">Take your nutritional goals to the next level with Nutrify,
+                    the global leader in nutritional tips and goal-setting. Did we mention it's free?</h1>
+
+                <div
+                    style="display: flex; flex-direction: row; justify-content: center; text-align: center; margin-left: 7%; margin-right: 7%;">
+                    <button class="button" style="width: 400px;">I'm in, sign me up!</button>
+                </div>
+                <br><br>
+                <div
+                    style="display: flex; flex-direction: row; justify-content: center; text-align: center; margin-left: 7%; margin-right: 7%;">
+                    <button class="button" style="width: 500px;">Not convinced? Learn more!</button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</body>
+
+<style>
+    * {
+        font-family: 'Overpass', sans-serif;
+        color: white;
+    }
+
+    nav {
+        padding: 1%;
+    }
+
+    .button {
+        cursor: pointer;
+        border: 1px solid #ff1212;
+        border-radius: 12px;
+        background-color: #d41111; 
+        height: 50px;
+        width: 200px;
+        color: black;
+        font-size: 1.5em;
+        box-shadow: 0 3px 3px rgba(0, 0, 0, 0.6);
+    }
+</style>
+
+</html>
