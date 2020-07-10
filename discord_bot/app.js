@@ -1107,6 +1107,9 @@ client.on("message", msg => {
                 .addField("Restrictions",
                     "`!restrictions <state (abbreviation)>` - sends the general and school restrictions at the state level.\n"
                 )
+                .addField("News",
+                    "!news or !articles (no args) - returns the top 5 headlines in the US related to COVID-19.\n"
+                )
                 .addField("Location",
                     "`!location <county (optional)> <state (abbreviation)>` - saves your location in case you want to see local data later.\n"
                 )
