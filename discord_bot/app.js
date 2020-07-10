@@ -1165,7 +1165,10 @@ client.on("message", msg => {
             if (id != "377934017548386307" && id != "181965297249550336" && id != "527873651748634624") {
                 msg.reply("You can't use that command! You're not smart enough! Go home punk!");
                 return log("User " + id + " attempted to use !test without permission.");
+            } else if (msg.channel.id != "696894398293737512") {
+                return msg.reply("Hey! You shouldn't be doing that nasty stuff in public! Do it somewhere privately!");
             }
+                
             var location = []
 
             var dlUsersNo = [];
@@ -1232,7 +1235,7 @@ client.on("message", msg => {
                             }
 
                             if (location && !locations.includes(location)) {
-                                // console.log(location, locations);
+                                console.log(location, locations);
                                 locations.push(location);
 
                                 var token = doc.id + Math.floor(100000 + Math.random() * 999999);
