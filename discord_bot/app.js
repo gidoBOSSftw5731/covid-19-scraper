@@ -786,7 +786,7 @@ client.on("message", msg => {
                                 }
 
                                 if (location && !locations.includes(location)) {
-                                    console.log(location);
+                                    // console.log(location);
                                     locations.push(location);
 
                                     var token = doc.id + Math.floor(100000 + Math.random() * 999999);
@@ -845,7 +845,7 @@ client.on("message", msg => {
                 var dwlUsersNo = [];
                 var dwlUsersYes = [];
 
-                console.log('hello');
+                // console.log('hello');
                 
                 users.get().then(function (querySnapshot) {
                     var l = 0;
@@ -1054,6 +1054,41 @@ client.on("message", msg => {
                 xhttp.send();
             }
             break;
+        case "news": case "articles":
+            var url = 'http://newsapi.org/v2/top-headlines?' +
+                'q=COVID&category=health&country=US&' +
+                'sortBy=popularity&' +
+                'apiKey=e55f2d04dbae45d4bc5c253924f6d3ed';
+
+            var xhttp = new XMLHttpRequest();
+            var articles = [];
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    articles = JSON.parse(this.responseText).articles;
+
+                    var newsEmbed = new Discord.RichEmbed().setTitle("Top Headlines for COVID-19")
+                        .setColor("#C70039")
+                        .setFooter("API: newsapi.org");
+
+                    for (i = 0; i < 5; i++) {
+                        var dateArray = new Date(new Date(articles[0]["publishedAt"]) - new Date().getTimezoneOffset()).toString().split(' ')
+                        var date = dateArray[1] + " " + dateArray[2] + " " + dateArray[3];
+
+                        var title = articles[i]["title"];
+                        var desc = articles[i]["description"].substr(0, 101) + "...";
+                        var url = articles[i]["url"];
+                        var source = articles[i]["source"]["name"] + " | " + date;
+
+                        newsEmbed.addField(title, desc + " (" + source + ") | [Open article](" + url + ")");
+                    }
+
+                    msg.channel.send({ embed: newsEmbed });
+                }
+            };
+
+            xhttp.open("GET", url, true);
+            xhttp.send();
+            break;
         case "help":
             const helpEmbed = new Discord.RichEmbed()
                 .setTitle("Command List")
@@ -1194,7 +1229,7 @@ client.on("message", msg => {
                             }
 
                             if (location && !locations.includes(location)) {
-                                console.log(location, locations);
+                                // console.log(location, locations);
                                 locations.push(location);
 
                                 var token = doc.id + Math.floor(100000 + Math.random() * 999999);
