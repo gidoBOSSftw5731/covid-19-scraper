@@ -4,7 +4,7 @@
         <div style="display: flex; flex-direction: column; justify-items: space-around;">
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text list-group-item list-group-item-primary" id="basic-addon1" style="font-size: large;" onclick="countryCases()">United States</span>
+                    <span class="input-group-text list-group-item list-group-item-primary" id="basic-addon1" style="font-size: large; background-color: #007BFF; color: white;" onclick="countryCases()">United States</span>
                 </div>
                 <ul class="list-group list-group-horizontal">
                     <li id="USCases" class="list-group-item" style="font-size: large; padding-top: 4.5%;">Cases:
@@ -12,7 +12,7 @@
                             <span class="sr-only">Loading...</span>
                         </div>
                     </li>
-                    <li id="USDeaths" class="list-group-item" style="font-size: large; padding-top: 4.5%;">Deaths:
+                    <li id="USDeaths" class="list-group-item" style="font-size: large; padding-top: 4.5%;;">Deaths:
                         <div class="spinner-border spinner-border-sm" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
@@ -91,14 +91,14 @@
 
                 <div class="form-group row">
                     <div class="col-sm-10">
-                        <button type="submit" class="btn btn-primary" onclick="cases()" style="font-size: x-large; margin-top: 2%;">Get Data</button>
+                        <button type="submit" class="btn btn-primary" onclick="cases()" style="font-size: x-large; margin-top: 2%; background-color: rgba(253, 54, 54, 0.84); border-color: #dd0000;">Get Data</button>
                     </div>
                 </div>
 
             </div>
 
             <ul id="dataResults" class="list-group" style="width: 100%;">
-                <li id="location" class="list-group-item active" style="font-size: x-large;">Location</li>
+                <li id="location" class="list-group-item active" style="font-size: x-large; background-color: rgba(253, 54, 54, 0.84); border-color: rgba(253, 54, 54, 0.84);">Location</li>
                 <li id="resultsCases" class="list-group-item" style="font-size: x-large;">Cases</li>
                 <li id="resultsDeaths" class="list-group-item" style="font-size: x-large;">Deaths</li>
                 <li id="resultsDeathRate" class="list-group-item" style="font-size: x-large;">Death Rate</li>
