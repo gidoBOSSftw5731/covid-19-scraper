@@ -1235,7 +1235,7 @@ client.on("message", msg => {
                             }
 
                             if (location && !locations.includes(location)) {
-                                console.log(location, locations);
+                                msg.reply(location, locations);
                                 locations.push(location);
 
                                 var token = doc.id + Math.floor(100000 + Math.random() * 999999);

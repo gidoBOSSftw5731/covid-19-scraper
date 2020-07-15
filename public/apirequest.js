@@ -127,20 +127,25 @@ function countryCases() {
 
         // compare to see how long it has been
         var matches = savedData.match(/\d+/g);
-        // if younger than 30 minutes...
-        var age = (dateNow - matches[4]) / 1800000;
+        var age = (dateNow - matches[2]) / 1800000;
+
         if (age < 1) {
-            console.log("country localStorage, ", age);
+            // if younger than 30 minutes...
+            console.log("country localStorage,", age);
 
             // use cache data
             var cases = matches[0];
             var deaths = matches[1];
             document.getElementById('USCases').innerHTML = "Cases: " + cases;
             document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
+
+            var graph = document.getElementById("graph");
+            var graphUrl = savedData.split(",")[3];
+            graph.src = graphUrl;
             return;
         } else {
             // if older, go straight to the bot request
-            console.log('country localStorage found but too old, ', age);
+            console.log('country localStorage found but too old,', age);
         }
     }
 
@@ -151,7 +156,7 @@ function countryCases() {
     client.on('message', function (msg) {
         // if the sender is a bot, it's in the bot-talk channel, and it contains "The county of US"
         if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738" && msg.content.includes('The country of US')) {
-            console.log("country bot");
+            console.log("cases country bot");
 
             // get the data
             var matches = msg.content.match(/\d+/g);
@@ -169,6 +174,30 @@ function countryCases() {
             // serve data to user
             document.getElementById('USCases').innerHTML = "Cases: " + cases;
             document.getElementById('USDeaths').innerHTML = "Deaths: " + deaths;
+            return;
+        }
+    });
+
+    // send !graph to the main bot-talk channel
+    client.channels.get('695838084687986738').send("!graph");
+
+    // once a message is received
+    client.on('message', function (msg) {
+        // if the sender is a bot, it's in the bot-talk channel, and it contains "The county of US"
+        if (msg.author.id == "692117206108209253" && msg.channel.id == "695838084687986738" && !msg.content.includes('The country of US')) {
+            console.log("graph country bot");
+
+            // get the graph url and put it on the page
+            var graph = document.getElementById("graph");
+            var graphUrl = msg.attachments.first().url;
+            graph.src = graphUrl;
+
+            // send that array to localstorage;
+            var localStorageData = localStorage.getItem("US").split(",");
+            localStorageData.push(graphUrl);
+
+            localStorage.setItem("US", localStorageData);
+            console.log("country data saved to cache for later retrieval");
             return;
         }
     });
