@@ -28,8 +28,10 @@
   <script src="auth.js"></script>
 </head>
 
-<body style="background-image: url('background.png'); background-repeat: no-repeat; background-size: 100% 100%;">
-  <nav style="display: flex; flex-direction: row-reverse; margin-right: 3.5%">
+<body>
+  <nav id="navbar-landscape">
+    <button class="title" style="color: white;" onclick="redirect('homepage')">CovidBot19</button>
+
     <div class="btn-group">
       <button type="button" class="btn btn-danger dropdown-toggle button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Menu</button>
       <div class="dropdown-menu">
@@ -40,8 +42,25 @@
         <a class="dropdown-item" id="signin" onclick="signIn()">Sign In</a>
       </div>
     </div>
+  </nav>
 
-    <button class="title" style="margin-right: 68%; margin-left: 3%; color: white;" onclick="redirect('homepage')">CovidBot19</button>
+  <nav id="navbar-portrait" style="display: flex; flex-direction: column; display: none;">
+    <div style="display: flex; justify-content: center">
+      <button class="title title-portrait" style="color: white;" onclick="redirect('homepage')">CovidBot19</button>
+    </div>
+
+    <div style="display: flex; justify-content: center;">
+      <div class="btn-group" style="width: 30%;">
+        <button type="button" class="btn btn-danger dropdown-toggle button portrait-menu-button"data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Menu</button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" onclick="redirect('homepage')">Home</a>
+          <a class="dropdown-item" onclick="redirect('data')">Data Dashboard</a>
+          <a class="dropdown-item" onclick="redirect('discord')">Discord</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" id="signin" onclick="signIn()">Sign In</a>
+        </div>
+      </div>
+    </div>
   </nav>
 
   <div id="auth-wrapper">
@@ -67,14 +86,72 @@
     overflow-x: hidden;
   }
 
+  body {
+    background-image: url('background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow-y: hidden;
+    height: 100%;
+  }
+
+  nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-right: 5%;
+  }
+
   .state-county {
     width: 50%;
   }
+
   img:hover {
     cursor: pointer;
   }
+  
   a:hover {
     cursor: pointer;
+  }
+
+  nav {
+    padding: 1%;
+    margin-left: 3%;
+  }
+
+  .title {
+    cursor: pointer;
+    border: 1px solid #ff1212;
+    border-radius: 12px;
+    background-color: #fd3636d7;
+    height: 100px;
+    width: 500px;
+    color: white;
+    font-size: 5em;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.6);
+  }
+
+  .title-portrait {
+    width: 50%;
+    height: 2em;
+    font-size: 3em;
+  }
+
+  .button {
+    cursor: pointer;
+    border: 1px solid #ff1212;
+    border-radius: 12px;
+    background-color: #fd3636d7;
+    height: 50px;
+    width: 200px;
+    color: white;
+    font-size: 1.5em;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.6);
+    position: absolute;
+  }
+
+  .portrait-menu-button {
+    margin-top: 5%;
+    width: 30%;
   }
 
   @font-face {
@@ -111,36 +188,6 @@
     font-display: swap;
     src: local('Overpass SemiBold'), local('Overpass-SemiBold'), url(https://fonts.gstatic.com/s/overpass/v4/qFdA35WCmI96Ajtm81l6d87N4ho.woff2) format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
-
-  nav {
-    padding: 1%;
-    margin-left: 3%;
-  }
-
-  .title {
-    cursor: pointer;
-    border: 1px solid #ff1212;
-    border-radius: 12px;
-    background-color: #fd3636d7;
-    height: 100px;
-    width: 500px;
-    color: white;
-    font-size: 5em;
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.6);
-  }
-
-  .button {
-    cursor: pointer;
-    border: 1px solid #ff1212;
-    border-radius: 12px;
-    background-color: #fd3636d7;
-    height: 50px;
-    width: 200px;
-    color: white;
-    font-size: 1.5em;
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.6);
-    position: absolute;
   }
 </style>
 

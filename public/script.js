@@ -62,12 +62,10 @@ function pageLoad(u) {
 
     switch (content) {
         case "homepage": case null:
-            xhttp("homepage", "main-content-wrapper");
             xhttp("discordToast", "toast-wrapper");
 
             break;
         case "data":
-            xhttp("data", "main-content-wrapper");
             xhttp("discordToast", "toast-wrapper");
 
             db.collection('env').doc('env').get().then(function (doc) {
@@ -89,7 +87,6 @@ function pageLoad(u) {
 
             break;
         case "discord":
-            xhttp("discord", "main-content-wrapper");
             xhttp("basicToast", "toast-wrapper");
 
             break;
@@ -105,6 +102,43 @@ function pageLoad(u) {
         window.usersUser = users.doc(displayName);
     } else {
         window.user = null;
+    }
+};
+
+if (matchMedia) {
+    var mq = window.matchMedia("(orientation: landscape)");
+    mq.addListener(orientationChange);
+    orientationChange(mq);
+
+    if (mq.matches) {
+        xhttp('homepage-landscape', 'main-content-wrapper');
+    }
+}
+
+function orientationChange(mq) {
+    var urlParams = new URLSearchParams(window.location.search);
+    var page = urlParams.get('content');
+
+    if (!page) {
+        page = "homepage";
+    }
+    
+    if (mq.matches) {
+        xhttp(page + '-landscape', 'main-content-wrapper');
+        display('navbar-landscape');
+        display('navbar-portrait');
+    } else {
+        xhttp(page + '-portrait', 'main-content-wrapper');
+        display('navbar-landscape');
+        display('navbar-portrait');
+    }
+};
+
+function contentChange(page) {
+    if (mq.matches) {
+        xhttp(page + '-landscape', 'main-content-wrapper');
+    } else {
+        xhttp(page + '-portrait', 'main-content-wrapper');
     }
 };
 
@@ -125,10 +159,10 @@ function redirect(source) {
     history.pushState(source, source, newURL);
 
     if (source == "homepage") {
-        xhttp("homepage", "main-content-wrapper");
+        contentChange("homepage");
         xhttp("discordToast", "toast-wrapper");
     } else if (source == "data") {
-        xhttp("data", "main-content-wrapper");
+        contentChange("data");
         xhttp("discordToast", "toast-wrapper");
 
         db.collection('env').doc('env').get().then(function (doc) {
@@ -148,7 +182,7 @@ function redirect(source) {
             console.log(err);
         });
     } else if (source == "discord") {
-        xhttp("discord", "main-content-wrapper");
+        contentChange("discord");
         xhttp("basicToast", "toast-wrapper");
     }
 }

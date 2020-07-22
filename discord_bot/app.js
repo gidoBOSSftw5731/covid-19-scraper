@@ -1089,6 +1089,31 @@ client.on("message", msg => {
             xhttp.open("GET", url, true);
             xhttp.send();
             break;
+        case "suggest":
+            if (!args.length || args.length != 1) {
+                return msg.reply("To use the suggest command, please follow the paradigm:\n" +
+                    "```!suggest <recommendation (max length: 400 characters)> ```Note: Our developers are humans and can't implement every feature you suggest. " +
+                    "If you ");
+            } else {
+                var i = stateNumbers.indexOf(args[0].toUpperCase());
+
+                var text = "";
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        text = this.responseText;
+                        text = JSON.parse(text);
+                        var state = JSON.stringify(text.features[i].attributes["NAME"]);
+                        var general = JSON.stringify(text.features[i].attributes["Statewide_Limits_on_Gatherings_"]);
+                        var school = JSON.stringify(text.features[i].attributes["Statewide_School_Closures"]);
+                        msg.reply("State of " + state.substring(1, state.length - 1)
+                            + ":\nLockdown Order? - " + general.substring(1, general.length - 1) + "\nSchool Closed? - " + school.substring(1, school.length - 1) + "\n Dislaimer: Data may be out of date for some places; check your DOH site to see more accurate data.");
+                    }
+                };
+                xhttp.open("GET", "https://services3.arcgis.com/EvmgEO8WtpouUbyD/arcgis/rest/services/COVID19_State_Actions_Download/FeatureServer/0/query?where=1%3D1&outFields=STUSPS,NAME,Statewide_School_Closures,Statewide_Limits_on_Gatherings_&returnGeometry=false&outSR=4326&f=json", true);
+                xhttp.send();
+            }
+            break;
         case "help":
             const helpEmbed = new Discord.RichEmbed()
                 .setTitle("Command List")
