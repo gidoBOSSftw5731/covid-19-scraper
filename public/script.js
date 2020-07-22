@@ -125,20 +125,24 @@ function orientationChange(mq) {
     
     if (mq.matches) {
         xhttp(page + '-landscape', 'main-content-wrapper');
-        display('navbar-landscape');
-        display('navbar-portrait');
+        document.getElementById("navbar-landscape").style.display = "flex";
+        document.getElementById("navbar-portrait").style.display = "none";
     } else {
         xhttp(page + '-portrait', 'main-content-wrapper');
-        display('navbar-landscape');
-        display('navbar-portrait');
+        document.getElementById("navbar-portrait").style.display = "flex";
+        document.getElementById("navbar-landscape").style.display = "none";
     }
 };
 
 function contentChange(page) {
     if (mq.matches) {
         xhttp(page + '-landscape', 'main-content-wrapper');
+        document.getElementById("navbar-landscape").style.display = "flex";
+        document.getElementById("navbar-portrait").style.display = "none";
     } else {
         xhttp(page + '-portrait', 'main-content-wrapper');
+        document.getElementById("navbar-portrait").style.display = "flex";
+        document.getElementById("navbar-landscape").style.display = "none";
     }
 };
 
