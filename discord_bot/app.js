@@ -931,6 +931,8 @@ client.on("message", msg => {
                                             log("Location " + location + " has already been queried, getting data for that location from stored memory.");
                                             var data = locationsMatches[locations.indexOf(location)];
                                             client.users.get(doc.id).send(data);
+
+                                            console.log(data);
                                         }
                                     }
                                 } else if (!watchlist) {
