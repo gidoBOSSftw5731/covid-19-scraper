@@ -609,7 +609,7 @@ client.on("message", msg => {
                                 }
 
                                 if (l == querySnapshot.size) {
-                                    log("---------------------------");
+                                    log("Worst Counties: Successful");
                                     pass++;
                                     client.removeListener('message', listentome0);
                                     return doCountry();
@@ -618,7 +618,8 @@ client.on("message", msg => {
                         }).catch(function (err) {
                             error(err);
                             e++;
-                            return client.removeListener('message', listentome0);
+                            client.removeListener('message', listentome0);
+                            return log("Worst Counties: Successful");
                         });
                     }
                 });
@@ -708,7 +709,7 @@ client.on("message", msg => {
                                 }
 
                                 if (l == querySnapshot.size) {
-                                    log("---------------------------");
+                                    log("Country: Successful");
                                     pass++;
                                     client.removeListener('message', listentome1);
                                     return doLocation();
@@ -718,7 +719,7 @@ client.on("message", msg => {
                             error(err);
                             e++;
                             client.removeListener('message', listentome1);
-                            return log("---------------------------");
+                            return log("Country: Unsuccessful");
                         });
                     }
                 });
@@ -789,7 +790,6 @@ client.on("message", msg => {
                                 }
 
                                 if (location && !locations.includes(location)) {
-                                    // console.log(location);
                                     locations.push(location);
 
                                     var token = doc.id + Math.floor(100000 + Math.random() * 999999);
@@ -829,7 +829,7 @@ client.on("message", msg => {
                         }
 
                         if (l == querySnapshot.size) {
-                            log("---------------------------");
+                            log("Location: Successful");
                             pass++;
                             return doWatchlist();
                         }
@@ -838,7 +838,7 @@ client.on("message", msg => {
                     error(err);
                     e++;
                     client.users.get('377934017548386307').send("Error occurred with activation location retrieval.");
-                    return log("---------------------------");
+                    return log("Location: Unuccessful");
                 });
             }
 
@@ -952,7 +952,7 @@ client.on("message", msg => {
                         }
 
                         if (l == querySnapshot.size) {
-                            log("---------------------------");
+                            log("Watchlist: Successful");
                             pass++;
                             return;
                         }
@@ -961,7 +961,7 @@ client.on("message", msg => {
                     error(err);
                     e++;
                     client.users.get('377934017548386307').send("Error occurred with activation watchlist retrieval.");
-                    return log("---------------------------");
+                    return log("Watchlist: Unsuccessful");
                 });
             }
 
@@ -991,14 +991,13 @@ client.on("message", msg => {
                             }
                         });
                     }).then(function () {
-                        log("Successful email attempts: " + mlUsersSuccess);
-                        log("Failed email attempts: " + mlUsersFailure);
-                        return log("---------------------------");
+                        return log("Emails: Successful");
                     }).catch(function (err) {
                         error(err);
                         e++;
                         client.users.get('377934017548386307').send("Error occurred with activation mailing list delivery.");
-                        return log("---------------------------");
+                        return log("Emails: Unsuccessful");
+
                     });
 
                     resolve(true);
@@ -1317,7 +1316,7 @@ client.on("message", msg => {
                     }
 
                     if (l == querySnapshot.size) {
-                        log("---------------------------");
+                        log("Watchlist: Successful");
                         pass++;
                         return;
                     }
@@ -1326,7 +1325,7 @@ client.on("message", msg => {
                 error(err);
                 e++;
                 client.users.get('377934017548386307').send("Error occurred with activation watchlist retrieval.");
-                return log("---------------------------");
+                return log("Watchlist: Unsuccessful");
             });
         default:
             break;
