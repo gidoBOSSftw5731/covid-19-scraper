@@ -1,3 +1,5 @@
+'use strict';
+
 const Discord = require("discord.js");
 const client = new Discord.Client({ disableEveryone: true });
 
@@ -36,6 +38,9 @@ db.collection('env').doc('env').get().then(function (doc) {
     client.on("ready", function readysetgo() {
         log(`Client user tag: ${client.user.id}!`);
         client.user.setActivity("alone | !help", { type: "Playing" });
+
+        client.channels.get("696894398293737512").send("!test");
+
         return client.removeListener('on', readysetgo);
     })
 }).catch(function (err) {
@@ -45,6 +50,8 @@ db.collection('env').doc('env').get().then(function (doc) {
 function error(err) {
     var date = new Date();
     client.channels.get("696540781787217952").send(date + " " + err);
+
+    console.log(date, err);
 };
 
 function log(message) {
@@ -72,7 +79,7 @@ client.on("message", msg => {
     if (msg.content == ("!activate") && msg.channel.id == "696894398293737512") {
         log("---------------------------");
         log("Activation message received.");
-    } else if (msg.author.id == client.user.id) {
+    } else if (msg.author.id == client.user.id && msg.content != "!test") {
         return;
     }
 
@@ -602,8 +609,6 @@ client.on("message", msg => {
                                 }
 
                                 if (l == querySnapshot.size) {
-                                    log("Users in this timeset for countySubscription: " + dwUsersYes.toString() + ".");
-                                    log("Users not in this timeset for countySubscription: " + dwUsersNo.toString() + ".");
                                     log("---------------------------");
                                     pass++;
                                     client.removeListener('message', listentome0);
@@ -703,8 +708,6 @@ client.on("message", msg => {
                                 }
 
                                 if (l == querySnapshot.size) {
-                                    log("Users in this timeset for countrySubscription: " + dcUsersYes);
-                                    log("Users not in this timeset for countrySubscription: " + dcUsersNo);
                                     log("---------------------------");
                                     pass++;
                                     client.removeListener('message', listentome1);
@@ -826,8 +829,6 @@ client.on("message", msg => {
                         }
 
                         if (l == querySnapshot.size) {
-                            log("Users in this timeset for location: " + dlUsersYes);
-                            log("Users not in this timeset for location: " + dlUsersNo);
                             log("---------------------------");
                             pass++;
                             return doWatchlist();
@@ -844,8 +845,6 @@ client.on("message", msg => {
             function doWatchlist() {
                 var dwlUsersNo = [];
                 var dwlUsersYes = [];
-
-                // console.log('hello');
                 
                 users.get().then(function (querySnapshot) {
                     var l = 0;
@@ -899,14 +898,19 @@ client.on("message", msg => {
                                     for (i = 0; i < watchlist.length; i++) {
                                         var location = watchlist[i].toString();
 
-                                        if (locations.includes(location)) {
+                                        if (locations.indexOf(location) == -1) {
                                             locations.push(location);
 
                                             var token = doc.id + Math.floor(100000 + Math.random() * 999999);
                                             msg.channel.send("!botcases " + location + " " + token);
 
-                                            client.on('message', function watchlistListen(message) {
+                                            console.log(location);
+
+
+                                            client.once('message', function watchlistListen(message) {
                                                 if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
+                                                    console.log(location);
+
                                                     var data = message.content.replace(token + " ", "").toString();
                                                     var matches = data.match(/\d+/g);
                                                     locationsMatches[locations.indexOf(location)] = matches;
@@ -930,9 +934,15 @@ client.on("message", msg => {
                                             dwlUsersYes.push(doc.id);
                                             log("Location " + location + " has already been queried, getting data for that location from stored memory.");
                                             var data = locationsMatches[locations.indexOf(location)];
-                                            client.users.get(doc.id).send(data);
 
-                                            console.log(data);
+                                            if (!locationsMatches) {
+                                                console.log("this ain't it chief");
+                                            } else if (data) {
+                                                console.log(data);
+                                                client.users.get(doc.id).send(data);
+                                            } else {
+                                                console.log(locationsMatches, "Error occurred here");
+                                            }
                                         }
                                     }
                                 } else if (!watchlist) {
@@ -942,11 +952,9 @@ client.on("message", msg => {
                         }
 
                         if (l == querySnapshot.size) {
-                            log("Users in this timeset for watchlist: " + dwlUsersYes);
-                            log("Users not in this timeset for watchlist: " + dwlUsersNo);
                             log("---------------------------");
                             pass++;
-                            return finish();
+                            return;
                         }
                     });
                 }).catch(function (err) {
@@ -1189,17 +1197,18 @@ client.on("message", msg => {
             }
             break;
         case "test":
-            if (id != "377934017548386307" && id != "181965297249550336" && id != "527873651748634624") {
+            if (id != "377934017548386307" && id != "181965297249550336" && id != "527873651748634624" && id != "692117206108209253") {
                 msg.reply("You can't use that command! You're not smart enough! Go home punk!");
                 return log("User " + id + " attempted to use !test without permission.");
             } else if (msg.channel.id != "696894398293737512") {
                 return msg.reply("Hey! You shouldn't be doing that nasty stuff in public! Do it somewhere privately!");
             }
                 
-            var location = []
+            var locations = [];
+            var locationsMatches = [];
 
-            var dlUsersNo = [];
-            var dlUsersYes = [];
+            var dwlUsersNo = [];
+            var dwlUsersYes = [];
 
             users.get().then(function (querySnapshot) {
                 var l = 0;
@@ -1207,11 +1216,11 @@ client.on("message", msg => {
                     l++;
 
                     var times = (doc.data().timesetCommands) ? doc.data().timesetCommands : null;
-                    var locationTimes = (times && times.location) ? times.location.toString().split(",") : null;
+                    var watchlistTimes = (times && times.watchlist) ? times.watchlist.toString().split(",") : null;
                     var timezone = (doc.data().tz) ? doc.data().tz : null;
 
-                    if (!locationTimes) {
-                        dlUsersNo.push(doc.id);
+                    if (!watchlistTimes) {
+                        dwlUsersNo.push(doc.id);
                     } else {
                         switch (timezone) {
                             case "EDT", "EST", null:
@@ -1244,75 +1253,78 @@ client.on("message", msg => {
                         var lt = localTime.toLocaleString();
                         var hour = lt.slice(lt.indexOf(", ") + 2, lt.indexOf(":")) + lt.slice(-2);
 
-                        if (!locationTimes.includes(hour)) {
-                            dlUsersNo.push(doc.id);
+                        if (!watchlistTimes.includes(hour)) {
+                            dwlUsersNo.push(doc.id);
                         } else {
-                            var state = (doc.data().state) ? doc.data().state : null;
-                            var county = (doc.data().county) ? doc.data().county : null;
+                            var watchlist = (doc.data().watchlist) ? doc.data().watchlist : null;
 
-                            if (state && county) {
-                                var location = county + " " + state;
-                            } else if (state) {
-                                var location = state;
-                            } else if (county) {
-                                var location = county;
-                            } else {
-                                log("User " + doc.id + " has no location set.");
-                                var location = null;
-                            }
+                            if (watchlist) {
+                                for (i = 0; i < watchlist.length; i++) {
+                                    var location = watchlist[i].toString();
 
-                            if (location && !locations.includes(location)) {
-                                msg.reply(location, locations);
-                                locations.push(location);
+                                    if (locations.indexOf(location) == -1) {
+                                        locations.push(location);
 
-                                var token = doc.id + Math.floor(100000 + Math.random() * 999999);
-                                msg.channel.send("!botcases " + location + " " + token);
+                                        var token = doc.id + Math.floor(100000 + Math.random() * 999999);
+                                        msg.channel.send("!botcases " + location + " " + token);
 
-                                client.on('message', function locationsListen(message) {
-                                    if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                        var data = message.content.replace(token + " ", "").toString();
-                                        var matches = data.match(/\d+/g);
-                                        locationsMatches[locations.indexOf(location)] = matches;
+                                        console.log(location);
 
-                                        var d = new Date();
 
-                                        var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
-                                        var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
-                                        var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
+                                        client.once('message', function watchlistListen(message) {
+                                            if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
+                                                console.log(location);
 
-                                        var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
+                                                var data = message.content.replace(token + " ", "").toString();
+                                                var matches = data.match(/\d+/g);
+                                                locationsMatches[locations.indexOf(location)] = matches;
 
-                                        dlUsersYes.push(doc.id);
-                                        eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                                var d = new Date();
 
-                                        client.users.get(doc.id).send(data);
+                                                var month = (d.getMonth() + 1 < 10) ? ("0" + (d.getMonth() + 1).toString()) : (d.getMonth() + 1).toString();
+                                                var day = (d.getDate() + 1 < 10) ? ("0" + (d.getDate() + 1).toString()) : (d.getDate() + 1).toString();
+                                                var hour = (d.getHours() < 10) ? ("0" + (d.getHours().toString())) : d.getHours().toString();
 
-                                        client.removeListener('message', locationsListen);
+                                                var addr = (location.replace(" ", "_") + "." + d.getFullYear().toString() + month + day + hour).toString();
+
+                                                dwlUsersYes.push(doc.id);
+                                                eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
+                                                client.users.get(doc.id).send(data);
+
+                                                client.removeListener('message', watchlistListen);
+                                            }
+                                        });
+                                    } else {
+                                        dwlUsersYes.push(doc.id);
+                                        log("Location " + location + " has already been queried, getting data for that location from stored memory.");
+                                        var data = locationsMatches[locations.indexOf(location)];
+
+                                        if (!locationsMatches) {
+                                            console.log("this ain't it chief");
+                                        } else if (data) {
+                                            console.log(data);
+                                            client.users.get(doc.id).send(data);
+                                        } else {
+                                            console.log(locationsMatches, "Error occurred here");
+                                        }
                                     }
-                                });
-                            } else if (location && locations.includes(location)) {
-                                dlUsersYes.push(doc.id);
-                                log("Location " + location + " has already been queried, getting data for that location from stored memory.");
-                                var data = locationsMatches[locations.indexOf(location)];
-                                client.users.get(doc.id).send(data);
-                            } else {
-                                error("Error occurred, location undefined.");
+                                }
+                            } else if (!watchlist) {
+                                log("User " + doc.id + " does not have a watchlist");
                             }
                         }
                     }
 
                     if (l == querySnapshot.size) {
-                        log("Users in this timeset for location: " + dlUsersYes);
-                        log("Users not in this timeset for location: " + dlUsersNo);
                         log("---------------------------");
                         pass++;
-                        return msg.reply("hi");
+                        return;
                     }
                 });
             }).catch(function (err) {
                 error(err);
                 e++;
-                client.users.get('377934017548386307').send("Error occurred with activation location retrieval.");
+                client.users.get('377934017548386307').send("Error occurred with activation watchlist retrieval.");
                 return log("---------------------------");
             });
         default:
