@@ -124,25 +124,29 @@ function orientationChange(mq) {
     }
     
     if (mq.matches) {
+        console.log("landscape");
         xhttp(page + '-landscape', 'main-content-wrapper');
-        document.getElementById("navbar-landscape").style.display = "flex";
-        document.getElementById("navbar-portrait").style.display = "none";
+        // document.getElementById("navbar-landscape").style.display = "flex";
+        // document.getElementById("navbar-portrait").style.display = "none";
     } else {
+        console.log("portrait");
         xhttp(page + '-portrait', 'main-content-wrapper');
-        document.getElementById("navbar-portrait").style.display = "flex";
-        document.getElementById("navbar-landscape").style.display = "none";
+        // document.getElementById("navbar-landscape").style.display = "none";
+        // document.getElementById("navbar-portrait").style.display = "flex";
     }
 };
 
 function contentChange(page) {
     if (mq.matches) {
+        console.log("landscape");
         xhttp(page + '-landscape', 'main-content-wrapper');
-        document.getElementById("navbar-landscape").style.display = "flex";
-        document.getElementById("navbar-portrait").style.display = "none";
+        // document.getElementById("navbar-landscape").style.display = "flex";
+        // document.getElementById("navbar-portrait").style.display = "none";
     } else {
+        console.log("portrait");
         xhttp(page + '-portrait', 'main-content-wrapper');
-        document.getElementById("navbar-portrait").style.display = "flex";
-        document.getElementById("navbar-landscape").style.display = "none";
+        // document.getElementById("navbar-portrait").style.display = "flex";
+        // document.getElementById("navbar-landscape").style.display = "none";
     }
 };
 

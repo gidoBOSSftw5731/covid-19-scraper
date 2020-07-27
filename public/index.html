@@ -44,9 +44,9 @@
     </div>
   </nav>
 
-  <nav id="navbar-portrait" style="display: none; flex-direction: column;">
+  <nav id="navbar-portrait" style="flex-direction: column;">
     <div style="display: flex; justify-content: center">
-      <button class="title title-portrait" style="color: white;" onclick="redirect('homepage')">CovidBot19</button>
+      <button class="title title-portrait" style="color: white;" onclick="redirect('homepage')">KovidBot19</button>
     </div>
 
     <div style="display: flex; justify-content: center;">
@@ -92,6 +92,33 @@
     background-size: cover;
     overflow-y: hidden;
     height: 100%;
+  }
+
+  @media screen and (orientation: portrait) {
+    #navbar-landscape {
+      display: none;
+    }
+    #navbar-portrait {
+      display: flex;
+    }
+    html {
+      overflow-x: hidden;
+      overflow-y: visible;
+    }
+    body {
+      background-image: url('background-portrait.png');
+      background-size: cover;
+      overflow-x: visible;
+      overflow-y: visible;
+    }
+  }
+
+  #navbar-landscape {
+    display: flex;
+  }
+
+  #navbar-portrait {
+    display: none;
   }
 
   nav {
