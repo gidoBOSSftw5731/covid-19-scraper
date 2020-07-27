@@ -1,7 +1,7 @@
-<div style="width: 80%; height: 60%; margin-left: 8%; margin-top: 4%; padding: 1.5%; padding-left: 2%; background-color: #c22f2f; border-radius: 25px; border: 2px solid #dd0000;">
+<div id="data-landscape-container" style="width: 80%; height: 60%; margin-left: 8%; margin-top: 2%; padding: 1.5%; padding-left: 2%; background-color: #c22f2f; border-radius: 25px; border: 2px solid #dd0000;">
 
-    <div style="display: flex; flex-direction: row;">
-        <div style="display: flex; flex-direction: column; justify-items: space-around;">
+    <div style="display: flex; flex-direction: column;">
+        <div id="data-form" style="display: flex; flex-direction: column; justify-items: space-around;">
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text list-group-item list-group-item-primary" id="basic-addon1" style="font-size: large; background-color: #007BFF; color: white;" onclick="countryCases()">United States</span>
@@ -20,7 +20,7 @@
                 </ul>
             </div>
 
-            <div class="form-group" style="margin-top: 2%;">
+            <div class="form-group" style="margin-top: 1%;">
 
                 <div class="input-group mb-3 state-county" style="width: 100%;">
                     <div class="input-group-prepend">
@@ -82,7 +82,7 @@
                     </select>
                 </div>
 
-                <div class="input-group mb-3 state-county" style="width: 100%; margin-top: 5%;">
+                <div class="input-group mb-3 state-county" style="width: 100%; margin-top: 2%;">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon2" style="font-size: x-large;">County</span>
                     </div>
@@ -91,13 +91,13 @@
 
                 <div class="form-group row">
                     <div class="col-sm-10">
-                        <button type="submit" class="btn btn-primary" onclick="cases()" style="font-size: x-large; margin-top: 2%; background-color: rgba(253, 54, 54, 0.84); border-color: #dd0000;">Get Data</button>
+                        <button type="submit" class="btn btn-primary" onclick="cases()" style="font-size: x-large; margin-top: 1.5%; background-color: rgba(253, 54, 54, 0.84); border-color: #dd0000;">Get Data</button>
                     </div>
                 </div>
 
             </div>
 
-            <ul id="dataResults" class="list-group" style="width: 100%;">
+            <ul id="dataResults" class="list-group" style="width: 30%;">
                 <li id="location" class="list-group-item active" style="font-size: x-large; background-color: rgba(253, 54, 54, 0.84); border-color: rgba(253, 54, 54, 0.84);">Location</li>
                 <li id="resultsCases" class="list-group-item" style="font-size: x-large;">Cases</li>
                 <li id="resultsDeaths" class="list-group-item" style="font-size: x-large;">Deaths</li>
@@ -105,8 +105,22 @@
             </ul>
         </div>
 
-        <div style="width: 60%; margin-top: 1%; margin-left: 5%;">
-            <img id="graph" style="width: 100%; height: 100%; border: 2px solid rgba(32, 32, 32, 0.575);">
+        <div style="width: 90%; margin-top: 2.5%; margin-left: 5%;">
+            <img id="graph" style="width: 100%; border: 2px solid rgba(32, 32, 32, 0.575);">
         </div>
     </div>
 </div>
+
+<br>
+
+<style>
+    @media screen and (orientation: landscape) {
+        body {
+            overflow-y: visible !important;
+        }
+
+        html {
+            overflow-y: visible !important;
+        }
+    }
+</style>

@@ -30,11 +30,6 @@ window.onload = function () {
     var minutes = (date.getMinutes() < 10) ? "0" + date.getMinutes() : date.getMinutes();
     document.getElementById("popupTime").innerHTML = hours.toString() + ":" + minutes.toString();
     $('#toast').toast('show');
-
-    setTimeout(function () {
-        document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 6;
-        document.getElementById("data-portrait-container").style.width = document.getElementById("graph").offsetWidth + document.getElementById("data-form").offsetWidth + 150
-    }, 1000);
 };
 
 document.addEventListener('keydown', function (event) {
@@ -65,39 +60,62 @@ function pageLoad(u) {
     var urlParams = new URLSearchParams(window.location.search);
     var content = urlParams.get('content');
 
+    console.log(content);
+
     switch (content) {
-        case "homepage": case null:
+        case "homepage": case "data": case null:
             xhttp("discordToast", "toast-wrapper");
-
-            break;
-        case "data":
-            xhttp("discordToast", "toast-wrapper");
-
-            db.collection('env').doc('env').get().then(function (doc) {
-                window.client = new Discord.Client();
-                client.login(doc.data().token);
-                client.on('ready', function () {
-                    console.log('CovidSite Client is ready for use!');
-                    countryCases();
-                });
-
-                window.botClient = new Discord.Client();
-                botClient.login(doc.data().token0);
-                botClient.on('ready', function () {
-                    console.log("CovidBot Client is ready for use!");
-                });
-            }).catch(function (err) {
-                console.log(err);
-            });
-
             break;
         case "discord":
             xhttp("basicToast", "toast-wrapper");
-
             break;
     }
 
+    setTimeout(function () {
+        if (!document.getElementById("graph").src.includes("https://cdn.discordapp.com/attachments/")) {
+            if (!client|| !botClient) {
+                db.collection('env').doc('env').get().then(function (doc) {
+                    window.client = new Discord.Client();
+                    client.login(doc.data().token);
+                    client.on('ready', function () {
+                        console.log('CovidSite Client is ready for use!');
+                        countryCases();
+                    });
+
+                    window.botClient = new Discord.Client();
+                    botClient.login(doc.data().token0);
+                    botClient.on('ready', function () {
+                        console.log("CovidBot Client is ready for use!");
+                    });
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            } else {
+                countryCases();
+            }
+
+            console.log("Error loading data, retrying.");
+        };
+    }, 5000);
+
     xhttp("auth", "auth-wrapper");
+
+    db.collection('env').doc('env').get().then(function (doc) {
+        window.client = new Discord.Client();
+        client.login(doc.data().token);
+        client.on('ready', function () {
+            console.log('CovidSite Client is ready for use!');
+            countryCases();
+        });
+
+        window.botClient = new Discord.Client();
+        botClient.login(doc.data().token0);
+        botClient.on('ready', function () {
+            console.log("CovidBot Client is ready for use!");
+        });
+    }).catch(function (err) {
+        console.log(err);
+    });
 
     if (u) {
         document.getElementById("signin").innerHTML = "Sign Out";
@@ -112,12 +130,13 @@ function pageLoad(u) {
 
 if (matchMedia) {
     var mq = window.matchMedia("(orientation: landscape)");
-    mq.addListener(orientationChange);
-    orientationChange(mq);
 
     if (mq.matches) {
         xhttp('homepage-landscape', 'main-content-wrapper');
     }
+
+    mq.addListener(orientationChange);
+    orientationChange(mq);
 }
 
 function orientationChange(mq) {
@@ -127,33 +146,23 @@ function orientationChange(mq) {
     if (!page) {
         page = "homepage";
     }
-    
+
     if (mq.matches) {
         console.log("landscape");
         xhttp(page + '-landscape', 'main-content-wrapper');
-        // document.getElementById("navbar-landscape").style.display = "flex";
-        // document.getElementById("navbar-portrait").style.display = "none";
     } else {
         console.log("portrait");
         xhttp(page + '-portrait', 'main-content-wrapper');
         document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 5;
-        // document.getElementById("navbar-landscape").style.display = "none";
-        // document.getElementById("navbar-portrait").style.display = "flex";
     }
 };
 
 function contentChange(page) {
     if (mq.matches) {
-        console.log("landscape");
         xhttp(page + '-landscape', 'main-content-wrapper');
-        // document.getElementById("navbar-landscape").style.display = "flex";
-        // document.getElementById("navbar-portrait").style.display = "none";
     } else {
-        console.log("portrait");
         xhttp(page + '-portrait', 'main-content-wrapper');
         document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 5;
-        // document.getElementById("navbar-portrait").style.display = "flex";
-        // document.getElementById("navbar-landscape").style.display = "none";
     }
 };
 

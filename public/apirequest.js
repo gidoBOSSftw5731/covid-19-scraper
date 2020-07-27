@@ -142,6 +142,17 @@ function countryCases() {
             var graph = document.getElementById("graph");
             var graphUrl = savedData.split(",")[3];
             graph.src = graphUrl;
+
+            setTimeout(function () {
+                if (mq.matches) {
+                    document.getElementById("data-landscape-container").style.height = document.getElementById("graph").offsetHeight + document.getElementById("data-form").offsetHeight + 100;
+                    document.getElementById("body")
+                } else {
+                    document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 6;
+                    document.getElementById("data-portrait-container").style.width = document.getElementById("graph").offsetWidth + document.getElementById("data-form").offsetWidth + 150;
+                }
+            }, 100);
+
             return;
         } else {
             // if older, go straight to the bot request
@@ -201,6 +212,15 @@ function countryCases() {
             return;
         }
     });
+
+    setTimeout(function () {
+        if (mq.matches) {
+            document.getElementById("data-landscape-container").style.height = document.getElementById("graph").offsetHeight + document.getElementById("data-form").offsetHeight + 100;
+        } else {
+            document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 6;
+            document.getElementById("data-portrait-container").style.width = document.getElementById("graph").offsetWidth + document.getElementById("data-form").offsetWidth + 150;
+        }
+    }, 100);
 };
 
 // get data graph
