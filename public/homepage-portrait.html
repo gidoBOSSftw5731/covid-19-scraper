@@ -13,25 +13,30 @@
             <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; margin-left: 7%; margin-right: 7%;">
     
                 <h1 class="body-description">
-                    With hourly data updates, county-level data, and lots of information, we've got everything you need!
+                    With hourly updates, county-level data, and lots of information, we've got everything you need!
                 </h1>
 
                 <div class="try-button">
-                    <button class="button" style="width: 60%; height: 60px; font-size: 2em;" onclick="signIn()">I'm in, sign me up!</button>
+                    <button class="button" style="width: 70%; height: 55px; font-size: 1.5em;" onclick="redirect('data')">Try it out!</button>
                 </div>
 
                 <br><br>
 
                 <div class="discord-button">
-                    <button class="button" style="width: 60%; height: 60px; font-size: 2em;">Not convinced? Learn more!</button>
+                    <button class="button" style="width: 70%; height: 55px; font-size: 1.5em;" onclick="redirect('discord')">Get our Discord Bot!</button>
                 </div>
-    
+                
+                <br><br>
+                
             </div>
         </div>
     </div>
 </div>
 
 <style>
+    * {
+        overflow-y: visible !important;
+    }
     .main-div {
         display: flex;
         flex-direction: column;
@@ -70,8 +75,8 @@
     }
 
     .body-description {
-        font-size: 30px;
-        color: rgb(199, 199, 199);
+        font-size: 29px;
+        color: white;
         margin-bottom: 5%;
         font-family: 'Overpass-Semibold', sans-serif;
     }
@@ -89,6 +94,7 @@
         flex-direction: row;
         justify-content: center;
         text-align: center;
-        margin-top: 36px;
+        margin-top: 10%;
+        margin-bottom: 10%;
     }
 </style>

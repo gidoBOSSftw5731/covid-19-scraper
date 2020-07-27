@@ -30,6 +30,11 @@ window.onload = function () {
     var minutes = (date.getMinutes() < 10) ? "0" + date.getMinutes() : date.getMinutes();
     document.getElementById("popupTime").innerHTML = hours.toString() + ":" + minutes.toString();
     $('#toast').toast('show');
+
+    setTimeout(function () {
+        document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 6;
+        document.getElementById("data-portrait-container").style.width = document.getElementById("graph").offsetWidth + document.getElementById("data-form").offsetWidth + 150
+    }, 1000);
 };
 
 document.addEventListener('keydown', function (event) {
@@ -131,6 +136,7 @@ function orientationChange(mq) {
     } else {
         console.log("portrait");
         xhttp(page + '-portrait', 'main-content-wrapper');
+        document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 5;
         // document.getElementById("navbar-landscape").style.display = "none";
         // document.getElementById("navbar-portrait").style.display = "flex";
     }
@@ -145,6 +151,7 @@ function contentChange(page) {
     } else {
         console.log("portrait");
         xhttp(page + '-portrait', 'main-content-wrapper');
+        document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 5;
         // document.getElementById("navbar-portrait").style.display = "flex";
         // document.getElementById("navbar-landscape").style.display = "none";
     }
