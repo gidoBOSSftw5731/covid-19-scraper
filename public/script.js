@@ -24,12 +24,12 @@ window.onload = function () {
         localStorage.setItem("version", "0.2");
     }
         
-    $('#stopTime').toast('hide');
-    var date = new Date();
-    var hours = (date.getHours() <= 12) ? date.getHours() : (date.getHours() - 12);
-    var minutes = (date.getMinutes() < 10) ? "0" + date.getMinutes() : date.getMinutes();
-    document.getElementById("popupTime").innerHTML = hours.toString() + ":" + minutes.toString();
-    $('#toast').toast('show');
+    // $('#stopTime').toast('hide');
+    // var date = new Date();
+    // var hours = (date.getHours() <= 12) ? date.getHours() : (date.getHours() - 12);
+    // var minutes = (date.getMinutes() < 10) ? "0" + date.getMinutes() : date.getMinutes();
+    // document.getElementById("popupTime").innerHTML = hours.toString() + ":" + minutes.toString();
+    // $('#toast').toast('show');
 };
 
 document.addEventListener('keydown', function (event) {
@@ -60,8 +60,6 @@ function pageLoad(u) {
     var urlParams = new URLSearchParams(window.location.search);
     var content = urlParams.get('content');
 
-    console.log(content);
-
     switch (content) {
         case "homepage": case "data": case null:
             xhttp("discordToast", "toast-wrapper");
@@ -74,6 +72,8 @@ function pageLoad(u) {
     setTimeout(function () {
         if (!document.getElementById("graph").src.includes("https://cdn.discordapp.com/attachments/")) {
             if (!client|| !botClient) {
+                console.log("Error loading bot, retrying.");
+
                 db.collection('env').doc('env').get().then(function (doc) {
                     window.client = new Discord.Client();
                     client.login(doc.data().token);
@@ -90,11 +90,11 @@ function pageLoad(u) {
                 }).catch(function (err) {
                     console.log(err);
                 });
+
             } else {
+                console.log("Error loading data, retrying.");
                 countryCases();
             }
-
-            console.log("Error loading data, retrying.");
         };
     }, 5000);
 
@@ -148,10 +148,8 @@ function orientationChange(mq) {
     }
 
     if (mq.matches) {
-        console.log("landscape");
         xhttp(page + '-landscape', 'main-content-wrapper');
     } else {
-        console.log("portrait");
         xhttp(page + '-portrait', 'main-content-wrapper');
         document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 5;
     }

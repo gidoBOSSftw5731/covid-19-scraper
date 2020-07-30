@@ -142,6 +142,7 @@ function countryCases() {
             var graph = document.getElementById("graph");
             var graphUrl = savedData.split(",")[3];
             graph.src = graphUrl;
+            console.log(graphUrl);
 
             setTimeout(function () {
                 if (mq.matches) {
@@ -151,7 +152,7 @@ function countryCases() {
                     document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 6;
                     document.getElementById("data-portrait-container").style.width = document.getElementById("graph").offsetWidth + document.getElementById("data-form").offsetWidth + 150;
                 }
-            }, 100);
+            }, 300);
 
             return;
         } else {
@@ -180,7 +181,7 @@ function countryCases() {
 
             // send that array to localstorage
             localStorage.setItem("US", matches);
-            console.log("country data saved to cache for later retrieval");
+            console.log("cases country data saved to cache for later retrieval");
 
             // serve data to user
             document.getElementById('USCases').innerHTML = "Cases: " + cases;
@@ -202,13 +203,17 @@ function countryCases() {
             var graph = document.getElementById("graph");
             var graphUrl = msg.attachments.first().url;
             graph.src = graphUrl;
+            
+            if (!graphUrl) {
+                console.log(msg.content);
+            }
 
             // send that array to localstorage;
             var localStorageData = localStorage.getItem("US").split(",");
             localStorageData.push(graphUrl);
 
             localStorage.setItem("US", localStorageData);
-            console.log("country data saved to cache for later retrieval");
+            console.log("graph country data saved to cache for later retrieval");
             return;
         }
     });
@@ -220,7 +225,7 @@ function countryCases() {
             document.getElementById("data-portrait-container").style.height = document.getElementById("data-portrait-container").offsetHeight + 6;
             document.getElementById("data-portrait-container").style.width = document.getElementById("graph").offsetWidth + document.getElementById("data-form").offsetWidth + 150;
         }
-    }, 100);
+    }, 1000);
 };
 
 // get data graph
