@@ -74,15 +74,21 @@ client.on("message", msg => {
         msg.reply("no i'm not")
     }
 
-    if (msg.mentions.members.first() && msg.content.includes("!usercases")) {
-        var cases = Math.floor(Math.random() * 1000000);
-        var deaths = Math.floor(Math.random() * 3000);
+    if (msg.content.includes("!usercases")) {
+        if (msg.mentions) {
+            if (msg.mentions.members) {
+                if (msg.mentions.members.first()) {
+                    var cases = Math.floor(Math.random() * 1000000);
+                    var deaths = Math.floor(Math.random() * 3000);
 
-        while (deaths > cases) {
-            deaths = Math.floor(Math.random() * 3000);
+                    while (deaths > cases) {
+                        deaths = Math.floor(Math.random() * 3000);
+                    }
+
+                    return msg.reply("The county of " + msg.member.user.username + " has " + cases + " cases and " + deaths + " deaths!");
+                }
+            }
         }
-
-        return msg.reply("The county of " + msg.member.user.username + " has " + cases + " cases and " + deaths  + " deaths!");
     }
 
     if (!msg.content.startsWith("!")) return;
