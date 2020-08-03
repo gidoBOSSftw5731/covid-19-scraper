@@ -1,0 +1,61 @@
+* {
+  box-sizing: border-box;
+}
+.popup {
+  position: fixed;
+  top: -1%;
+  border: 500px solid rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
+}
+#popupsignin {
+  top: -100%;
+}
+.popupwrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.signinoptions {
+  background-color: #E53935;
+  border: none;
+  color: white;
+  padding: 24px 28px;
+  text-align: center;
+  font-size: 28px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px grey;
+}
+.signinoptions:hover {
+  background-color: brown;
+}
+.mdl-card.sis:not(.ap) {
+  overflow: visible;
+  position: relative;
+  top: -500px;
+}
+.mdl-grid:not(.ap) {
+  max-width: 35%;
+  margin: auto;
+  position: fixed;
+}
+.mdl-layout__container:not(.ap) {
+  display: contents;
+}
+.mdl-layout__header-row:not(.ap) {
+  padding: 0;
+}
+@-moz-document {
+  ::placeholder {
+    color: white;
+    opacity: 1; /* Firefox */
+  }
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
+input:focus {
+  outline: none;
+}
