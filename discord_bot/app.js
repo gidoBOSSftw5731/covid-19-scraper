@@ -904,12 +904,8 @@ client.on("message", msg => {
                                             var token = doc.id + Math.floor(100000 + Math.random() * 999999);
                                             msg.channel.send("!botcases " + location + " " + token);
 
-                                            console.log(location);
-
-
                                             client.once('message', function watchlistListen(message) {
                                                 if (message.author.id == "692117206108209253" && message.channel.id == "696894398293737512" && message.content.includes(token) && !message.content.includes("!botcases")) {
-                                                    console.log(location);
 
                                                     var data = message.content.replace(token + " ", "").toString();
                                                     var matches = data.match(/\d+/g);
@@ -1045,7 +1041,6 @@ client.on("message", msg => {
                     client.on('message', function usercasesListening(message) {
                         if (message.author.id == "692117206108209253" && message.channel.id == channelID && message.content.includes(token) && !message.content.includes("!botcases")) {
                             msg.reply(message.content.substr(6));
-                            console.log(message.author.id, message.channel.id, message.content);
 
                             return client.removeListener('message', usercasesListening);
                         }
