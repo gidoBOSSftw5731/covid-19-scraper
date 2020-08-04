@@ -1040,7 +1040,7 @@ client.on("message", msg => {
 
                     client.on('message', function usercasesListening(message) {
                         if (message.author.id == "692117206108209253" && message.channel.id == channelID && message.content.includes(token) && !message.content.includes("!botcases")) {
-                            msg.reply(message.content.substr(6));
+                            msg.reply(message.content.substr(7));
 
                             return client.removeListener('message', usercasesListening);
                         }
