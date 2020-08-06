@@ -117,26 +117,67 @@ client.on("message", msg => {
             } else {
                 var o = "";
                 const len = args.length;
+
+                let x = true;
+
+                userDoc.get().then(function (doc) {
+                    if (doc.exists) {
+                        x = true;
+                    } else {
+                        x = false;
+                    }
+                });
+
                 if (len == 3) {
                     var state = args[2];
                     var countyParts = args.slice(0, 2).toString();
                     var county = countyParts.replace(",", " ");
+                    console.log('hia');
                 } else if (len == 2) {
                     var state = args[1];
                     var county = args[0];
+                    console.log('hi', county, state);
                 } else if (args[0] == "clear") {
-                    userDoc.update({
-                        location: firebase.firestore.FieldValue.delete()
+                    if (x) {
+                        let removeLocation = userDoc.update({
+                            location: firebase.firestore.FieldValue.delete()
+                        }).then(function () {
+                            return msg.reply("Your location has been cleared!");
+                        });
+                    } else {
+                        return msg.reply("You don't have an account or location to clear! Use `!signup` to create and account or set your location using !location to automatically create an account.");
+                    }
+                } else {
+                    return error("Args length, " + len + ", did not match any cases");
+                }
+
+                if (typeof state != String) {
+                    return error("State isn't a string");
+                }
+
+
+                if (!x) {
+                    userDoc.set({
+                        id: id
                     });
-                    return msg.reply("Your location has been cleared!");
+
+                    client.users.get(id).send('Welcome to the CovidBot19 Community! Use the command `!help` to see a list of commands that you can run!\n' +
+                        "This bot is still a WIP, so expect bugs and new features all at the same time!\nAnd don't forget, stay home and wash your hands for 20 seconds!");
                 }
                 
                 for (i = 0; i < args.length; i++) {
                     if (i == 0) {
-                        let updateState = userDoc.update({ state: state });
+                        let updateState = userDoc.update({ state: state }).catch(function (e) {
+                            error(e);
+                        });
                         o += "State: " + state;
                     } else if (i == 1) {
-                        let updateCounty = userDoc.update({ county: county });
+                        if (typeof county != String) {
+                            return error("County isn't a string");
+                        }
+                        let updateCounty = userDoc.update({ county: county }).catch(function (e) {
+                            error(e);
+                        });
                         o += ", County: " + county;
                     }
                 }
