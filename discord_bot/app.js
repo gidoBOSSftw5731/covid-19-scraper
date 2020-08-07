@@ -1081,7 +1081,9 @@ client.on("message", msg => {
 
                     client.on('message', function usercasesListening(message) {
                         if (message.author.id == "692117206108209253" && message.channel.id == channelID && message.content.includes(token) && !message.content.includes("!botcases")) {
-                            msg.reply(message.content.substr(7));
+                            var words = message.content.split(" ");
+
+                            msg.reply(`The ${words[1] + " " + words[2] + " " + words[3]} has ${words[6]} cases and ${words[8]} deaths!`);
 
                             return client.removeListener('message', usercasesListening);
                         }
