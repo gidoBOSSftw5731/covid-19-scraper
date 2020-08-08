@@ -1108,7 +1108,7 @@ client.on("message", msg => {
                                         var rate = words[6]/population;
 
                                         if (!Number.isNaN(rate)) {
-                                            msg.reply(`The ${words[1] + " " + words[2] + " " + words[3]} has ${words[6]} cases and ${words[8]} deaths, with an infection rate of ${(rate * 100).toFixed(2)}%!`);
+                                            msg.reply(`The state of ${words[4]} has ${words[6]} cases and ${words[8]} deaths, with an infection rate of ${(rate * 100).toFixed(2)}%!`);
                                         } else {
                                             error("Rate for mycases command is not a number!");
                                             return msg.reply("Error occurred! Try again later!");
