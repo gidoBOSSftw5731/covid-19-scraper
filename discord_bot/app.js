@@ -62,6 +62,8 @@ function log(message) {
 client.setMaxListeners(15);
 
 var stateNumbers = ['WV','FL','IL','MN','MD','RI','ID','NH','NC','VT','CT','DE','NM','CA','NJ','WI','OR','NE','PA','WA','LA','GA','AL','UT','OH','TX','CO','SC','OK','TN','WY','HI','ND','KY','VI','MP','GU','ME','NY','NV','AK','AS','MI','AR','MS','MO','MT','KS','IN','PR','SD','MA','VA','DC','IA']
+const stateAbbrv = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY']
+const states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
 
 client.on("message", msg => {
     if (msg.content == "so how was your day") {
@@ -132,16 +134,18 @@ client.on("message", msg => {
                     var state = args[2];
                     var countyParts = args.slice(0, 2).toString();
                     var county = countyParts.replace(",", " ");
-                    console.log('hia');
                 } else if (len == 2) {
                     var state = args[1];
                     var county = args[0];
-                    console.log('hi', county, state);
+                } else if (len == 1) {
+                    var state = args[0].toString();
                 } else if (args[0] == "clear") {
                     if (x) {
                         let removeLocation = userDoc.update({
-                            location: firebase.firestore.FieldValue.delete()
-                        }).then(function () {
+                            state: firebase.firestore.FieldValue.delete()
+                        }).then(userDoc.update({
+                            county: firebase.firestore.FieldValue.delete()
+                        })).then(function () {
                             return msg.reply("Your location has been cleared!");
                         });
                     } else {
@@ -151,10 +155,11 @@ client.on("message", msg => {
                     return error("Args length, " + len + ", did not match any cases");
                 }
 
-                if (typeof state != String) {
+                if ((typeof state).toString() != "string") {
+                    console.log(state);
+                    console.log(typeof state);
                     return error("State isn't a string");
                 }
-
 
                 if (!x) {
                     userDoc.set({
@@ -170,9 +175,12 @@ client.on("message", msg => {
                         let updateState = userDoc.update({ state: state }).catch(function (e) {
                             error(e);
                         });
+                        let removeCounty = userDoc.update({
+                            county: admin.firestore.FieldValue.delete()
+                        })
                         o += "State: " + state;
                     } else if (i == 1) {
-                        if (typeof county != String) {
+                        if ((typeof county).toString() != "string") {
                             return error("County isn't a string");
                         }
                         let updateCounty = userDoc.update({ county: county }).catch(function (e) {
@@ -1083,7 +1091,34 @@ client.on("message", msg => {
                         if (message.author.id == "692117206108209253" && message.channel.id == channelID && message.content.includes(token) && !message.content.includes("!botcases")) {
                             var words = message.content.split(" ");
 
-                            msg.reply(`The ${words[1] + " " + words[2] + " " + words[3]} has ${words[6]} cases and ${words[8]} deaths!`);
+                            if (county) {
+                                msg.reply(`The ${words[2] + " " + words[3] + " " + words[4]} has ${words[6]} cases and ${words[8]} deaths!`);
+                            } else {
+                                var xhttp = new XMLHttpRequest();
+                                xhttp.onreadystatechange = function () {
+                                    if (this.readyState == 4 && this.status == 200) {
+                                        text = this.responseText;
+                                        text = JSON.parse(text);
+                                        text = text.sort(function (a, b) {
+                                            return a[3] - b[3];
+                                        });
+
+                                        var s = stateAbbrv.indexOf(state);
+                                        var population = text[s + 1][1];
+                                        var rate = words[6]/population;
+
+                                        if (!Number.isNaN(rate)) {
+                                            msg.reply(`The ${words[1] + " " + words[2] + " " + words[3]} has ${words[6]} cases and ${words[8]} deaths, with an infection rate of ${(rate * 100).toFixed(2)}%!`);
+                                        } else {
+                                            error("Rate for mycases command is not a number!");
+                                            return msg.reply("Error occurred! Try again later!");
+                                        }
+                                    }
+                                };
+
+                                xhttp.open("GET", "https://api.census.gov/data/2019/pep/population?get=DATE_DESC,POP,NAME&for=state", true);
+                                xhttp.send();
+                            }
 
                             return client.removeListener('message', usercasesListening);
                         }
