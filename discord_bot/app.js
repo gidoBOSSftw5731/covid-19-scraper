@@ -1131,6 +1131,66 @@ client.on("message", msg => {
                 msg.reply("Error occurred. Please try again later.");
             });
             break;
+        case "rate":
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    text = this.responseText;
+                    text = JSON.parse(text);
+                    text = text.sort(function (a, b) {
+                        return a[3] - b[3];
+                    });
+
+                    var channels = ["695838084687986738", "696893994247913492", "696894015324291194", "696894101232287785", "696894131972210708", "696894159314747392",
+                        "696894185755902002", "696894213194776636", "696894242894774282", "696894279720894475", "696894305058422794", "696894326994632784"];
+                    var seed = Math.floor(Math.random() * 12);
+                    var channelID = channels[seed];
+
+                    if (args.length == 0 || args.includes("US")) {
+                        var population = 331209314;
+                        var cmd = "!cases";
+                    } else {
+                        var state = args[0];
+                        if (!stateAbbrv.includes(state)) {
+                            return msg.reply("Sorry, couldn't figure out what state '" + state + "' is. Please make sure you have entered an abbreviation and not the full name!");
+                        }
+
+                        var s = stateAbbrv.indexOf(state);
+                        var population = text[s + 1][1];
+
+                        var token = Math.floor(100000 + Math.random() * 999999);
+                        var cmd = "!botcases " + state + " " + token;
+                    }
+
+                    client.channels.get(channelID).send(cmd);
+
+                    client.on('message', function usercasesListening(message) {
+                        if (message.author.id == "692117206108209253" && message.channel.id == channelID && !message.content.includes(cmd)) {
+                            if ((cmd == "!cases" && !message.content.includes(token)) || (cmd != "!cases" && message.content.includes(token))) {
+                                var data = message.content.replace(token + " ", " ").toString();
+                                var matches = data.match(/\d+/g);
+                                var cases = matches[0];
+
+                                if (args.length == 0 || args.includes("US")) {
+                                    var pre = "the US";
+                                } else {
+                                    var pre = "the state of " + states[s];
+                                }
+
+                                var rate = ((cases / population) * 100).toFixed(2);
+
+                                msg.reply(`The infection rate for ${pre} is ${rate}% (${cases} cases out of a population of ${population}).`);
+
+                                return client.removeListener('message', usercasesListening);
+                            }
+                        }
+                    });
+                }
+            };
+
+            xhttp.open("GET", "https://api.census.gov/data/2019/pep/population?get=DATE_DESC,POP,NAME&for=state", true);
+            xhttp.send();
+            break;
         case "website", "site":
             const websiteEmbed = {
                 title: 'CovidBot19 Website',
