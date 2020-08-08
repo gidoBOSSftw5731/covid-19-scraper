@@ -61,7 +61,7 @@ function log(message) {
 
 client.setMaxListeners(15);
 
-var stateNumbers = ['WV','FL','IL','MN','MD','RI','ID','NH','NC','VT','CT','DE','NM','CA','NJ','WI','OR','NE','PA','WA','LA','GA','AL','UT','OH','TX','CO','SC','OK','TN','WY','HI','ND','KY','VI','MP','GU','ME','NY','NV','AK','AS','MI','AR','MS','MO','MT','KS','IN','PR','SD','MA','VA','DC','IA']
+const stateNumbers = ['WV','FL','IL','MN','MD','RI','ID','NH','NC','VT','CT','DE','NM','CA','NJ','WI','OR','NE','PA','WA','LA','GA','AL','UT','OH','TX','CO','SC','OK','TN','WY','HI','ND','KY','VI','MP','GU','ME','NY','NV','AK','AS','MI','AR','MS','MO','MT','KS','IN','PR','SD','MA','VA','DC','IA']
 const stateAbbrv = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY']
 const states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
 
@@ -70,7 +70,7 @@ client.on("message", msg => {
         msg.reply("eh, not bad, u?");
     }
     if (msg.content == "so whatcha up to tomorrow?") {
-        msg.reply('nothing much, just beating up some bitches');
+        msg.reply('nothing much, just beating up some b*tches');
     }
     if (msg.content == "the bot is broken") {
         msg.reply("no i'm not");
@@ -192,7 +192,7 @@ client.on("message", msg => {
                 msg.reply(`Location added!\n${o}`);
             }
             break;
-        case "subscribe": // this could maybe just add the user to a table in firestore?
+        case "subscribe": // this could maybe just add the user to a table in firestore? not that it should but it's possible just saying
             if (!args.length) {
                 return msg.reply("To use the subscribe command, please follow the paradigm:\n" +
                     "```!subscribe <level (county, state, country)>```Note: At this moment, only the US is supported.");
