@@ -288,111 +288,111 @@ function discordTokenVerify(use, token) {
 // Discord Token Verification End
 
 // Discord Auth
-function discordAuth() {
-    var dID = document.getElementById('AdiscordID').value;
-    var email = document.getElementById('Aemail').value;
+    function discordAuth() {
+        var dID = document.getElementById('AdiscordID').value;
+        var email = document.getElementById('Aemail').value;
 
-    if (dID && email) {
-        users.doc(dID).get().then(function (doc) {
-            if (doc.exists && doc.data().email == email) {
-                firebase.auth().signInWithEmailAndPassword(email, dID).then(function () {
-                    console.log("Success!");
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            } else {
-                firebase.auth().createUserWithEmailAndPassword(email, dID).then(function () {
-                    firebase.auth().signInWithEmailAndPassword(email, dID).catch(function (error) {
-                        console.log("Error occurred signing in: ", error);
-                    });
-
-                    firebase.auth().onAuthStateChanged(function (user) {
-                        users.doc(dID).set({
-                            email: email,
-                            id: dID
-                        }, { merge: true }).then(function () {
-                            console.log("Document successfully written!");
-                        }).catch(function (error) {
-                            console.error("Error writing document: ", error);
-                        });
-
-                        user.updateProfile({
-                            displayName: dID
-                        }).then(function () {
-                            console.log(user.displayName);
-                        }).catch(function (error) {
-                            console.log(error);
-                            console.log(user.displayName);
-                        });
-                    });
-                }).catch(function (err) {
-                    if (err.code == "auth/email-already-in-use") {
-                        botClient.users.get("377934017548386307").send("Interesting error with Discord Authentication (account already exists but passed doc.exists check. Email is " + email);
-                        alert("An interesting error occurred that will require developer action. Developers have been notified of this error, please try again later.");
-                    }
-                    console.log("Error occurred creating user: ", err);
-                });
-            }
-            display('discordAuth');
-            pageLoad(true);
-        }).catch(function (err) {
-            console.log("Error occurred getting user doc: ", err);
-        });
-    } else {
-        if (email) {
-            alert("Error occurred, please retry the authentication process.");
-            console.log("Error occurred, ID somehow disappeared?");
-        } else if (dID) {
-            alert("Please enter an email!");
-            console.log("Error occurred, no email entered.");
-        } else {
-            alert("Impossible error. If you are seeing this, go email the NSA to apply for a job.");
-            console.log("Impossible error.");
-        }
-    }
-};
-// Discord Auth End
-
-// Connect Discord
-function discordConnect() {
-    if (user) {
-        var dID = document.getElementById('CdiscordID').value;
-        var discordUserDoc = users.doc(dID);
-        var siteUserDoc = users.doc(displayName);
-
-        discordUserDoc.get().then(function (doc) {
-            if (!doc.exists) {
-                if (confirm("You don't have an account registered with us on Discord yet! Would you like to register now?")) {
-                    siteUserDoc.get().then(function (doc) {
-                        doc.set({
-                            id: dID
-                        }, { merge: true });
+        if (dID && email) {
+            users.doc(dID).get().then(function (doc) {
+                if (doc.exists && doc.data().email == email) {
+                    firebase.auth().signInWithEmailAndPassword(email, dID).then(function () {
+                        console.log("Success!");
+                    }).catch(function (error) {
+                        console.log(error);
                     });
                 } else {
-                    alert("Please create an account on Discord using !signup and then come back to retry the connect process!");
-                }
-            } else {
-                var discordUserData = doc.data();
-                if (discordUserData.email != user.email && discordUserData.email) {
+                    firebase.auth().createUserWithEmailAndPassword(email, dID).then(function () {
+                        firebase.auth().signInWithEmailAndPassword(email, dID).catch(function (error) {
+                            console.log("Error occurred signing in: ", error);
+                        });
 
+                        firebase.auth().onAuthStateChanged(function (user) {
+                            users.doc(dID).set({
+                                email: email,
+                                id: dID
+                            }, { merge: true }).then(function () {
+                                console.log("Document successfully written!");
+                            }).catch(function (error) {
+                                console.error("Error writing document: ", error);
+                            });
+
+                            user.updateProfile({
+                                displayName: dID
+                            }).then(function () {
+                                console.log(user.displayName);
+                            }).catch(function (error) {
+                                console.log(error);
+                                console.log(user.displayName);
+                            });
+                        });
+                    }).catch(function (err) {
+                        if (err.code == "auth/email-already-in-use") {
+                            botClient.users.get("377934017548386307").send("Interesting error with Discord Authentication (account already exists but passed doc.exists check. Email is " + email);
+                            alert("An interesting error occurred that will require developer action. Developers have been notified of this error, please try again later.");
+                        }
+                        console.log("Error occurred creating user: ", err);
+                    });
                 }
-                siteUserDoc.get().then(function (doc) {
-                    doc.set(discordUserData, { merge: true });
-                    discordUserDoc.delete();
-                }).then(function () {
-                    alert('Successfully merged your accounts! You should receive a DM on Discord confirming this. If not, please contact a developer.');
-                    display('discordConnect');
-                    pageLoad(true);
-                }).catch(function (error) {
-                    console.error("Error writing document: ", error);
-                });
+                display('discordAuth');
+                pageLoad(true);
+            }).catch(function (err) {
+                console.log("Error occurred getting user doc: ", err);
+            });
+        } else {
+            if (email) {
+                alert("Error occurred, please retry the authentication process.");
+                console.log("Error occurred, ID somehow disappeared?");
+            } else if (dID) {
+                alert("Please enter an email!");
+                console.log("Error occurred, no email entered.");
+            } else {
+                alert("Impossible error. If you are seeing this, go email the NSA to apply for a job.");
+                console.log("Impossible error.");
             }
-        });
-    } else {
-        alert("Oh no! It looks like you're not signed in but somehow seeing this! That shouldn't be happening! Sign in and try again!");
-    }
-};
-// Connect Discord End
+        }
+    };
+    // Discord Auth End
+
+    // Connect Discord
+    function discordConnect() {
+        if (user) {
+            var dID = document.getElementById('CdiscordID').value;
+            var discordUserDoc = users.doc(dID);
+            var siteUserDoc = users.doc(displayName);
+
+            discordUserDoc.get().then(function (doc) {
+                if (!doc.exists) {
+                    if (confirm("You don't have an account registered with us on Discord yet! Would you like to register now?")) {
+                        siteUserDoc.get().then(function (doc) {
+                            doc.set({
+                                id: dID
+                            }, { merge: true });
+                        });
+                    } else {
+                        alert("Please create an account on Discord using !signup and then come back to retry the connect process!");
+                    }
+                } else {
+                    var discordUserData = doc.data();
+                    if (discordUserData.email != user.email && discordUserData.email) {
+
+                    }
+                    siteUserDoc.get().then(function (doc) {
+                        doc.set(discordUserData, { merge: true });
+                        discordUserDoc.delete();
+                    }).then(function () {
+                        alert('Successfully merged your accounts! You should receive a DM on Discord confirming this. If not, please contact a developer.');
+                        display('discordConnect');
+                        pageLoad(true);
+                    }).catch(function (error) {
+                        console.error("Error writing document: ", error);
+                    });
+                }
+            });
+        } else {
+            alert("Oh no! It looks like you're not signed in but somehow seeing this! That shouldn't be happening! Sign in and try again!");
+        }
+    };
+    // Connect Discord End
 
 // Password Reset
 function sendPasswordReset() {
