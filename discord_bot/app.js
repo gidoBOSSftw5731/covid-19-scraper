@@ -1576,7 +1576,7 @@ client.on("message", msg => {
         case "international": case "intl": case "global": case "worldwide":
             if (args.length == 0) {
                 return msg.reply("To use the international command, please follow the paradigm:\n" +
-                    "```!international <country (2- or 3-character abbreviation)>```");
+                    "```!global <country (2- or 3-character abbreviation)>```");
             } else if (countries2.has(args[0].toUpperCase())) {
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
@@ -1844,8 +1844,17 @@ client.on("message", msg => {
                 .addField("ID",
                     "`!id (no args)` - retrieves your Discord ID; useful on our website to connect / sign in to a Discord account.\n"
                 )
-                .addField("Cases",
-                    "`!cases <level (county, state, country)> <chart (optional)>` - sends number of cases at the specified level of data plus an optional chart modelling historic data.\n"
+                .addField("Cases (US-only)",
+                    "`!cases <location (county, state, country)>` - sends number of cases at the specified level of data.\n"
+                )
+                .addField("Global (International Data)",
+                    "`!global <country (2- or 3-character abbreviation)>` - sends number of cases, deaths, and recovered cases for the country specified."
+                )
+                .addField("Mycases (US-only)",
+                    "`!mycases (no args)` - sends number of cases in your location (use !location to set a location).\n"
+                )
+                .addField("Graph (US-only)",
+                    "`!graph <location (county + state, state, country)>` - sends a graph of the cases and deaths for the given location."
                 )
                 .addField("Restrictions",
                     "`!restrictions <state (abbreviation)>` - sends the general and school restrictions at the state level.\n"
@@ -1875,7 +1884,7 @@ client.on("message", msg => {
                 .addField("Discord Server",
                     "`!discord (no args)` - Sends the invite link to our Discord Server.\n"
                 )
-                .setFooter('Data Source: Arcgis | DM Rasmit#2549 if you have any difficulties');
+                .setFooter('Data Source: Arcgis | DM Rasmit#3525 if you have any difficulties');
             msg.channel.send({ embed: helpEmbed });
             break;
         case "mimic":
