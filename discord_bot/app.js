@@ -1757,6 +1757,7 @@ client.on("message", msg => {
             msg.channel.send({ embed: websiteEmbed });
             break;
         case "discord":
+            return;
             const discordEmbed = {
                 title: 'CovidBot19 Discord Server',
                 url: 'https://discord.gg/Cg7E8ms',
