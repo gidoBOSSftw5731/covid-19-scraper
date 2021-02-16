@@ -39,7 +39,7 @@ db.collection('env').doc('env').get().then(function (doc) {
         log(`Client user tag: ${client.user.id}!`);
         client.user.setActivity("alone | !help", { type: "Playing" });
 
-        client.channels.get("696894398293737512").send("!test");
+        client.channels.cache.get("696894398293737512").send("!test");
 
         return client.removeListener('on', readysetgo);
     })
@@ -49,14 +49,14 @@ db.collection('env').doc('env').get().then(function (doc) {
 
 function error(err) {
     var date = new Date();
-    client.channels.get("696540781787217952").send("<@377934017548386307> " + date + " " + err);
+    client.channels.cache.get("696540781787217952").send("<@377934017548386307> " + date + " " + err);
 
     console.log(date, err);
 };
 
 function log(message) {
     var date = new Date();
-    client.channels.get("696540781787217952").send(date + " " + message);
+    client.channels.cache.get("696540781787217952").send(date + " " + message);
 };
 
 client.setMaxListeners(15);
@@ -1641,7 +1641,7 @@ client.on("message", msg => {
 
                     var token = Math.floor(100000 + Math.random() * 999999);
 
-                    client.channels.get(channelID).send("!botcases " + location + " " + token);
+                    client.channels.cache.get(channelID).send("!botcases " + location + " " + token);
 
                     client.on('message', function usercasesListening(message) {
                         if (message.author.id == "692117206108209253" && message.channel.id == channelID && message.content.includes(token) && !message.content.includes("!botcases")) {
@@ -1718,7 +1718,7 @@ client.on("message", msg => {
                         var cmd = "!botcases " + state + " " + token;
                     }
 
-                    client.channels.get(channelID).send(cmd);
+                    client.channels.cache.get(channelID).send(cmd);
 
                     client.on('message', function usercasesListening(message) {
                         if (message.author.id == "692117206108209253" && message.channel.id == channelID && !message.content.includes(cmd)) {
