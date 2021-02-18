@@ -606,7 +606,7 @@ client.on("message", msg => {
                         id: id
                     });
                     msg.reply('User created with id: ' + id);
-                    client.users.get(id).send('Welcome to the CovidBot19 Community! Use the command `!help` to see a list of commands that you can run!\n' +
+                    client.users.cache.get(id).send('Welcome to the CovidBot19 Community! Use the command `!help` to see a list of commands that you can run!\n' +
                     "This bot is still a WIP, so expect bugs and new features all at the same time!\nAnd don't forget, stay home and wash your hands for 20 seconds!");
                 } else {
                     log("Users doc already exists, skipped writing.");
@@ -673,7 +673,7 @@ client.on("message", msg => {
                         id: id
                     });
 
-                    client.users.get(id).send('Welcome to the CovidBot19 Community! Use the command `!help` to see a list of commands that you can run!\n' +
+                    client.users.cache.get(id).send('Welcome to the CovidBot19 Community! Use the command `!help` to see a list of commands that you can run!\n' +
                         "This bot is still a WIP, so expect bugs and new features all at the same time!\nAnd don't forget, stay home and wash your hands for 20 seconds!");
                 }
                 
@@ -1157,7 +1157,7 @@ client.on("message", msg => {
                                     } else {
                                         dwUsersYes.push(doc.id);
                                         message.embeds.forEach((embed) => {
-                                            client.users.get(doc.id).send({
+                                            client.users.cache.get(doc.id).send({
                                                 embed: embed
                                             });
                                         });
@@ -1260,7 +1260,7 @@ client.on("message", msg => {
                                         dcUsersYes.push(doc.id);
                                         eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
 
-                                        client.users.get(doc.id).send(message.content);
+                                        client.users.cache.get(doc.id).send(message.content);
                                     }
                                 }
 
@@ -1368,7 +1368,7 @@ client.on("message", msg => {
                                             dlUsersYes.push(doc.id);
                                             eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
 
-                                            client.users.get(doc.id).send(data);
+                                            client.users.cache.get(doc.id).send(data);
 
                                             client.removeListener('message', locationsListen);
                                         }
@@ -1377,7 +1377,7 @@ client.on("message", msg => {
                                     dlUsersYes.push(doc.id);
                                     log("Location " + location + " has already been queried, getting data for that location from stored memory.");
                                     var data = locationsMatches[locations.indexOf(location)];
-                                    client.users.get(doc.id).send(data);
+                                    client.users.cache.get(doc.id).send(data);
                                 } else {
                                     error("Error occurred, location undefined.");
                                 }
@@ -1393,7 +1393,7 @@ client.on("message", msg => {
                 }).catch(function (err) {
                     error(err);
                     e++;
-                    client.users.get('377934017548386307').send("Error occurred with activation location retrieval.");
+                    client.users.cache.get('377934017548386307').send("Error occurred with activation location retrieval.");
                     return log("Location: Unuccessful");
                 });
             }
@@ -1477,7 +1477,7 @@ client.on("message", msg => {
 
                                                     dwlUsersYes.push(doc.id);
                                                     eval("users.doc('" + doc.id + "').update({'" + addr + "': '" + data + "'});");
-                                                    client.users.get(doc.id).send(data);
+                                                    client.users.cache.get(doc.id).send(data);
 
                                                     client.removeListener('message', watchlistListen);
                                                 }
@@ -1491,7 +1491,7 @@ client.on("message", msg => {
                                                 console.log("this ain't it chief");
                                             } else if (data) {
                                                 console.log(data);
-                                                client.users.get(doc.id).send(data);
+                                                client.users.cache.get(doc.id).send(data);
                                             } else {
                                                 console.log(locationsMatches, "Error occurred here");
                                             }
@@ -1512,7 +1512,7 @@ client.on("message", msg => {
                 }).catch(function (err) {
                     error(err);
                     e++;
-                    client.users.get('377934017548386307').send("Error occurred with activation watchlist retrieval.");
+                    client.users.cache.get('377934017548386307').send("Error occurred with activation watchlist retrieval.");
                     return log("Watchlist: Unsuccessful");
                 });
             }
@@ -1547,7 +1547,7 @@ client.on("message", msg => {
                     }).catch(function (err) {
                         error(err);
                         e++;
-                        client.users.get('377934017548386307').send("Error occurred with activation mailing list delivery.");
+                        client.users.cache.get('377934017548386307').send("Error occurred with activation mailing list delivery.");
                         return log("Emails: Unsuccessful");
 
                     });
@@ -1559,10 +1559,10 @@ client.on("message", msg => {
                         log("Finished updating!");
 
                         if (result && e == 0) {
-                            client.users.get('377934017548386307').send("Finished updating everyone successfully!");
+                            client.users.cache.get('377934017548386307').send("Finished updating everyone successfully!");
                             log("Finished updating everyone! No errors occurred!");
                         } else if (result && e != 0) {
-                            client.users.get('377934017548386307').send("Finished updating everyone with " + e + " errors.");
+                            client.users.cache.get('377934017548386307').send("Finished updating everyone with " + e + " errors.");
                             log("Finished updating everyone! " + e + " errors were found.");
                         }
                         return log("---------------------------");
