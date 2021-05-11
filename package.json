@@ -4,7 +4,7 @@
   "description": "covid-19 arcgis in golang",
   "main": "./discord_bot/app.js",
   "dependencies": {
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "discord.js": "^12.1.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
